@@ -1,0 +1,262 @@
+/* Allgemeine Stile */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+}
+
+/* Überschrift */
+h2 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Buttons-Container */
+#buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px;
+}
+
+/* Allgemeine Button-Stile */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Tabelle */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Input-Felder */
+input[type="number"] {
+  width: 60px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* KW-Steuerung */
+.week-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.week-controls button {
+  margin: 0 10px;
+}
+
+/* Speichern-Button */
+#save-button {
+  margin-top: 20px;
+  display: block;
+  width: 100%;
+  background-color: #28a745;
+}
+
+#save-button:hover {
+  background-color: #218838;
+}
+
+/* Versteckte Elemente */
+.hidden {
+  display: none;
+}
+
+/* Form-Container */
+#form-container {
+  display: block;
+  background-color: #ffffff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-width: 800px;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Grüne Umrandung für freigegebene Felder */
+input.allowed {
+  border: 2px solid green;
+  background-color: #e8f5e9; /* Hellgrüner Hintergrund */
+}
+
+/* Verstecke nicht freigegebene Felder */
+input.hidden {
+  display: none;
+}
+
+/* Nicht bearbeitbare Felder hervorheben */
+.readonly-input {
+  background-color: #e0e0e0; /* Helleres Grau für Sichtbarkeit */
+  color: #555; /* Kontrastfarbe für Text */
+  border: 1px solid #ccc; /* Leichter Rand */
+  text-align: center; /* Zentrierter Text */
+}
+
+/* INFO-Buttons standardmäßig grau */
+.info-button {
+  background-color: #d3d3d3; /* Grau */
+  color: #333;
+  border: 1px solid #999;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* INFO-Buttons mit gespeicherten Informationen */
+.info-button.info-saved {
+  background-color: #4caf50; /* Grün */
+  color: white;
+  border: 1px solid #3e8e41;
+}
+
+/* Hover-Effekt für INFO-Buttons */
+.info-button:hover {
+  background-color: #bbb;
+}
+
+/* Modal-Hintergrund */
+.modal {
+  /* Entferne display: none; */
+  position: fixed; /* Fixiert im Viewport */
+  z-index: 1000; /* Über anderen Elementen */
+  left: 0;
+  top: 0;
+  width: 100%; /* Volle Breite */
+  height: 100%; /* Volle Höhe */
+  overflow: auto; /* Scrollen bei Bedarf */
+  background-color: rgba(0, 0, 0, 0.5); /* Halbtransparenter Hintergrund */
+}
+
+/* Modal-Inhalt */
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto; /* Zentriert das Modal */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Breite des Modals */
+  max-width: 500px;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Schließen-Button im Modal */
+.close-button {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+}
+
+/* Textarea im Modal */
+#info-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+/* Speichern-Button im Modal */
+#save-info-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50; /* Grün */
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#save-info-button:hover {
+  background-color: #45a049;
+}
+
+/* Zusätzliche Stile für bessere Benutzerfreundlichkeit */
+
+/* Buttons im Modal */
+.modal-content button {
+  margin: 10px 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content button.save {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-content button.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Responsive Design für kleinere Bildschirme */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95%;
+    margin: 20% auto;
+  }
+
+  input[type="number"] {
+    width: 50px;
+  }
+
+  button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  #save-button {
+    padding: 10px;
+    font-size: 16px;
+  }
+}
+

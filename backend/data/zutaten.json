@@ -1,0 +1,435 @@
+[
+  {
+    "id": 31,
+    "name": "Nudeln",
+    "preisProBasiseinheit": 88,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Obst"
+    ],
+    "allergene": [
+      "Gluten",
+      "Eier"
+    ],
+    "allergenCodes": [
+      "A",
+      "C"
+    ],
+    "preisProVerwendungseinheit": 0.088
+  },
+  {
+    "id": 32,
+    "name": "Krabbenfond",
+    "preisProBasiseinheit": 220,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Gemüse"
+    ],
+    "allergene": [
+      "Gluten"
+    ],
+    "allergenCodes": [
+      "A"
+    ],
+    "preisProVerwendungseinheit": 0.22
+  },
+  {
+    "id": 33,
+    "name": "Spaghetti",
+    "preisProBasiseinheit": 4.44,
+    "basiseinheit": "l",
+    "verwendungseinheit": "ml",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "trockene Lebensmittel"
+    ],
+    "allergene": [
+      "Gluten"
+    ],
+    "allergenCodes": [
+      "A"
+    ],
+    "preisProVerwendungseinheit": 0.0044
+  },
+  {
+    "id": 34,
+    "name": "Mehl 405",
+    "preisProBasiseinheit": 1.49,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Obst"
+    ],
+    "allergene": [
+      "Gluten",
+      "Krebstiere",
+      "Sesam"
+    ],
+    "allergenCodes": [
+      "A",
+      "N",
+      "B"
+    ],
+    "preisProVerwendungseinheit": 0.0015
+  },
+  {
+    "id": 35,
+    "name": "Eier",
+    "preisProBasiseinheit": 0.75,
+    "basiseinheit": "Stück",
+    "verwendungseinheit": "Stück",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Eier"
+    ],
+    "allergene": [
+      "Eier"
+    ],
+    "allergenCodes": [
+      "C"
+    ],
+    "preisProVerwendungseinheit": 0.75
+  },
+  {
+    "id": 38,
+    "name": "Kalbfleisch",
+    "preisProBasiseinheit": 20,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Fleisch(TK)"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.02
+  },
+  {
+    "id": 39,
+    "name": "R-Suppen Pulver",
+    "preisProBasiseinheit": 1.7,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Hügli"
+    ],
+    "kategorien": [
+      "trockene Lebensmittel"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0017
+  },
+  {
+    "id": 40,
+    "name": "Wasser",
+    "preisProBasiseinheit": 0.1,
+    "basiseinheit": "l",
+    "verwendungseinheit": "ml",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Flüssigkeiten"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0001
+  },
+  {
+    "id": 41,
+    "name": "Zucker",
+    "preisProBasiseinheit": 1.04,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Gewürze",
+      "trockene Lebensmittel"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.001
+  },
+  {
+    "id": 42,
+    "name": "Hühnerkeule (frisch)",
+    "preisProBasiseinheit": 12.56,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Kröswang"
+    ],
+    "kategorien": [
+      "Fleisch (frisch)"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0126
+  },
+  {
+    "id": 43,
+    "name": "Hühnerkeule (gar)",
+    "preisProBasiseinheit": 0.1,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Kröswang"
+    ],
+    "kategorien": [
+      "Fleisch (frisch)"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0001
+  },
+  {
+    "id": 44,
+    "name": "Reis",
+    "preisProBasiseinheit": 8.26,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "trockene Lebensmittel"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0083
+  },
+  {
+    "id": 45,
+    "name": "Brokkoli",
+    "preisProBasiseinheit": 2.33,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Kröswang"
+    ],
+    "kategorien": [
+      "Gemüse"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0023
+  },
+  {
+    "id": 46,
+    "name": "Schlagobers 32%",
+    "preisProBasiseinheit": 4,
+    "basiseinheit": "l",
+    "verwendungseinheit": "ml",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Milchprodukte"
+    ],
+    "allergene": [
+      "Milch",
+      "Laktose"
+    ],
+    "allergenCodes": [
+      "G",
+      "S"
+    ],
+    "preisProVerwendungseinheit": 0.004
+  },
+  {
+    "id": 47,
+    "name": "R-Faschiertes (TK)",
+    "preisProBasiseinheit": 8.99,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Schultes"
+    ],
+    "kategorien": [
+      "Fleisch(TK)"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.009
+  },
+  {
+    "id": 48,
+    "name": "R-Faschiertes (frisch)",
+    "preisProBasiseinheit": 12.54,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Schultes"
+    ],
+    "kategorien": [
+      "Fleisch (frisch)"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0125
+  },
+  {
+    "id": 49,
+    "name": "Gemüsewürfel (TK)",
+    "preisProBasiseinheit": 4.45,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Kröswang"
+    ],
+    "kategorien": [
+      "Gemüse"
+    ],
+    "allergene": [
+      "Sellerie"
+    ],
+    "allergenCodes": [
+      "L"
+    ],
+    "preisProVerwendungseinheit": 0.0044
+  },
+  {
+    "id": 50,
+    "name": "Semmelbrösel",
+    "preisProBasiseinheit": 2.33,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "trockene Lebensmittel"
+    ],
+    "allergene": [
+      "Gluten"
+    ],
+    "allergenCodes": [
+      "A"
+    ],
+    "preisProVerwendungseinheit": 0.0023
+  },
+  {
+    "id": 51,
+    "name": "Senf",
+    "preisProBasiseinheit": 1.8,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Konserven"
+    ],
+    "allergene": [
+      "Senf"
+    ],
+    "allergenCodes": [
+      "M"
+    ],
+    "preisProVerwendungseinheit": 0.0018
+  },
+  {
+    "id": 52,
+    "name": "Leberkäse",
+    "preisProBasiseinheit": 8.99,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Transgourmet"
+    ],
+    "kategorien": [
+      "Wurst"
+    ],
+    "allergene": [
+      "Gluten",
+      "Sellerie",
+      "Senf",
+      "Laktose"
+    ],
+    "allergenCodes": [
+      "A",
+      "S",
+      "M",
+      "L"
+    ],
+    "preisProVerwendungseinheit": 0.009
+  },
+  {
+    "id": 53,
+    "name": "Kartoffelpüreepulver",
+    "preisProBasiseinheit": 6.25,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Hügli"
+    ],
+    "kategorien": [
+      "trockene Lebensmittel"
+    ],
+    "allergene": [
+      "Laktose"
+    ],
+    "allergenCodes": [
+      "S"
+    ],
+    "preisProVerwendungseinheit": 0.0063
+  },
+  {
+    "id": 54,
+    "name": "Rindersoße (Fertig)",
+    "preisProBasiseinheit": 9.8,
+    "basiseinheit": "l",
+    "verwendungseinheit": "ml",
+    "lieferanten": [
+      "Hügli"
+    ],
+    "kategorien": [
+      "Flüssigkeiten"
+    ],
+    "allergene": [
+      "Soja",
+      "Sellerie"
+    ],
+    "allergenCodes": [
+      "L",
+      "F"
+    ],
+    "preisProVerwendungseinheit": 0.0098
+  },
+  {
+    "id": 55,
+    "name": "Karotten  (TK)",
+    "preisProBasiseinheit": 2.33,
+    "basiseinheit": "kg",
+    "verwendungseinheit": "g",
+    "lieferanten": [
+      "Kröswang"
+    ],
+    "kategorien": [
+      "Gemüse"
+    ],
+    "allergene": [],
+    "allergenCodes": [],
+    "preisProVerwendungseinheit": 0.0023
+  }
+]

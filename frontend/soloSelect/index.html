@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menüplan Auswertung</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+    <script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Menüplan Auswertung</h1>
+            <div class="controls">
+                <div class="date-selector">
+                    <label for="year">Jahr:</label>
+                    <select id="year"></select>
+                    <label for="week">Kalenderwoche:</label>
+                    <select id="week"></select>
+                </div>
+                <div class="layout-controls">
+                    <button id="layout-config-btn" class="btn">Drucklayout</button>
+                    <button id="print-btn" class="btn">A5 Drucken</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="filters">
+                <h2>Filter</h2>
+                <div id="filter-buttons" class="filter-buttons"></div>
+            </div>
+
+            <div class="plans-container">
+                <div id="plans-list"></div>
+            </div>
+
+           
+
+           
+                <h2 class="person-name"><!-- Wird dynamisch gefüllt --></h2>
+                <div class="person-areas">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+                <h3 class="day-header"><!-- Wird dynamisch gefüllt --></h3>
+            </div>
+        </main>
+
+
+    <!-- Menu Modal -->
+    <div id="menuModal" class="modal">
+        <div class="modal-content" id="modalContent">
+            <button class="close-modal">&times;</button>
+            <!-- Wird dynamisch gefüllt -->
+        </div>
+    </div>
+
+    <!-- Layout Configuration Modal -->
+    <div id="layoutConfigModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Drucklayout Konfiguration</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="layout-config-content">
+                <div class="layout-list">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+                <button id="add-layout-btn" class="btn">Neues Layout hinzufügen</button>
+                <div class="config-actions">
+                    <button class="btn" id="save-config">Speichern</button>
+                    <button class="btn" id="cancel-config">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

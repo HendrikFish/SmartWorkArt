@@ -1,0 +1,107 @@
+{
+  "name": "Kindergarten Limberg",
+  "kuerzel": "KG-LB",
+  "woche": "1",
+  "jahr": "2025",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln mit Butter",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Nudelkuchen",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          },
+          {
+            "name": "Wurst",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "kalenderwoche": 11,
+  "jahr": 2025,
+  "zyklus": 4,
+  "tage": [
+    {
+      "tag": "Montag",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    },
+    {
+      "tag": "Dienstag",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    },
+    {
+      "tag": "Mittwoch",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    },
+    {
+      "tag": "Donnerstag",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    },
+    {
+      "tag": "Freitag",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    },
+    {
+      "tag": "Samstag",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    },
+    {
+      "tag": "Sonntag",
+      "anzahl_menu1": "",
+      "anzahl_menu2": "",
+      "suppe": "",
+      "hauptspeise1": "",
+      "hauptspeise2": "",
+      "dessert": "",
+      "abend_suppe": "",
+      "pudding": "",
+      "normalkost": ""
+    }
+  ]
+}

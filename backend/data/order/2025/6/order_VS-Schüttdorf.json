@@ -1,0 +1,26 @@
+{
+  "einrichtung": "VS-Schüttdorf",
+  "kuerzel": "VS-S",
+  "orders": [
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 23
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Schüler",
+      "amount": 23
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 23
+    }
+  ],
+  "week": 6,
+  "year": 2025
+}

@@ -1,0 +1,1063 @@
+{
+  "year": "2024",
+  "week": "51",
+  "days": [
+    {
+      "day": "Montag",
+      "suppe": [
+        {
+          "rezeptId": 2,
+          "name": "Farn",
+          "rezeptKategorien": [
+            "Soße"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "1",
+          "createdAt": "2024-12-11T14:15:19.822Z",
+          "updatedAt": "2024-12-11T14:15:19.822Z"
+        }
+      ],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Top Top",
+          "createdAt": "2024-12-11T14:08:08.286Z",
+          "updatedAt": "2024-12-11T14:08:41.591Z"
+        },
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Top Top",
+          "createdAt": "2024-12-11T14:08:08.286Z",
+          "updatedAt": "2024-12-11T14:08:41.591Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 4,
+          "name": "Faschierte Laibchen",
+          "rezeptKategorien": [
+            "Hauptgericht"
+          ],
+          "zutaten": [
+            {
+              "id": 48,
+              "name": "R-Faschiertes (frisch)",
+              "preisProBasiseinheit": 12.54,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Schultes"
+              ],
+              "kategorien": [
+                "Fleisch (frisch)"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0125,
+              "menge": 120
+            },
+            {
+              "id": 50,
+              "name": "Semmelbrösel",
+              "preisProBasiseinheit": 2.33,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0023,
+              "menge": 20
+            },
+            {
+              "id": 35,
+              "name": "Eier",
+              "preisProBasiseinheit": 0.75,
+              "basiseinheit": "Stück",
+              "verwendungseinheit": "Stück",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Eier"
+              ],
+              "allergene": [
+                "Eier"
+              ],
+              "allergenCodes": [
+                "C"
+              ],
+              "preisProVerwendungseinheit": 0.75,
+              "menge": 1
+            },
+            {
+              "id": 51,
+              "name": "Senf",
+              "preisProBasiseinheit": 1.8,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Konserven"
+              ],
+              "allergene": [
+                "Senf"
+              ],
+              "allergenCodes": [
+                "M"
+              ],
+              "preisProVerwendungseinheit": 0.0018,
+              "menge": 7
+            },
+            {
+              "id": 39,
+              "name": "R-Suppen Pulver",
+              "preisProBasiseinheit": 1.7,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0017,
+              "menge": 7
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:07:07.248Z",
+          "updatedAt": "2025-01-05T20:07:07.248Z"
+        },
+        {
+          "rezeptId": 2,
+          "name": "Farn",
+          "rezeptKategorien": [
+            "Soße"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "1",
+          "createdAt": "2024-12-11T14:15:19.822Z",
+          "updatedAt": "2024-12-11T14:15:19.822Z"
+        }
+      ],
+      "dessert": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Top Top",
+          "createdAt": "2024-12-11T14:08:08.286Z",
+          "updatedAt": "2024-12-11T14:08:41.591Z"
+        }
+      ],
+      "abendSuppe": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        }
+      ],
+      "milchspeise": [
+        {
+          "rezeptId": 2,
+          "name": "Farn",
+          "rezeptKategorien": [
+            "Soße"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "1",
+          "createdAt": "2024-12-11T14:15:19.822Z",
+          "updatedAt": "2024-12-11T14:15:19.822Z"
+        }
+      ],
+      "normalkost": [
+        {
+          "rezeptId": 2,
+          "name": "Haferschleim",
+          "rezeptKategorien": [
+            "Hauptgericht"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            },
+            {
+              "id": 35,
+              "name": "Eier",
+              "preisProBasiseinheit": 0.75,
+              "basiseinheit": "Stück",
+              "verwendungseinheit": "Stück",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Eier"
+              ],
+              "allergene": [
+                "Eier"
+              ],
+              "allergenCodes": [
+                "C"
+              ],
+              "preisProVerwendungseinheit": 0.75,
+              "menge": 100
+            },
+            {
+              "id": 32,
+              "name": "Krabbenfond",
+              "preisProBasiseinheit": 220,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Gemüse"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.22,
+              "menge": 100
+            }
+          ],
+          "infos": "Aufpassen",
+          "createdAt": "2024-12-26T17:05:44.449Z",
+          "updatedAt": "2024-12-26T17:05:44.449Z"
+        }
+      ]
+    },
+    {
+      "day": "Dienstag",
+      "suppe": [
+        {
+          "rezeptId": 2,
+          "name": "Knobauch-Dip",
+          "rezeptKategorien": [
+            "Dip"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 3345
+            }
+          ],
+          "infos": "Kräftig aber Gut",
+          "createdAt": "2024-12-11T13:33:28.833Z",
+          "updatedAt": "2024-12-11T13:49:24.820Z"
+        }
+      ],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        },
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Mittwoch",
+      "suppe": [],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Top Top",
+          "createdAt": "2024-12-11T14:08:08.286Z",
+          "updatedAt": "2024-12-11T14:08:41.591Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Donnerstag",
+      "suppe": [
+        {
+          "rezeptId": 4,
+          "name": "Faschierte Laibchen",
+          "rezeptKategorien": [
+            "Hauptgericht"
+          ],
+          "zutaten": [
+            {
+              "id": 48,
+              "name": "R-Faschiertes (frisch)",
+              "preisProBasiseinheit": 12.54,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Schultes"
+              ],
+              "kategorien": [
+                "Fleisch (frisch)"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0125,
+              "menge": 120
+            },
+            {
+              "id": 50,
+              "name": "Semmelbrösel",
+              "preisProBasiseinheit": 2.33,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0023,
+              "menge": 20
+            },
+            {
+              "id": 35,
+              "name": "Eier",
+              "preisProBasiseinheit": 0.75,
+              "basiseinheit": "Stück",
+              "verwendungseinheit": "Stück",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Eier"
+              ],
+              "allergene": [
+                "Eier"
+              ],
+              "allergenCodes": [
+                "C"
+              ],
+              "preisProVerwendungseinheit": 0.75,
+              "menge": 1
+            },
+            {
+              "id": 51,
+              "name": "Senf",
+              "preisProBasiseinheit": 1.8,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Konserven"
+              ],
+              "allergene": [
+                "Senf"
+              ],
+              "allergenCodes": [
+                "M"
+              ],
+              "preisProVerwendungseinheit": 0.0018,
+              "menge": 7
+            },
+            {
+              "id": 39,
+              "name": "R-Suppen Pulver",
+              "preisProBasiseinheit": 1.7,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0017,
+              "menge": 7
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:07:07.248Z",
+          "updatedAt": "2025-01-05T20:07:07.248Z"
+        }
+      ],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Freitag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Samstag",
+      "suppe": [
+        {
+          "rezeptId": 4,
+          "name": "Faschierte Laibchen",
+          "rezeptKategorien": [
+            "Hauptgericht"
+          ],
+          "zutaten": [
+            {
+              "id": 48,
+              "name": "R-Faschiertes (frisch)",
+              "preisProBasiseinheit": 12.54,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Schultes"
+              ],
+              "kategorien": [
+                "Fleisch (frisch)"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0125,
+              "menge": 120
+            },
+            {
+              "id": 50,
+              "name": "Semmelbrösel",
+              "preisProBasiseinheit": 2.33,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0023,
+              "menge": 20
+            },
+            {
+              "id": 35,
+              "name": "Eier",
+              "preisProBasiseinheit": 0.75,
+              "basiseinheit": "Stück",
+              "verwendungseinheit": "Stück",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Eier"
+              ],
+              "allergene": [
+                "Eier"
+              ],
+              "allergenCodes": [
+                "C"
+              ],
+              "preisProVerwendungseinheit": 0.75,
+              "menge": 1
+            },
+            {
+              "id": 51,
+              "name": "Senf",
+              "preisProBasiseinheit": 1.8,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Konserven"
+              ],
+              "allergene": [
+                "Senf"
+              ],
+              "allergenCodes": [
+                "M"
+              ],
+              "preisProVerwendungseinheit": 0.0018,
+              "menge": 7
+            },
+            {
+              "id": 39,
+              "name": "R-Suppen Pulver",
+              "preisProBasiseinheit": 1.7,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0017,
+              "menge": 7
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:07:07.248Z",
+          "updatedAt": "2025-01-05T20:07:07.248Z"
+        }
+      ],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Sonntag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+  --base-clr: #11121a;
+  --line-clr: #42434a;
+  --hover-clr: #222533;
+  --text-clr: #e6e6ef;
+  --accent-clr: #5e63ff;
+  --secondary-text-clr: #b0b3c1;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+nav#navbar {
+  background-color: var(--base-clr);
+  border-bottom: 1px solid var(--line-clr);
+  padding: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav#navbar .logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+nav#navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 1em;
+}
+
+nav#navbar ul li a {
+  text-decoration: none;
+  color: var(--text-clr);
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+nav#navbar ul li a:hover,
+nav#navbar ul li a:focus {
+  background-color: var(--hover-clr);
+}
+
+main {
+  flex: 1;
+  padding: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.rezept-erstellung {
+  background-color: var(--hover-clr);
+  padding: 2em;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.rezept-erstellung h2 {
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.5em;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75em;
+  border: 1px solid var(--line-clr);
+  border-radius: 5px;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent-clr);
+}
+
+.zutaten-ergebnisse {
+  max-width: 200px;
+  position: absolute;
+  background-color: var(--accent-clr);
+  color: var(--text-clr);
+  width: calc(100% - 2em);
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--line-clr);
+  border-top: none;
+  z-index: 1000;
+}
+
+
+.such-ergebnis-item {
+  padding: 0.75em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.such-ergebnis-item:hover,
+.such-ergebnis-item:focus {
+  background-color: var(--hover-clr);
+}
+
+.zutaten-liste {
+  margin-bottom: 1.5em;
+}
+
+#rezeptZutatenTabelle {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#rezeptZutatenTabelle th,
+#rezeptZutatenTabelle td {
+  border: 1px solid var(--line-clr);
+  padding: 0.75em;
+  text-align: center;
+}
+
+#rezeptZutatenTabelle th {
+  background-color: var(--base-clr);
+  color: var(--accent-clr);
+}
+
+.menge-slider {
+  width: 80%;
+}
+
+.menge-input {
+  width: 60px;
+  text-align: center;
+  border: 1px solid var(--secondary-text-clr);
+  border-radius: 5px;
+  padding: 0.25em;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+}
+
+.preis-cell {
+  color: var(--accent-clr);
+  font-weight: bold;
+}
+
+.entfernen-btn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.entfernen-btn:hover,
+.entfernen-btn:focus {
+  background-color: #c82333;
+}
+
+.gesamtpreis {
+  text-align: right;
+  font-size: 1.2rem;
+  margin-bottom: 1.5em;
+}
+
+.speichern-btn {
+  background-color: var(--accent-clr);
+  border: none;
+  padding: 0.75em 1.5em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speichern-btn:hover,
+.speichern-btn:focus {
+  background-color: #5058e0;
+  box-shadow: 0 0 10px rgba(94, 99, 255, 0.5);
+}
+
+@media (max-width: 800px) {
+  .rezept-erstellung {
+    padding: 1em;
+  }
+
+  nav#navbar ul {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  .zutaten-ergebnisse {
+    width: calc(100% - 2em);
+  }
+
+  #rezeptZutatenTabelle th,
+  #rezeptZutatenTabelle td {
+    padding: 0.5em;
+  }
+}

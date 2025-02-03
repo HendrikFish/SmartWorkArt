@@ -1,0 +1,1381 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --background-color: #f5f6fa;
+    --border-color: #dcdde1;
+    --text-color: #2d3436;
+    --filter-active: #27ae60;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    margin-bottom: 30px;
+}
+
+h1, h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.date-selector {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+select {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: white;
+}
+
+/* Filter Styles */
+.filters {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    background-color: var(--background-color);
+}
+
+.filter-btn.active {
+    background-color: var(--filter-active);
+    color: white;
+    border-color: var(--filter-active);
+}
+
+/* Plans List Styles */
+.plans-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.plan-item {
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    margin-bottom: 30px;
+    /* A5 Querformat */
+    width: 210mm;
+    min-height: 148mm;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.person-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.person-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.person-areas {
+ 
+    font-size: 0.9em;
+    color: #666;
+}
+
+.plan-content {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Tabellenlayout */
+.menu-table {
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.menu-table th,
+.menu-table td {
+    border: 1px solid var(--border-color);
+    padding: 4px 6px;
+    text-align: left;
+    font-size: 0.85em;
+    min-width: 24mm;
+}
+
+.menu-table th {
+    background-color: var(--background-color);
+    font-weight: bold;
+    text-align: center;
+}
+
+.menu-table td {
+    vertical-align: middle;
+}
+
+.menu-table .category-cell {
+    background-color: var(--background-color);
+    font-weight: bold;
+    width: 18mm;
+    min-width: 18mm;
+}
+
+.meal-info {
+    margin-bottom: 5px;
+}
+
+.meal-portion {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.meal-alternatives {
+    color: #e74c3c;
+    font-style: italic;
+    font-size: 1.8em;
+    margin-top: 3px;
+}
+
+.meal-comments {
+    color: #27ae60;
+    font-style: italic;
+    font-size: 0.8em;
+    margin-top: 3px;
+}
+
+.layout-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+/* Print styles for A5 format */
+@media print {
+    @page {
+        size: A5 landscape;
+        margin: 10mm;
+    }
+
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container,
+    .controls,
+    .actions,
+    .filters,
+    .missing-plans,
+    .person-row,
+    .config-btn,
+    .print-modal {
+        display: none !important;
+    }
+
+    .menu-content {
+        display: block !important;
+        page-break-after: always;
+        margin: 0;
+        padding: 0;
+        width: 210mm;
+        height: 148mm;
+        position: relative !important;
+        box-shadow: none;
+        background: white;
+        overflow: hidden;
+    }
+
+    .menu-content:last-child {
+        page-break-after: avoid;
+    }
+
+    .menu-header {
+        position: absolute;
+        top: 10mm;
+        left: 10mm;
+        right: 10mm;
+        margin-bottom: 5mm;
+        border-bottom: 1px solid #000;
+    }
+
+    .menu-table {
+        position: absolute;
+        top: 45mm;  /* Abstand von oben - kann angepasst werden */
+        left: 10mm;
+        right: 10mm;
+        width: calc(100% - 20mm);
+        font-size: 9pt;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .menu-table th,
+    .menu-table td {
+        padding: 2mm 3mm;
+        border: 1px solid #000;
+    }
+
+    .category-cell {
+        width: 25mm;
+        background-color: #f5f5f5 !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .person-name {
+        font-size: 14pt;
+        margin-bottom: 2mm;
+    }
+
+    .person-areas {
+        font-size: 9pt;
+        margin-bottom: 2mm;
+    }
+
+    .day-header {
+        font-size: 12pt;
+        margin-bottom: 3mm;
+    }
+
+    .meal-info,
+    .meal-alternatives,
+    .meal-comments {
+        margin-bottom: 1mm;
+    }
+
+    .meal-portion {
+        font-size: 8pt;
+    }
+}
+
+/* Menu plan specific styles */
+.day-section {
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.day-header {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.meal-category {
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+.meal-item {
+    margin-left: 30px;
+    font-size: 0.9em;
+}
+
+.alternatives {
+    color: #e74c3c;
+    font-style: italic;
+    margin-left: 30px;
+}
+
+.comments {
+    color: #27ae60;
+    font-style: italic;
+    margin-left: 30px;
+}
+
+/* Missing Plans Styles */
+.missing-plans {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    border-left: 4px solid #e74c3c;
+}
+
+.missing-plans h3 {
+    color: #e74c3c;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.missing-plans ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.missing-plans li {
+    padding: 5px 0;
+    color: #666;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.missing-plans li:last-child {
+    border-bottom: none;
+}
+
+@media print {
+    .missing-plans {
+        display: none;
+    }
+}
+
+.person-row {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    background: white;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.person-info {
+    flex: 0 0 200px;
+    padding-right: 20px;
+}
+
+.day-buttons {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+.day-button {
+    padding: 8px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 100px;
+    text-align: center;
+}
+
+.day-button:hover {
+    background: var(--background-color);
+    border-color: var(--secondary-color);
+}
+
+.day-button.active {
+    background: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.menu-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-modal.active {
+    display: flex;
+}
+
+.menu-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    /* A5 Format (210mm × 148mm) */
+    width: 210mm;
+    min-height: 148mm;
+    max-height: none;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 8px 8px 0 0;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.menu-header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+    position: relative;
+}
+
+.menu-header .close-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+
+.menu-header .close-menu:hover {
+    color: var(--secondary-color);
+}
+
+@media print {
+    .menu-header .close-menu {
+        display: none;
+    }
+}
+
+.menu-header .person-name {
+    font-size: 18pt;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.menu-header .person-areas {
+    font-size: 10pt;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.menu-header .day-header {
+    font-size: 14pt;
+    color: var(--secondary-color);
+}
+
+.menu-cell {
+    padding: 8px 12px;
+}
+
+.menu-cell .meal-info {
+    margin-bottom: 8px;
+}
+
+.menu-cell .meal-info strong {
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.menu-cell .meal-portion {
+    margin-left: 5px;
+}
+
+.menu-cell .meal-alternatives,
+.menu-cell .meal-comments {
+    padding-left: 10px;
+    position: relative;
+}
+
+.menu-cell .meal-alternatives::before,
+.menu-cell .meal-comments::before {
+    font-weight: bold;
+}
+
+.config-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.config-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Layout Configuration Modal */
+.config-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.config-modal.active {
+    display: flex;
+}
+
+.config-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.config-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    flex-shrink: 0;
+}
+
+.config-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.config-body {
+    padding: 16px 24px;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) var(--background-color);
+}
+
+/* Webkit Scrollbar Styles */
+.config-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.config-body::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 4px;
+}
+
+.config-body::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+.config-body::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+.layout-list {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.layout-item {
+    background: var(--background-color);
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.layout-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.layout-name-input {
+    font-size: 1.1rem;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 60%;
+    transition: all 0.2s ease;
+}
+
+.layout-name-input:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    outline: none;
+}
+
+.delete-layout-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.delete-layout-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.category-select,
+.filter-select {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.category-select-header,
+.filter-select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.category-select-header span,
+.filter-select-header span {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.add-category-btn,
+.add-filter-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-category-btn:hover,
+.add-filter-btn:hover {
+    background: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.selected-categories,
+.selected-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.category-item,
+.filter-item {
+    background: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.remove-category-btn,
+.remove-filter-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    padding: 2px;
+    font-size: 1.2rem;
+    line-height: 1;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.remove-category-btn:hover,
+.remove-filter-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.config-actions {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: white;
+    border-radius: 0 0 12px 12px;
+    flex-shrink: 0;
+}
+
+.config-actions button {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#add-layout-btn {
+    margin-bottom: 16px;
+    padding: 8px 16px;
+}
+
+#save-config {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+}
+
+#save-config:hover {
+    background: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+#cancel-config {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+#cancel-config:hover {
+    background: var(--background-color);
+}
+
+/* Multiselect Styles */
+.category-multiselect,
+.filter-multiselect {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.category-checkbox-list,
+.filter-checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 4px;
+    margin-bottom: 16px;
+}
+
+.category-checkbox-item,
+.filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-checkbox-item:hover,
+.filter-checkbox-item:hover {
+    background: var(--background-color);
+}
+
+.multiselect-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-add-categories,
+.btn-add-filters {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-add-categories:hover,
+.btn-add-filters:hover {
+    background: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+/* Allgemeine Stile */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Stile */
+header {
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.date-selector {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Filter Stile */
+.filters {
+    margin-bottom: 30px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+/* Plan Container Stile */
+.plans-container {
+    margin-bottom: 30px;
+}
+
+.person-row {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.person-info {
+    margin-bottom: 10px;
+}
+
+.person-name {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.person-areas {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.days-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.day-column {
+    text-align: center;
+}
+
+.day-header {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.layout-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.day-button {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.day-button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Modal Stile */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal.active {
+    display: block;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: 50px auto;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 8px 8px 0 0;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: none;
+    border: none;
+    font-size: 44px;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 22px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.close-modal:hover {
+    color: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.layout-config-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-color) var(--background-color);
+}
+
+/* Webkit Scrollbar für layout-config-content */
+.layout-config-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.layout-config-content::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 4px;
+}
+
+.layout-config-content::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+.layout-config-content::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+.config-actions {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: white;
+    border-radius: 0 0 8px 8px;
+    flex-shrink: 0;
+}
+
+#add-layout-btn {
+    margin: 16px 0;
+    width: 100%;
+    padding: 12px;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#add-layout-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.layout-list {
+    display: grid;
+    gap: 16px;
+}
+
+/* Print Modal Stile */
+.print-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.print-modal.active {
+    display: block;
+}
+
+.print-modal-content {
+    position: relative;
+    background-color: white;
+    margin: 50px auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.print-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.print-options {
+    margin-bottom: 20px;
+}
+
+.day-select, .filter-select {
+    margin-bottom: 15px;
+}
+
+.day-options, .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.day-option, .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.print-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Aktions-Buttons */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Print Stile */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .print-container, .print-container * {
+        visibility: visible;
+    }
+    
+    .print-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    
+    .menu-content {
+        page-break-after: always;
+    }
+}
+
+.filter-select {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.filter-select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-select-header span {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.add-filter-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.add-filter-btn:hover {
+    color: var(--primary-color);
+}
+
+.selected-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: var(--background-color);
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.remove-filter-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+.remove-filter-btn:hover {
+    color: #c0392b;
+}
+
+.filter-multiselect {
+    display: none;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.filter-multiselect.active {
+    display: block;
+}
+
+.filter-checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.filter-checkbox-item:hover {
+    background: var(--background-color);
+}

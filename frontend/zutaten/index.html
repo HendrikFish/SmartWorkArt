@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zutatenerstellung</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      .toggle-button.active {
+        background-color: #4caf50;
+        color: white;
+      }
+    </style>
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+    <script src="/navbar-static/navbar.js"></script>
+  </head>
+  <body>
+    <!-- Export/Import Buttons -->
+    <button type="button" id="export-btn">Zutaten exportieren</button>
+    <button type="button" id="import-btn">Zutaten importieren</button>
+    <input type="file" id="import-file" style="display: none" />
+
+    <!-- Zutaten-Formular -->
+    <form id="zutaten-form">
+      <input type="hidden" id="zutat-id" name="zutat-id" value="" />
+
+      <!-- Name + Autocomplete -->
+      <div class="form-group name-input-container">
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Name"
+          required
+          autocomplete="off"
+        />
+        <div
+          id="autocomplete-list-form"
+          class="autocomplete-list"
+          style="display: none"
+        ></div>
+      </div>
+      <br />
+      <label for="preisProBasiseinheit">Preis pro Basiseinheit (€):</label>
+      <input
+        type="number"
+        step="0.01"
+        id="preisProBasiseinheit"
+        placeholder="€"
+        name="preisProBasiseinheit"
+        required
+      />
+
+      <label for="basiseinheit">Basiseinheit:</label>
+      <select id="basiseinheit" name="basiseinheit" required>
+        <option value="">Bitte wählen</option>
+        <option value="kg">Kg</option>
+        <option value="g">Gramm</option>
+        <option value="l">Liter</option>
+        <option value="ml">ml</option>
+        <option value="Stück">Stück</option>
+      </select>
+
+      <label for="verwendungseinheit">Verwendungseinheit:</label>
+      <input
+        type="text"
+        id="verwendungseinheit"
+        name="verwendungseinheit"
+        required
+        readonly
+      />
+
+      <label for="preisProVerwendungseinheit">Preis pro Verwendungseinheit (€):</label>
+      <input
+        type="number"
+        step="0.0001"
+        id="preisProVerwendungseinheit"
+        placeholder="€"
+        name="preisProVerwendungseinheit"
+        readonly
+      />
+
+      <!-- Lieferanten-Auswahl -->
+      <div id="lieferanten-buttons">
+        <p>Lieferanten:</p>
+        <button type="button" class="toggle-button" data-value="Transgourmet">Transgourmet</button>
+        <button type="button" class="toggle-button" data-value="Pinzgau-Milch">Pinzgau-Milch</button>
+        <button type="button" class="toggle-button" data-value="Kröswang">Kröswang</button>
+        <button type="button" class="toggle-button" data-value="ChefsCulinar">ChefsCulinar</button>
+        <button type="button" class="toggle-button" data-value="Eurogast">Eurogast</button>
+        <button type="button" class="toggle-button" data-value="Schultes">Schultes</button>
+        <button type="button" class="toggle-button" data-value="Katschner">Katschner</button>
+        <button type="button" class="toggle-button" data-value="Manfreddo">Manfreddo</button>
+        <button type="button" class="toggle-button" data-value="Hügli">Hügli</button>
+      </div>
+      <input type="hidden" id="lieferanten" name="lieferanten" value="" />
+
+      <!-- Kategorien-Auswahl -->
+      <div id="kategorien-buttons">
+        <p>Kategorien:</p>
+        <button type="button" class="toggle-button" data-value="Obst">Obst</button>
+        <button type="button" class="toggle-button" data-value="Gemüse">Gemüse</button>
+        <button type="button" class="toggle-button" data-value="Fleisch (frisch)">Fleisch (frisch)</button>
+        <button type="button" class="toggle-button" data-value="Fleisch(TK)">Fleisch (TK)</button>
+        <button type="button" class="toggle-button" data-value="Wurst">Wurst</button>
+        <button type="button" class="toggle-button" data-value="Fisch (frisch)">Fisch (frisch)</button>
+        <button type="button" class="toggle-button" data-value="Fisch(TK)">Fisch (TK)</button>
+        <button type="button" class="toggle-button" data-value="Milchprodukte">Milchprodukte</button>
+        <button type="button" class="toggle-button" data-value="Eier">Eier</button>
+        <button type="button" class="toggle-button" data-value="Gewürze">Gewürze</button>
+        <button type="button" class="toggle-button" data-value="Flüssigkeiten">Flüssigkeiten</button>
+        <button type="button" class="toggle-button" data-value="Konserven">Konserven</button>
+        <button type="button" class="toggle-button" data-value="Convenience-Produkte">Convenience-Produkte</button>
+        <button type="button" class="toggle-button" data-value="Soßen und Dressings">Soßen und Dressings</button>
+        <button type="button" class="toggle-button" data-value="trockene Lebensmittel">trockene Lebensmittel</button>
+        <button type="button" class="toggle-button" data-value="Brot und Backwaren">Brot und Backwaren</button>
+      </div>
+      <input type="hidden" id="kategorien" name="kategorien" value="" />
+
+      <!-- Allergen-Auswahl -->
+      <div id="allergene-buttons">
+        <p>Allergene:</p>
+        <button type="button" class="toggle-button" data-value="Gluten" data-code="A">Gluten</button>
+        <button type="button" class="toggle-button" data-value="Krebstiere" data-code="B">Krebstiere</button>
+        <button type="button" class="toggle-button" data-value="Eier" data-code="C">Eier</button>
+        <button type="button" class="toggle-button" data-value="Fisch" data-code="D">Fisch</button>
+        <button type="button" class="toggle-button" data-value="Erdnüsse" data-code="E">Erdnüsse</button>
+        <button type="button" class="toggle-button" data-value="Soja" data-code="F">Soja</button>
+        <button type="button" class="toggle-button" data-value="Schalenfrüchte" data-code="H">Schalenfrüchte</button>
+        <button type="button" class="toggle-button" data-value="Sellerie" data-code="L">Sellerie</button>
+        <button type="button" class="toggle-button" data-value="Senf" data-code="M">Senf</button>
+        <button type="button" class="toggle-button" data-value="Sesam" data-code="N">Sesam</button>
+        <button type="button" class="toggle-button" data-value="Schwefeldioxid und Sulfite" data-code="O">Schwefeldioxid und Sulfite</button>
+        <button type="button" class="toggle-button" data-value="Lupinen" data-code="P">Lupinen</button>
+        <button type="button" class="toggle-button" data-value="Weichtiere" data-code="R">Weichtiere</button>
+        <button type="button" class="toggle-button" data-value="Laktose" data-code="G">Laktose</button>
+      </div>
+      <input type="hidden" id="allergene" name="allergene" value="" />
+      <input type="hidden" id="allergen-code" name="allergen-code" value="" />
+
+      <!-- Speichern/Aktualisieren Buttons -->
+      <button type="submit" id="speichern-btn">Zutat speichern</button>
+      <button type="button" id="aktualisieren-btn" style="display: none">Zutat aktualisieren</button>
+    </form>
+
+    <!-- Filter Button -->
+    <button id="toggle-filter-btn">Zutaten filtern</button>
+      <div id="filter-section" style="display: none">
+        <label for="filter-kategorie">Kategorie filtern:</label>
+        <select id="filter-kategorie" name="filter-kategorie">
+          <option value="">Alle</option>
+          <option value="Obst">Obst</option>
+          <option value="Gemüse">Gemüse</option>
+          <option value="Fleisch (frisch)">Fleisch (frisch)</option>
+          <option value="Fleisch(TK)">Fleisch (TK)</option>
+          <option value="Wurst">Wurst</option>
+          <option value="Fisch (frisch)">Fisch (frisch)</option>
+          <option value="Fisch(TK)">Fisch (TK)</option>
+          <option value="Milchprodukte">Milchprodukte</option>
+          <option value="Eier">Eier</option>
+          <option value="Gewürze">Gewürze</option>
+          <option value="Flüssigkeiten">Flüssigkeiten</option>
+          <option value="Konserven">Konserven</option>
+          <option value="Convenience-Produkte">Convenience-Produkte</option>
+          <option value="Soßen und Dressings">Soßen und Dressings</option>
+          <option value="trockene Lebensmittel">trockene Lebensmittel</option>
+          <option value="Brot und Backwaren">Brot und Backwaren</option>
+        </select>
+  
+        <label for="search-name">Name suchen:</label>
+        <input type="text" id="search-name" name="search-name" />
+        <button type="button" id="clear-search-btn">Suche zurücksetzen</button>
+      </div>
+
+    <!-- Zutaten-Tabelle -->
+    <table id="zutaten-tabelle">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Basiseinheit</th>
+          <th>Preis pro Basiseinheit (€)</th>
+          <th>Verwendungseinheit</th>
+          <th>Preis pro Verwendungseinheit (€)</th>
+          <th>Lieferanten</th>
+          <th>Kategorien</th>
+          <th>Allergene</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script src="js/script.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,165 @@
+{
+  "resident": "Oma_Trude",
+  "1_menue2": {
+    "day": "Dienstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Knobauch-Dip"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue2": {
+    "day": "Mittwoch",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Haferschleim"
+      },
+      {
+        "rezeptId": 4,
+        "name": "Faschierte Laibchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue1": {
+    "day": "Mittwoch",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_menue2": {
+    "day": "Montag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue2": {
+    "day": "Freitag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Knobauch-Dip"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_suppe": {
+    "day": "Montag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Galgant Suppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_suppe": {
+    "day": "Dienstag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_suppe": {
+    "day": "Mittwoch",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_suppe": {
+    "day": "Donnerstag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_suppe": {
+    "day": "Freitag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Galgant Suppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "5_suppe": {
+    "day": "Samstag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  }
+}

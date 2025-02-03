@@ -1,0 +1,20 @@
+{
+  "einrichtung": "Kindergarten  Schulwerg",
+  "kuerzel": "KG-SW",
+  "orders": [
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 74
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "Krappel",
+      "amount": 39
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

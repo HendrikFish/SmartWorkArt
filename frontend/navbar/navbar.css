@@ -1,0 +1,72 @@
+.main-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 2rem;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    flex: 1;
+    min-width: 50px;
+}
+
+.title-container {
+    flex: 2;
+    text-align: center;
+}
+
+.button-container {
+    flex: 1;
+    text-align: right;
+}
+
+.module-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.dashboard-btn {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.dashboard-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-navbar {
+        padding: 0.6rem 1rem;
+    }
+    
+    .module-title {
+        font-size: 1.2rem;
+    }
+    
+    .dashboard-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Platz für den Content unter der fixed Navbar */
+body {
+    padding-top: 70px;
+}

@@ -1,0 +1,360 @@
+{
+  "resident": "Oma_Trude",
+  "0_menue2": {
+    "day": "Montag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln",
+        "rezept_selected": false
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln",
+        "rezept_selected": false
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_menue2": {
+    "day": "Dienstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": [
+      "Bruno",
+      "Banana"
+    ]
+  },
+  "2_menue2": {
+    "day": "Mittwoch",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 4,
+        "name": "Faschierte Laibchen"
+      },
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [
+      {
+        "text": "Hallo du Sack",
+        "timestamp": "2025-01-22T15:58:55.257Z"
+      }
+    ],
+    "alternatives": []
+  },
+  "3_menue2": {
+    "day": "Donnerstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      },
+      {
+        "rezeptId": 4,
+        "name": "Faschierte Laibchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue1": {
+    "day": "Donnerstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue1": {
+    "day": "Mittwoch",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_menue1": {
+    "day": "Montag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_menue1": {
+    "day": "Dienstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_dessert": {
+    "day": "Montag",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Haferschleim"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_dessert": {
+    "day": "Dienstag",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_dessert": {
+    "day": "Mittwoch",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kohl"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_dessert": {
+    "day": "Donnerstag",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kohl"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_dessert": {
+    "day": "Freitag",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kohl"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue2": {
+    "day": "Freitag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Farn"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "5_menue2": {
+    "day": "Samstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 4,
+        "name": "Faschierte Laibchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "5_menue1": {
+    "day": "Samstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue1": {
+    "day": "Freitag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "5_suppe": {
+    "day": "Samstag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Galgant Suppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_suppe": {
+    "day": "Freitag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_suppe": {
+    "day": "Donnerstag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Galgant Suppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_suppe": {
+    "day": "Mittwoch",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_suppe": {
+    "day": "Dienstag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Galgant Suppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_suppe": {
+    "day": "Montag",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [
+      {
+        "text": "Test",
+        "timestamp": "2025-01-22T15:59:04.676Z"
+      }
+    ],
+    "alternatives": []
+  }
+}

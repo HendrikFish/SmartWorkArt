@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzerverwaltung - Seniorenheim Portal</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1>Benutzerverwaltung</h1>
+        </div>
+        <div class="nav-right">
+            <button id="backToDashboard" class="nav-btn">
+                <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Ausstehend</h3>
+                <p id="pendingCount">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Genehmigt</h3>
+                <p id="approvedCount">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Abgelehnt</h3>
+                <p id="rejectedCount">0</p>
+            </div>
+        </div>
+
+        <div class="filter-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Benutzer suchen...">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-status="all">Alle</button>
+                <button class="filter-btn" data-status="pending">Ausstehend</button>
+                <button class="filter-btn" data-status="approved">Genehmigt</button>
+                <button class="filter-btn" data-status="rejected">Abgelehnt</button>
+            </div>
+        </div>
+
+        <div class="users-container">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>E-Mail</th>
+                        <th>Einrichtung</th>
+                        <th>Position</th>
+                        <th>Status</th>
+                        <th>Registriert am</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Wird dynamisch befüllt -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal für Benutzerdetails -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Benutzerdetails</h2>
+            
+            <div class="detail-group">
+                <label>Name:</label>
+                <span id="modalFirstName"></span> <span id="modalLastName"></span>
+            </div>
+            
+            <div class="detail-group">
+                <label>E-Mail:</label>
+                <span id="modalEmail"></span>
+            </div>
+            
+            <div class="detail-group">
+                <label>Telefon:</label>
+                <span id="modalPhone"></span>
+            </div>
+            
+            <div class="detail-group">
+                <label>Arbeitgeber:</label>
+                <span id="modalEmployer"></span>
+            </div>
+            
+            <div class="detail-group">
+                <label>Position:</label>
+                <span id="modalPosition"></span>
+            </div>
+            
+            <div class="detail-group">
+                <label>Einrichtung:</label>
+                <span id="modalFacility"></span>
+            </div>
+            
+            <div class="detail-group">
+                <label>Status:</label>
+                <select id="modalStatus" class="form-control">
+                    <option value="pending">Ausstehend</option>
+                    <option value="approved">Genehmigt</option>
+                </select>
+            </div>
+            
+            <div class="detail-group">
+                <label>Rolle:</label>
+                <select id="modalRole" class="form-control">
+                    <option value="user">Benutzer</option>
+                    <option value="co-admin">Co-Admin</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <!-- Berechtigungen -->
+            <div class="detail-group permissions-group">
+                <label>Verfügbare Module:</label>
+                <div class="permissions-grid">
+                    <!-- Planungs-Module -->
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-plan" data-module="/planung-static/">
+                            Planung
+                        </label>
+                    </div>
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-solo" data-module="/solo-static/">
+                            Einzelplanung
+                        </label>
+                    </div>
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-soloPlan" data-module="/soloPlan-static/">
+                            Solo Planung
+                        </label>
+                    </div>
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-soloSelect" data-module="/soloSelect-static/">
+                            Solo Auswahl
+                        </label>
+                    </div>
+
+                    <!-- Verwaltungs-Module -->
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-rezepte" data-module="/rezepte-static/">
+                            Rezepte
+                        </label>
+                    </div>
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-zutaten" data-module="/zutaten-static/">
+                            Zutaten
+                        </label>
+                    </div>
+
+                    <!-- Admin-Module -->
+                    <div class="permission-item admin-only">
+                        <label>
+                            <input type="checkbox" id="module-customer" data-module="/customer-static/">
+                            Benutzerverwaltung
+                        </label>
+                    </div>
+                    <div class="permission-item admin-only">
+                        <label>
+                            <input type="checkbox" id="module-datenbank" data-module="/datenbank-static/">
+                            Datenbank
+                        </label>
+                    </div>
+                    <div class="permission-item admin-only">
+                        <label>
+                            <input type="checkbox" id="module-einrichtung" data-module="/einrichtungen-static/">
+                            Einrichtungen
+                        </label>
+                    </div>
+
+                    <!-- Standard-Module (immer aktiv für alle) -->
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-order" data-module="/order-static/" checked disabled>
+                            Bestellungen
+                        </label>
+                    </div>
+                    <div class="permission-item">
+                        <label>
+                            <input type="checkbox" id="module-menue" data-module="/menue-static/" checked disabled>
+                            Menü
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-group facilities-group">
+                <label>Zugelassene Einrichtungen:</label>
+                <div id="facilitiesContainer" class="facilities-grid">
+                    <!-- Wird dynamisch mit Checkboxen gefüllt -->
+                </div>
+            </div>
+            
+            <div class="detail-group">
+                <label>Notizen:</label>
+                <textarea id="modalNotes" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="saveChanges" class="btn-primary">Speichern</button>
+                <button id="deleteUser" class="btn-danger">Löschen</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

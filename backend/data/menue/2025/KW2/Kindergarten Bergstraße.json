@@ -1,0 +1,129 @@
+{
+  "name": "Kindergarten Bergstraße",
+  "kuerzel": "KG-B",
+  "woche": "KW2",
+  "jahr": "2025",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Faschierte Laibchen",
+            "allergene": [
+              "A",
+              "C",
+              "M"
+            ]
+          },
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [
+          {
+            "name": "Nudelkuchen",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kohl",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Farn",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    }
+  ]
+}

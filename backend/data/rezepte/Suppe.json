@@ -1,0 +1,81 @@
+[
+  {
+    "rezeptId": 1,
+    "name": "Galgant Suppe",
+    "rezeptKategorien": [
+      "Suppe"
+    ],
+    "zutaten": [
+      {
+        "id": 33,
+        "name": "Spaghetti",
+        "preisProBasiseinheit": 4.44,
+        "basiseinheit": "l",
+        "verwendungseinheit": "ml",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "trockene Lebensmittel"
+        ],
+        "allergene": [
+          "Gluten"
+        ],
+        "allergenCodes": [
+          "A"
+        ],
+        "preisProVerwendungseinheit": 0.0044,
+        "menge": 100
+      }
+    ],
+    "infos": "Super Gut",
+    "createdAt": "2024-12-11T14:06:17.488Z",
+    "updatedAt": "2024-12-11T14:06:17.488Z"
+  },
+  {
+    "rezeptId": 2,
+    "name": "Rindersuppe",
+    "rezeptKategorien": [
+      "Suppe"
+    ],
+    "zutaten": [
+      {
+        "id": 39,
+        "name": "R-Suppen Pulver",
+        "preisProBasiseinheit": 1.7,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Hügli"
+        ],
+        "kategorien": [
+          "trockene Lebensmittel"
+        ],
+        "allergene": [],
+        "allergenCodes": [],
+        "preisProVerwendungseinheit": 0.0017,
+        "menge": 4.6
+      },
+      {
+        "id": 40,
+        "name": "Wasser",
+        "preisProBasiseinheit": 0.1,
+        "basiseinheit": "l",
+        "verwendungseinheit": "ml",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Flüssigkeiten"
+        ],
+        "allergene": [],
+        "allergenCodes": [],
+        "preisProVerwendungseinheit": 0.0001,
+        "menge": 200
+      }
+    ],
+    "infos": "",
+    "createdAt": "2024-12-29T15:24:57.784Z",
+    "updatedAt": "2024-12-29T15:34:27.063Z"
+  }
+]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestellübersicht</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <button id="prevWeek">&lt; Vorherige Woche</button>
+            <span id="currentPeriod">Jahr 2024 - KW 1</span>
+            <button id="nextWeek">Nächste Woche &gt;</button>
+            <button id="currentWeek">Aktuelle Woche</button>
+        </div>
+        <div class="table-container">
+            <table id="orderTable">
+                <thead>
+                    <tr>
+                        <th>Einrichtung</th>
+                        <th>MO</th>
+                        <th>DI</th>
+                        <th>MI</th>
+                        <th>DO</th>
+                        <th>FR</th>
+                        <th>SA</th>
+                        <th>SO</th>
+                        <th>Info</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

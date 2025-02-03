@@ -1,0 +1,48 @@
+{
+  "name": "Kindergarten Bergstraße",
+  "kuerzel": "KG-B",
+  "woche": "KW3",
+  "jahr": "2025",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    }
+  ]
+}

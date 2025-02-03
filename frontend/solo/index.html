@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewohner-Verwaltung</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styleModal.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Bewohner-Verwaltung</h1>
+            <div class="action-buttons">
+                <button id="newResidentBtn" class="primary-btn">Neuer Bewohner</button>
+                <button id="resurrectionBtn" class="secondary-btn">Auferstehung</button>
+                <button id="configBtn" class="secondary-btn">Konfiguration</button>
+            </div>
+        </header>
+
+        <!-- Bewohnerliste -->
+        <div id="residentsList" class="residents-grid"></div>
+
+        <!-- Neuer Bewohner Modal -->
+        <div id="newResidentForm" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Neuer Bewohner</h2>
+                    <button type="button" class="icon-btn close-modal">×</button>
+                </div>
+                <form id="newResidentFormContent">
+                    <div class="fields-container">
+                        <!-- Basis-Felder -->
+                        <div class="form-group required-field">
+                            <label for="firstName">Vorname</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group required-field">
+                            <label for="lastName">Nachname</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                        <div class="gender-buttons-group">
+                            <label>Geschlecht</label>
+                            <div class="area-buttons" data-multiple="false">
+                                <button type="button" class="secondary-btn area-button" data-gender="Herr">Herr</button>
+                                <button type="button" class="secondary-btn area-button" data-gender="Frau">Frau</button>
+                            </div>
+                            <input type="hidden" name="gender" id="gender">
+                            <div class="error-message" style="display: none; color: red;">
+                                Bitte wählen Sie ein Geschlecht aus
+                            </div>
+                        </div>
+                        <!-- Dynamische Felder -->
+                        <div id="dynamicFields"></div>
+                        <!-- Dynamische Bereiche -->
+                        <div id="dynamicAreas"></div>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" class="primary-btn">Speichern</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bewohner Details Modal -->
+        <div id="residentDetailModal" class="modal">
+            <div class="modal-content">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+        </div>
+
+        <!-- Konfigurations-Modal -->
+        <div id="configModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Konfiguration</h2>
+                    <button type="button" class="icon-btn close-modal">×</button>
+                </div>
+                <div class="config-content">
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="fields">Felder</button>
+                        <button class="tab-btn" data-tab="areas">Bereiche</button>
+                        <button class="tab-btn" data-tab="filter">Filter</button>
+                    </div>
+
+                    <!-- Felder Tab -->
+                    <div id="fieldsTab" class="tab-content active">
+                        <div id="fieldsList"></div>
+                        <button type="button" class="primary-btn" id="addFieldBtn">+ Feld hinzufügen</button>
+                    </div>
+
+                    <!-- Bereiche Tab -->
+                    <div id="areasTab" class="tab-content">
+                        <div id="areasList" class="areas-list"></div>
+                    </div>
+
+                    <!-- Filter Tab -->
+                    <div id="filterTab" class="tab-content">
+                        <div id="filterOptions"></div>
+                    </div>
+                </div>
+                <div class="button-container">
+                    <button type="button" class="primary-btn" id="saveConfigBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auferstehungs-Modal -->
+        <div id="resurrectionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Entlassene Bewohner</h2>
+                    <button type="button" class="icon-btn close-modal">×</button>
+                </div>
+                <div class="fields-container">
+                    <div id="dismissedResidentsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/init.js"></script>
+</body>
+
+</html>

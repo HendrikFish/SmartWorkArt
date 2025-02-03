@@ -1,0 +1,58 @@
+[
+  {
+    "rezeptId": 2,
+    "name": "Kohl",
+    "rezeptKategorien": [
+      "Gebäck"
+    ],
+    "zutaten": [
+      {
+        "id": 33,
+        "name": "Spaghetti",
+        "preisProBasiseinheit": 4.44,
+        "basiseinheit": "l",
+        "verwendungseinheit": "ml",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "trockene Lebensmittel"
+        ],
+        "allergene": [
+          "Gluten"
+        ],
+        "allergenCodes": [
+          "A"
+        ],
+        "preisProVerwendungseinheit": 0.0044,
+        "menge": 100
+      },
+      {
+        "id": 34,
+        "name": "Mehl 405",
+        "preisProBasiseinheit": 1.49,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Obst"
+        ],
+        "allergene": [
+          "Gluten",
+          "Sesam"
+        ],
+        "allergenCodes": [
+          "A",
+          "N"
+        ],
+        "preisProVerwendungseinheit": 0.0015,
+        "menge": 100
+      }
+    ],
+    "infos": "Top",
+    "createdAt": "2024-12-11T14:10:22.609Z",
+    "updatedAt": "2024-12-11T14:16:21.896Z"
+  }
+]

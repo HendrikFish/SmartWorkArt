@@ -1,0 +1,37 @@
+[
+  {
+    "rezeptId": 1,
+    "name": "Nudelkuchen",
+    "rezeptKategorien": [
+      "Dessert"
+    ],
+    "zutaten": [
+      {
+        "id": 34,
+        "name": "Mehl 405",
+        "preisProBasiseinheit": 1.49,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Obst"
+        ],
+        "allergene": [
+          "Gluten",
+          "Sesam"
+        ],
+        "allergenCodes": [
+          "A",
+          "N"
+        ],
+        "preisProVerwendungseinheit": 0.0015,
+        "menge": 1002
+      }
+    ],
+    "infos": "Kuchen",
+    "createdAt": "2024-12-11T14:09:16.633Z",
+    "updatedAt": "2024-12-20T15:41:46.393Z"
+  }
+]

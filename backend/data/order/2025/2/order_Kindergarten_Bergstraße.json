@@ -1,0 +1,74 @@
+{
+  "einrichtung": "Kindergarten Bergstraße",
+  "kuerzel": "KG-B",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 5
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 8
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 5
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 3
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 3
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 4
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 3
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 4
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 3
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 8
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 6
+    }
+  ],
+  "week": 2,
+  "year": 2025
+}

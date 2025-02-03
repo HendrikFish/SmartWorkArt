@@ -1,0 +1,32 @@
+{
+  "einrichtung": "Constantins Psycokinese Zentrum",
+  "kuerzel": "TZ",
+  "orders": [
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 119
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 213
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 332
+    },
+    {
+      "day": "Mittwoch",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 332
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

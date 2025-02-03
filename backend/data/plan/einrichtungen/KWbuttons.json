@@ -1,0 +1,76 @@
+{
+  "year": "einrichtungen",
+  "week": "buttons",
+  "days": [
+    {
+      "day": "Montag",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Dienstag",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Mittwoch",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Donnerstag",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Freitag",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Samstag",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Sonntag",
+      "suppe": [],
+      "menue1": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    }
+  ]
+}

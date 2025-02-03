@@ -1,0 +1,57 @@
+{
+  "resident": "Oma_Trude",
+  "2_menue1": {
+    "day": "Mittwoch",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue1": {
+    "day": "Freitag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue2": {
+    "day": "Freitag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue2": {
+    "day": "Donnerstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_menue2": {
+    "day": "Dienstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_menue2": {
+    "day": "Montag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [],
+    "comments": [],
+    "alternatives": []
+  }
+}

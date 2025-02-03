@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahlen von Einrichtungen</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="ico/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="ico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="ico/favicon-16x16.png">
+    <link rel="manifest" href="ico/site.webmanifest">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+    <script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+    <h2>Zahlen von Einrichtungen</h2>
+    
+    <!-- Container für die Einrichtungs-Buttons -->
+    <div id="buttons-container" class="facilities-grid">
+        <!-- Wird dynamisch mit Buttons gefüllt -->
+    </div>
+
+    <div id="form-container" class="hidden">
+        <h2 id="form-title"></h2>
+        <div class="week-controls">
+            <button id="prev-week">&larr;</button>
+            <span id="week-display"></span>
+            <button id="next-week">&rarr;</button>
+        </div>
+        <table id="wochenplan">
+            <thead>
+                <tr>
+                    <th>Komponente</th>
+                    <th>Montag</th>
+                    <th>Dienstag</th>
+                    <th>Mittwoch</th>
+                    <th>Donnerstag</th>
+                    <th>Freitag</th>
+                    <th>Samstag</th>
+                    <th>Sonntag</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="save-button">Bestellung speichern</button>
+    </div>
+    
+    <!-- Modal für Informationen -->
+    <div id="info-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Information</h2>
+            <textarea id="info-input" rows="5" cols="50" placeholder="Geben Sie hier Ihre Informationen ein..."></textarea>
+            <button id="save-info-button">Speichern</button>
+        </div>
+    </div>
+    
+    <script>
+    // Funktion zum Laden der Benutzerinformationen
+    async function loadUserInfo() {
+        try {
+            const response = await fetch('/api/auth/me', {
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                // Wenn nicht eingeloggt, zum Login weiterleiten
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return null;
+                }
+                throw new Error('Fehler beim Laden der Benutzerinformationen');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Fehler:', error);
+            return null;
+        }
+    }
+
+    // Funktion zum Laden und Filtern der Einrichtungen
+    async function loadAndFilterFacilities() {
+        try {
+            // Benutzerinformationen laden
+            const user = await loadUserInfo();
+            if (!user) return;
+
+            // Einrichtungen laden
+            const response = await fetch('/api/einrichtungen', {
+                credentials: 'include'
+            });
+            if (!response.ok) throw new Error('Fehler beim Laden der Einrichtungen');
+            const facilities = await response.json();
+
+            // Container für die Buttons
+            const container = document.getElementById('buttons-container');
+            if (!container) {
+                console.error('Container #buttons-container nicht gefunden');
+                return;
+            }
+            container.innerHTML = '';
+
+            // Einrichtungen filtern basierend auf Benutzerrolle und Berechtigungen
+            let allowedFacilities = facilities;
+            if (user.role !== 'admin') {
+                if (user.allowedFacilities && user.allowedFacilities.length > 0) {
+                    allowedFacilities = facilities.filter(facility => 
+                        user.allowedFacilities.includes(facility.kuerzel)
+                    );
+                } else if (user.role === 'co-admin') {
+                    allowedFacilities = facilities.filter(facility => 
+                        facility.kuerzel === user.facility
+                    );
+                }
+            }
+
+            console.log('Erstelle Buttons für', allowedFacilities.length, 'Einrichtungen');
+
+            // Buttons für erlaubte Einrichtungen erstellen
+            allowedFacilities.forEach(facility => {
+                const button = document.createElement('button');
+                button.textContent = facility.name;
+                button.dataset.id = facility.kuerzel;
+                button.addEventListener('click', () => {
+                    // Importiere die openEinrichtung Funktion aus dem Modul
+                    import('./js/Modules/openEinrichtung.js').then(module => {
+                        module.openEinrichtung(facility);
+                    });
+                });
+                container.appendChild(button);
+            });
+        } catch (error) {
+            console.error('Fehler beim Laden der Einrichtungen:', error);
+            showError('Fehler beim Laden der Einrichtungen');
+        }
+    }
+
+    // Hilfsfunktion für Fehlermeldungen
+    function showError(message) {
+        // Toast-Modul importieren und Fehler anzeigen
+        import('./js/Modules/toast.js').then(module => {
+            module.showToast(message, false);
+        });
+    }
+
+    // Initial Einrichtungen laden
+    document.addEventListener('DOMContentLoaded', loadAndFilterFacilities);
+    </script>
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

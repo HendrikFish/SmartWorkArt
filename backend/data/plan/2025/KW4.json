@@ -1,0 +1,764 @@
+{
+  "year": 2025,
+  "week": 4,
+  "days": [
+    {
+      "day": "Montag",
+      "suppe": [],
+      "menue1": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        },
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        },
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        }
+      ],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": [
+        "LH",
+        "KG-LB",
+        "KG-B",
+        "VS-Zell",
+        "VS-S"
+      ]
+    },
+    {
+      "day": "Dienstag",
+      "suppe": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        }
+      ],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 53,
+              "name": "Kartoffelpüreepulver",
+              "preisProBasiseinheit": 6.25,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Laktose"
+              ],
+              "allergenCodes": [
+                "S"
+              ],
+              "preisProVerwendungseinheit": 0.0063,
+              "menge": 30
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 110
+            }
+          ],
+          "infos": "",
+          "createdAt": "2025-01-05T20:08:08.664Z",
+          "updatedAt": "2025-01-05T20:08:08.664Z"
+        }
+      ],
+      "abendSuppe": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "milchspeise": [],
+      "normalkost": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "Einrichtungen-Menü1": [
+        "VS-Zell",
+        "KG-LB",
+        "KG-B",
+        "VS-S"
+      ],
+      "Einrichtungen-Menü2": [
+        "LH"
+      ]
+    },
+    {
+      "day": "Mittwoch",
+      "suppe": [],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        }
+      ],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": [
+        "VS-Zell",
+        "KG-LB",
+        "LH",
+        "VS-S",
+        "KG-B"
+      ]
+    },
+    {
+      "day": "Donnerstag",
+      "suppe": [],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [
+        "KG-LB",
+        "VS-Zell",
+        "LH",
+        "VS-S",
+        "KG-B"
+      ],
+      "Einrichtungen-Menü2": []
+    },
+    {
+      "day": "Freitag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": [
+        "VS-S",
+        "KG-LB",
+        "VS-Zell",
+        "LH",
+        "KG-B"
+      ]
+    },
+    {
+      "day": "Samstag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Sonntag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    }
+  ]
+}

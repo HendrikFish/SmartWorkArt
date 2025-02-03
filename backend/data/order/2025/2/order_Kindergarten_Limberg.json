@@ -1,0 +1,74 @@
+{
+  "einrichtung": "Kindergarten Limberg",
+  "kuerzel": "KG-LB",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 44
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 4
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 7
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 1
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 44
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 4
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 7
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 7
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 44
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 7
+    }
+  ],
+  "week": 2,
+  "year": 2025
+}

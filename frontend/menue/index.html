@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menüplan</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Menüplan</h1>
+            <div class="controls">
+                <select id="einrichtungSelect">
+                    <option value="">Einrichtung wählen...</option>
+                </select>
+                <div class="week-controls">
+                    <button id="prevWeek">&lt;</button>
+                    <span id="currentWeek"></span>
+                    <button id="nextWeek">&gt;</button>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div id="menuPlan" class="menu-plan">
+                <!-- Wird dynamisch befüllt -->
+            </div>
+        </main>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

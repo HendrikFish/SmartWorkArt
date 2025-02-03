@@ -1,0 +1,68 @@
+{
+  "name": "VS-Schüttdorf",
+  "kuerzel": "VS-S",
+  "adresse": "Einöd  21",
+  "ansprechperson": "Hirschbäck",
+  "telefon": "0660114036",
+  "email": "rebekka.fischer@gmx.at",
+  "personengruppe": "Schüler",
+  "tour": "2",
+  "gesamtPersonenanzahl": 30,
+  "speiseangebot": [
+    {
+      "tag": "Montag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Dienstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Mittwoch",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Donnerstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Freitag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Samstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    },
+    {
+      "tag": "Sonntag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    }
+  ],
+  "gruppen": [
+    {
+      "name": "VS-Schüler",
+      "anzahl": 30
+    }
+  ]
+}

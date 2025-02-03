@@ -1,0 +1,59 @@
+{
+  "resident": "Oma_Trude",
+  "2_menue1": {
+    "day": "Mittwoch",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue1": {
+    "day": "Donnerstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue2": {
+    "day": "Donnerstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue2": {
+    "day": "Freitag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  }
+}

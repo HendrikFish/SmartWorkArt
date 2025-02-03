@@ -1,0 +1,72 @@
+{
+  "name": "Lebenshilfe",
+  "kuerzel": "LH",
+  "adresse": "Industriegebiet 3",
+  "ansprechperson": "Gudrun",
+  "telefon": "067761446285",
+  "email": "samantha.fischer.junior@gmail.com",
+  "personengruppe": "Erwachsene",
+  "tour": "3",
+  "gesamtPersonenanzahl": 14,
+  "speiseangebot": [
+    {
+      "tag": "Montag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Dienstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Mittwoch",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Donnerstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Freitag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Samstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    },
+    {
+      "tag": "Sonntag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    }
+  ],
+  "gruppen": [
+    {
+      "name": "LH 1",
+      "anzahl": 7
+    },
+    {
+      "name": "LH 2",
+      "anzahl": 7
+    }
+  ]
+}

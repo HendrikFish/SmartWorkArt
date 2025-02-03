@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Seniorenheim Portal</title>
+    <link rel="stylesheet" href="/login-static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="register">Registrierung</button>
+            </div>
+
+            <!-- Login Formular -->
+            <form id="loginForm" class="form active">
+                <h2>Anmeldung</h2>
+                <div class="form-group">
+                    <input type="email" id="loginEmail" required autocomplete="username">
+                    <label>E-Mail</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                    <label>Passwort</label>
+                </div>
+                <button type="submit" class="submit-btn">Anmelden</button>
+            </form>
+
+            <!-- Registrierungs Formular -->
+            <form id="registerForm" class="form">
+                <h2>Registrierung</h2>
+                <div class="form-group">
+                    <input type="text" id="firstName" required autocomplete="given-name">
+                    <label>Vorname</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="lastName" required autocomplete="family-name">
+                    <label>Nachname</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="registerEmail" required autocomplete="email">
+                    <label>E-Mail</label>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" required autocomplete="new-password">
+                    <label>Passwort</label>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="phoneNumber" required autocomplete="tel">
+                    <label>Telefonnummer</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="employer" required autocomplete="organization">
+                    <label>Arbeitgeber</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="position" required autocomplete="organization-title">
+                    <label>Position</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="facility" required autocomplete="organization">
+                    <label>Einrichtung</label>
+                </div>
+                <button type="submit" class="submit-btn">Registrieren</button>
+            </form>
+        </div>
+    </div>
+    <script src="/login-static/js/script.js"></script>
+</body>
+</html>

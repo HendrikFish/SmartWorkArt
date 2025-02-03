@@ -1,0 +1,80 @@
+{
+  "einrichtung": "Lebenshilfe",
+  "kuerzel": "LH",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 2
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "LH 2",
+      "amount": 1
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "LH 2",
+      "amount": 1
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "LH 2",
+      "amount": 1
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "LH 2",
+      "amount": 1
+    },
+    {
+      "day": "Montag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 2
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Freitag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 1
+    }
+  ],
+  "week": 2,
+  "year": 2025
+}

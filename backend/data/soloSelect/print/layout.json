@@ -1,0 +1,31 @@
+{
+  "printLayouts": [
+    {
+      "id": "layout_1737384683406_1",
+      "name": "Mittagessen",
+      "categories": [
+        "Suppe",
+        "Menü 1",
+        "Menü 2",
+        "Dessert"
+      ],
+      "filters": []
+    },
+    {
+      "id": "layout_1737384683406_2",
+      "name": "Abendessen",
+      "categories": [
+        "Abend-Suppe",
+        "Milchspeise",
+        "Normalkost"
+      ],
+      "filters": []
+    }
+  ],
+  "defaultLayout": null,
+  "printOptions": {
+    "paperSize": "A5",
+    "orientation": "landscape",
+    "fontSize": "9pt"
+  }
+}

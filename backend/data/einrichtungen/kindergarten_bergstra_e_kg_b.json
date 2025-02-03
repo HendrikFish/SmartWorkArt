@@ -1,0 +1,76 @@
+{
+  "name": "Kindergarten Bergstraße",
+  "kuerzel": "KG-B",
+  "adresse": "Einöd",
+  "ansprechperson": "Hirschbäck",
+  "telefon": "067761446285",
+  "email": "samantha.fischer.junior@gmail.com",
+  "personengruppe": "Kindergartenkinder",
+  "tour": "1",
+  "gesamtPersonenanzahl": 24,
+  "speiseangebot": [
+    {
+      "tag": "Montag",
+      "alleOptionen": false,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": false
+    },
+    {
+      "tag": "Dienstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Mittwoch",
+      "alleOptionen": false,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": false
+    },
+    {
+      "tag": "Donnerstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Freitag",
+      "alleOptionen": false,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": false
+    },
+    {
+      "tag": "Samstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    },
+    {
+      "tag": "Sonntag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    }
+  ],
+  "gruppen": [
+    {
+      "name": "AEG",
+      "anzahl": 11
+    },
+    {
+      "name": "krabbel",
+      "anzahl": 3
+    },
+    {
+      "name": "KG Kinder",
+      "anzahl": 10
+    }
+  ]
+}

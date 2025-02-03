@@ -1,0 +1,68 @@
+{
+  "name": "VS-Zell am See",
+  "kuerzel": "VS-Zell",
+  "adresse": "Einöd, 21/1",
+  "ansprechperson": "Hirschbäck",
+  "telefon": "0660611036",
+  "email": "rebekka.fischer@gmx.at",
+  "personengruppe": "Schüler",
+  "tour": "1",
+  "gesamtPersonenanzahl": 34,
+  "speiseangebot": [
+    {
+      "tag": "Montag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Dienstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Mittwoch",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Donnerstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Freitag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Samstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    },
+    {
+      "tag": "Sonntag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    }
+  ],
+  "gruppen": [
+    {
+      "name": "Schüler",
+      "anzahl": 34
+    }
+  ]
+}

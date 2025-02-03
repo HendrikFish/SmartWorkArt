@@ -1,0 +1,49 @@
+{
+  "resident": "Hendrik_Walter",
+  "0_menue1": {
+    "day": "Montag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      },
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue1": {
+    "day": "Mittwoch",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue1": {
+    "day": "Donnerstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  }
+}

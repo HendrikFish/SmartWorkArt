@@ -1,0 +1,37 @@
+[
+  {
+    "rezeptId": 1,
+    "name": "Endiviensalat",
+    "rezeptKategorien": [
+      "Salat"
+    ],
+    "zutaten": [
+      {
+        "id": 34,
+        "name": "Mehl 405",
+        "preisProBasiseinheit": 1.49,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Obst"
+        ],
+        "allergene": [
+          "Gluten",
+          "Sesam"
+        ],
+        "allergenCodes": [
+          "A",
+          "N"
+        ],
+        "preisProVerwendungseinheit": 0.0015,
+        "menge": 100
+      }
+    ],
+    "infos": "Schmeckt super",
+    "createdAt": "2024-12-11T14:12:35.130Z",
+    "updatedAt": "2024-12-11T17:02:28.590Z"
+  }
+]

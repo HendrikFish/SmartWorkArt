@@ -1,0 +1,32 @@
+{
+  "einrichtung": "Kindergaerten Siedlungsstraße",
+  "kuerzel": "KG-Park",
+  "orders": [
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 111
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Lebenshilfe 1",
+      "amount": 42
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Gamer",
+      "amount": 42
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 111
+    }
+  ],
+  "week": 52,
+  "year": 2024
+}

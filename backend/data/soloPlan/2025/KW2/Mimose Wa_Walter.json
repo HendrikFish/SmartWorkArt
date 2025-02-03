@@ -1,0 +1,215 @@
+{
+  "resident": "Mimose Wa_Walter",
+  "1_menue2": {
+    "day": "Dienstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue2": {
+    "day": "Mittwoch",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 4,
+        "name": "Faschierte Laibchen"
+      },
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue2": {
+    "day": "Freitag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Farn"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "4_menue1": {
+    "day": "Freitag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue1": {
+    "day": "Donnerstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_menue1": {
+    "day": "Dienstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "50%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_menue1": {
+    "day": "Montag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_menue2": {
+    "day": "Montag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_milchspeise": {
+    "day": "Mittwoch",
+    "category": "milchspeise",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_milchspeise": {
+    "day": "Dienstag",
+    "category": "milchspeise",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_milchspeise": {
+    "day": "Montag",
+    "category": "milchspeise",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_dessert": {
+    "day": "Montag",
+    "category": "dessert",
+    "selected": true,
+    "portion": "50%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Haferschleim"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_dessert": {
+    "day": "Dienstag",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_dessert": {
+    "day": "Mittwoch",
+    "category": "dessert",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kohl"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  }
+}

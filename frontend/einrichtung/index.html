@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einrichtungsverwaltung</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+
+</head>
+<body>
+    <header>
+        <h1>Einrichtungen</h1>
+        <button id="neueEinrichtung">Neue Einrichtung</button>
+    </header>
+
+    <div id="toast-container"></div>
+
+    <main id="dashboard">
+        <div class="einrichtungen-grid">
+            <div class="kategorie">
+                <h2>Kindergartenkinder</h2>
+                <div id="kindergarten-liste" class="einrichtungen-liste"></div>
+            </div>
+            <div class="kategorie">
+                <h2>Schüler</h2>
+                <div id="schueler-liste" class="einrichtungen-liste"></div>
+            </div>
+            <div class="kategorie">
+                <h2>Erwachsene</h2>
+                <div id="erwachsene-liste" class="einrichtungen-liste"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="einrichtungsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="einrichtungsForm">
+                <!-- Schritt 1: Grunddaten -->
+                <div class="form-step" data-step="1">
+                    <h3>Grunddaten</h3>
+                    <input type="text" name="name" placeholder="Name" required>
+                    <input type="text" name="kuerzel" placeholder="Kürzel" required>
+                    <input type="text" name="adresse" placeholder="Adresse" required>
+                    <input type="text" name="ansprechperson" placeholder="Ansprechperson" required>
+                    <input type="tel" name="telefon" placeholder="Telefonnummer" required>
+                    <input type="email" name="email" placeholder="E-Mail" required>
+                </div>
+
+                <!-- Schritt 2: Personengruppe -->
+                <div class="form-step" data-step="2" style="display: none;">
+                    <h3>Personengruppe</h3>
+                    <select name="personengruppe" required>
+                        <option value="">Wählen Sie eine Gruppe</option>
+                        <option value="Schüler">Schüler</option>
+                        <option value="Kindergartenkinder">Kindergartenkinder</option>
+                        <option value="Erwachsene">Erwachsene</option>
+                    </select>
+                </div>
+
+                <!-- Schritt 3: Speiseangebot -->
+                <div class="form-step" data-step="3" style="display: none;">
+                    <h3>Speiseangebot</h3>
+                    <div id="speiseangebot" class="speiseangebot-container"></div>
+                </div>
+
+                <!-- Schritt 4: Gruppenverwaltung -->
+                <div class="form-step" data-step="4" style="display: none;">
+                    <h3>Gruppenverwaltung</h3>
+                    <div id="gruppenListe"></div>
+                    <div class="gruppe-input">
+                        <input type="text" id="gruppenName" placeholder="Gruppenname">
+                        <button type="button" id="gruppeHinzufuegen">Gruppe hinzufügen</button>
+                    </div>
+                    <div class="gesamtpersonen">
+                        <p>Gesamtanzahl Personen: <span id="gesamtPersonenanzahlDisplay">0</span></p>
+                        <input type="hidden" id="gesamtPersonenanzahl" name="gesamtPersonenanzahl" value="0">
+                    </div>
+                </div>
+
+                <!-- Navigationsbuttons -->
+                <div class="form-navigation">
+                    <button type="button" id="prevStep" style="display: none;">Zurück</button>
+                    <button type="button" id="nextStep">Weiter</button>
+                    <button type="submit" id="submitForm" style="display: none;">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

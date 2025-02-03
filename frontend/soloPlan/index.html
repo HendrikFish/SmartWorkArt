@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wochen-Speiseplan</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navigation">
+            <div class="week-controls">
+                <button id="prevWeek">Vorherige Woche</button>
+                <div class="week-info">
+                    <span id="currentWeek">KW </span>
+                    <span id="currentDate"></span>
+                </div>
+                <button id="nextWeek">Nächste Woche</button>
+            </div>
+        </nav>
+
+        <!-- Bewohner-Auswahl -->
+        <div class="residents-container">
+            <h2>Bewohner auswählen</h2>
+            <div id="residentButtons" class="resident-buttons"></div>
+        </div>
+
+        <!-- Resident Info - jetzt außerhalb des meal-plan -->
+        <div id="selectedResident" class="selected-resident"></div>
+
+        <!-- Speiseplan -->
+        <div class="meal-plan">
+            <table id="mealTable">
+                <thead>
+                    <tr>
+                        <th>Kategorie</th>
+                        <th>Montag</th>
+                        <th>Dienstag</th>
+                        <th>Mittwoch</th>
+                        <th>Donnerstag</th>
+                        <th>Freitag</th>
+                        <th>Samstag</th>
+                        <th>Sonntag</th>
+                    </tr>
+                </thead>
+                <tbody id="mealTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,982 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+}
+
+/* Dashboard Styles */
+#dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+    #dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .kategorie {
+        width: 100%;
+    }
+}
+
+.kategorie {
+    width: 100%;
+}
+
+.kategorie h2 {
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
+}
+
+.einrichtungen-liste {
+    display: grid;
+    gap: 15px;
+}
+
+/* Responsive Grid für die Einrichtungskarten */
+@media screen and (min-width: 768px) {
+    #dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+}
+
+/* Einrichtungskarten-Styling */
+.einrichtung-card {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Zusätzliche mobile Optimierungen */
+@media screen and (max-width: 480px) {
+    .einrichtung-card {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .card-buttons {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.card-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.einrichtung-card button.edit-btn {
+    margin-left: 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.einrichtung-card button.edit-btn:hover {
+    background: #45a049;
+}
+
+.einrichtung-card button.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.einrichtung-card button.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 15px;
+    width: 60%;
+    max-width: 800px;
+    border-radius: 8px;
+    position: relative;
+    min-height: 500px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #666;
+}
+
+/* Formular Styles */
+.form-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    min-height: 200px;
+    margin-bottom: 10px;
+}
+
+.form-step h3 {
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.form-step input {
+    margin-bottom: 7px;
+    position: relative;
+}
+
+.form-step[data-step="1"] input {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.form-step[data-step="1"] input::before {
+    content: attr(placeholder) ":";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-step[data-step="1"] input::placeholder {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.form-step[data-step="1"] {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-step[data-step="1"] input {
+    margin-top: 20px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Speiseangebot Styles */
+.tag-container {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    align-items: center;
+}
+
+.tag-name {
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.tag-options {
+    display: flex;
+    gap: 12px;
+    font-size: 0.95em;
+}
+
+.tag-options label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Checkbox Styling */
+.tag-options input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+}
+
+/* Slider Styling */
+.slider-container {
+    margin: 20px 0;
+}
+
+.slider-container label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+/* Gruppenverwaltung Styles */
+.gruppe {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.loeschen-btn {
+    background-color: #dc3545;
+}
+
+.loeschen-btn:hover {
+    background-color: #c82333;
+}
+
+/* Speiseangebot Container */
+.speiseangebot-container {
+    margin-top: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.gruppe-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+#gruppenName {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+#gruppeHinzufuegen {
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.gruppe-item {
+    background: #f5f5f5;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gruppe-details {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.personen-slider {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gruppe-personen-slider {
+    flex: 1;
+    margin-right: 8px;
+}
+
+.gruppe-details strong {
+    font-size: 0.95em;
+}
+
+.personen-anzahl {
+    font-size: 0.9em;
+}
+
+.gruppe-item button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Nach den Modal Styles */
+.einrichtungen-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+    .einrichtungen-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .kategorie {
+        width: 100%;
+    }
+}
+
+/* Kategorie Styling */
+.kategorie {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.kategorie h2 {
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #eee;
+}
+
+.einrichtungen-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.einrichtung-card {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.einrichtung-card button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.einrichtung-card button:hover {
+    background: #45a049;
+}
+
+/* Toast Styles */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px 32px;
+    border-radius: 4px;
+    margin: 8px;
+    animation: slideIn 0.5s, fadeOut 0.5s 2.5s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Form Navigation Styling - Desktop (Standard) */
+.form-navigation {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 10px;
+    justify-content: flex-end;
+}
+
+.form-navigation button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Mobile Styles für Form Navigation */
+@media screen and (max-width: 768px) {
+    .form-navigation {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        gap: 10px;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .form-navigation button#prevStep,
+    .form-navigation button#nextStep,
+    .form-navigation button#submitForm {
+        flex: 1 !important;  /* Alle Buttons gleiche Breite */
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        margin: 0 !important;
+        min-width: 0 !important;  /* Erlaubt Schrumpfen */
+        font-size: 14px;  /* Kleinere Schrift für bessere Passung */
+    }
+
+    .form-navigation button#prevStep:hover,
+    .form-navigation button#nextStep:hover,
+    .form-navigation button#submitForm:hover {
+        background-color: #45a049;
+    }
+}
+
+/* Personengruppen Button Styles */
+.personengruppen-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.personengruppe-btn {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid #ddd;
+    background-color: white;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.personengruppe-btn:hover {
+    border-color: #ff9800;
+    background-color: #fff3e0;
+}
+
+.personengruppe-btn.active {
+    background-color: #ff9800;
+    color: white;
+    border-color: #ff9800;
+}
+
+/* Form Step Styles */
+.form-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    min-height: 500px;
+}
+
+/* Entfernen der überflüssigen form-content Styles */
+.form-content {
+    flex: 1;
+}
+
+/* Tag Container Styling kompakter machen */
+.tag-container {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    align-items: center;
+}
+
+.tag-name {
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.tag-options {
+    display: flex;
+    gap: 12px;
+    font-size: 0.95em;
+}
+
+.tag-options label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Checkbox Styling */
+.tag-options input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+}
+
+/* Gruppen Container anpassen */
+#gruppenListe {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+/* Gruppenverwaltung Styling */
+.gruppen-eingabe {
+    margin-bottom: 20px;
+}
+
+.eingabe-zeile {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.gruppen-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.hinzufuegen-btn {
+    padding: 10px 20px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.hinzufuegen-btn:hover {
+    background-color: #f57c00;
+}
+
+.gruppen-liste {
+    margin: 10px 0;
+    gap: 10px;
+}
+
+.gruppe-item {
+    background: #f5f5f5;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gruppe-details {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.personen-slider {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gruppe-personen-slider {
+    flex: 1;
+    margin-right: 8px;
+}
+
+.gesamtpersonen {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    font-weight: bold;
+    max-width: 50%;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Header Styling */
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+}
+
+#neueEinrichtung {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#neueEinrichtung:hover {
+    background-color: #45a049;
+}
+
+/* Mobile Header Styles */
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+    }
+
+    #neueEinrichtung {
+        width: 100%; /* Button nimmt volle Breite ein */
+    }
+}
+
+/* Mobile Styles für die Formularschritte */
+@media screen and (max-width: 768px) {
+    /* Schritt 2: Personengruppe & Tour Buttons */
+    .personengruppen-buttons,
+    .tour-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .personengruppen-buttons button,
+    .tour-buttons button {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Schritt 3: Speiseangebot */
+    .wochentage-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .wochentag-label {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .wochentag-label span {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .checkbox-container {
+        width: 100%;
+    }
+
+    /* Schritt 4: Gruppenverwaltung */
+    .gruppe-item {
+        flex-direction: column;
+        gap: 10px;
+        max-height: 50%;
+    }
+
+    .gruppe-details {
+        width: 100%;
+    }
+
+    .personen-slider {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .delete-btn {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    /* Allgemeine Form-Navigation */
+    .form-navigation {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form-navigation button {
+        width: 100%;
+    }
+}
+
+/* Gruppe Input Styling */
+.gruppe-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+#gruppenName {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+#gruppeHinzufuegen {
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+/* Mobile Styles für Gruppe Input */
+@media screen and (max-width: 768px) {
+    .gruppe-input {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    #gruppenName {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    #gruppeHinzufuegen {
+        width: 100%;
+    }
+}
+
+/* Personen Slider und Anzahl Styling */
+.personen-slider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gruppe-personen-slider {
+    flex: 1;
+}
+
+/* Mobile Styles für Personen Slider */
+@media screen and (max-width: 768px) {
+    .personen-slider {
+        flex-direction: initial;
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .gruppe-personen-slider {
+        width: 100%;
+    }
+
+    /* Personen Anzahl und Text in einer Zeile */
+    .personen-anzahl {
+        display: inline-block;
+        margin-right: 4px;
+    }
+
+    /* Container für den Text entfernen */
+    .personen-slider > span,
+    .personen-slider > .personen-anzahl {
+        display: inline;
+    }
+}
+
+/* Container für Personen-Anzahl und Text */
+.personen-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+    .personen-slider {
+        flex-direction: initial;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .personen-info {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .personen-anzahl {
+        margin-right: 4px;
+    }
+}
+
+/* Mobile Styles für Gruppe Items */
+@media screen and (max-width: 768px) {
+    .gruppe-item {
+        background: #ebebeb;  /* Dunklerer Hintergrund */
+        padding: 8px;  /* Verringertes vertikales Padding */
+        margin-bottom: 8px;  /* Geringerer Abstand zwischen Items */
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .gruppe-details {
+        width: 100%;
+    }
+
+    .personen-slider {
+        width: 100%;
+    }
+
+    /* Kompaktere Darstellung der Buttons */
+    .card-buttons {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+    }
+}
+
+.form-step[data-step="1"] input[type="text"] {
+    margin-bottom: 10px;
+}
+
+.form-step[data-step="1"] input[type="text"]:first-child {
+    margin-top: 10px;
+}
+
+.form-step[data-step="1"] .input-container {
+    gap: 10px;
+}
+
+/* Kompaktere Button-Gruppen */
+.personengruppen-buttons {
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* Kompaktere Input-Felder */
+.form-step input[type="text"],
+.form-step select {
+    margin-bottom: 5px;
+    padding: 8px;
+}
+
+/* Navigation-Buttons höher positionieren */
+.form-navigation {
+    margin-top: -50px; /* Negativer margin um die Buttons höher zu ziehen */
+    padding: 10px;
+    position: relative; /* Stellt sicher, dass die Buttons über dem Content bleiben */
+    z-index: 1; /* Verhindert, dass andere Elemente die Buttons überdecken */
+}
+
+/* Optional: Wenn mehr Platz nach unten benötigt wird */
+.modal-content {
+    padding-bottom: 10px; /* Reduziert den unteren Abstand im Modal */
+}
+
+/* Letzter form-step braucht weniger margin-bottom */
+.form-step:last-of-type {
+    margin-bottom: 5px;
+}

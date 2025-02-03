@@ -1,0 +1,72 @@
+[
+  {
+    "rezeptId": 1,
+    "name": "Hund",
+    "rezeptKategorien": [
+      "Dip"
+    ],
+    "zutaten": [
+      {
+        "id": 34,
+        "name": "Mehl 405",
+        "preisProBasiseinheit": 1.49,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Obst"
+        ],
+        "allergene": [
+          "Gluten",
+          "Sesam"
+        ],
+        "allergenCodes": [
+          "A",
+          "N"
+        ],
+        "preisProVerwendungseinheit": 0.0015,
+        "menge": 4444
+      }
+    ],
+    "createdAt": "2024-12-10T22:41:47.810Z",
+    "updatedAt": "2024-12-11T17:01:29.230Z",
+    "infos": ""
+  },
+  {
+    "rezeptId": 2,
+    "name": "Knobauch-Dip",
+    "rezeptKategorien": [
+      "Dip"
+    ],
+    "zutaten": [
+      {
+        "id": 34,
+        "name": "Mehl 405",
+        "preisProBasiseinheit": 1.49,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Obst"
+        ],
+        "allergene": [
+          "Gluten",
+          "Sesam"
+        ],
+        "allergenCodes": [
+          "A",
+          "N"
+        ],
+        "preisProVerwendungseinheit": 0.0015,
+        "menge": 3345
+      }
+    ],
+    "infos": "Kräftig aber Gut",
+    "createdAt": "2024-12-11T13:33:28.833Z",
+    "updatedAt": "2024-12-11T13:49:24.820Z"
+  }
+]

@@ -1,0 +1,104 @@
+{
+  "einrichtung": "VS-Schüttdorf",
+  "kuerzel": "VS-S",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 36
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 146
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 36
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 36
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 46
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "VS-Schüler",
+      "amount": 36
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "VS-Schüler",
+      "amount": 146
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "VS-Schüler",
+      "amount": 36
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "VS-Schüler",
+      "amount": 36
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "VS-Schüler",
+      "amount": 46
+    },
+    {
+      "day": "Montag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 36
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 146
+    },
+    {
+      "day": "Mittwoch",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 36
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 36
+    },
+    {
+      "day": "Freitag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 46
+    },
+    {
+      "day": "Mittwoch",
+      "component": "information",
+      "info": "Fuck",
+      "group": "Gesamt"
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

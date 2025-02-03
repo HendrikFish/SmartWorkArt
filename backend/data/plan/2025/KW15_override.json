@@ -1,0 +1,626 @@
+{
+  "year": 2025,
+  "week": 15,
+  "days": [
+    {
+      "day": "Montag",
+      "suppe": [
+        {
+          "rezeptId": 2,
+          "name": "Rindersuppe",
+          "rezeptKategorien": [
+            "Suppe"
+          ],
+          "zutaten": [
+            {
+              "id": 39,
+              "name": "R-Suppen Pulver",
+              "preisProBasiseinheit": 1.7,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0017,
+              "menge": 4.6
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 200
+            }
+          ],
+          "infos": "",
+          "createdAt": "2024-12-29T15:24:57.784Z",
+          "updatedAt": "2024-12-29T15:34:27.063Z"
+        }
+      ],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        },
+        {
+          "rezeptId": 1,
+          "name": "Rahmsoße",
+          "rezeptKategorien": [
+            "Soße"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 220
+            }
+          ],
+          "infos": "Schmeckt nicht",
+          "createdAt": "2024-12-11T14:04:54.183Z",
+          "updatedAt": "2024-12-11T14:04:54.183Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": []
+    },
+    {
+      "day": "Dienstag",
+      "suppe": [
+        {
+          "rezeptId": 1,
+          "name": "Galgant Suppe",
+          "rezeptKategorien": [
+            "Suppe"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Super Gut",
+          "createdAt": "2024-12-11T14:06:17.488Z",
+          "updatedAt": "2024-12-11T14:06:17.488Z"
+        }
+      ],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter",
+          "rezeptKategorien": [
+            "Gemüse"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 1290
+            },
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Kartoffeln",
+          "createdAt": "2024-12-11T13:31:15.942Z",
+          "updatedAt": "2024-12-11T13:55:36.882Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Nudelkuchen",
+          "rezeptKategorien": [
+            "Dessert"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 1002
+            }
+          ],
+          "infos": "Kuchen",
+          "createdAt": "2024-12-11T14:09:16.633Z",
+          "updatedAt": "2024-12-20T15:41:46.393Z"
+        },
+        {
+          "rezeptId": 1,
+          "name": "Wurst",
+          "rezeptKategorien": [
+            "Hauptgericht"
+          ],
+          "zutaten": [
+            {
+              "id": 34,
+              "name": "Mehl 405",
+              "preisProBasiseinheit": 1.49,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Obst"
+              ],
+              "allergene": [
+                "Gluten",
+                "Sesam"
+              ],
+              "allergenCodes": [
+                "A",
+                "N"
+              ],
+              "preisProVerwendungseinheit": 0.0015,
+              "menge": 100
+            }
+          ],
+          "infos": "Wurstbrot",
+          "createdAt": "2024-12-11T13:30:36.386Z",
+          "updatedAt": "2024-12-11T13:30:36.386Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": []
+    },
+    {
+      "day": "Mittwoch",
+      "suppe": [
+        {
+          "rezeptId": 2,
+          "name": "Rindersuppe",
+          "rezeptKategorien": [
+            "Suppe"
+          ],
+          "zutaten": [
+            {
+              "id": 39,
+              "name": "R-Suppen Pulver",
+              "preisProBasiseinheit": 1.7,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0017,
+              "menge": 4.6
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 200
+            }
+          ],
+          "infos": "",
+          "createdAt": "2024-12-29T15:24:57.784Z",
+          "updatedAt": "2024-12-29T15:34:27.063Z"
+        }
+      ],
+      "menue1": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Top Top",
+          "createdAt": "2024-12-11T14:08:08.286Z",
+          "updatedAt": "2024-12-11T14:08:41.591Z"
+        }
+      ],
+      "Einrichtungen": [],
+      "menue2": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln",
+          "rezeptKategorien": [
+            "Beilage"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Top Top",
+          "createdAt": "2024-12-11T14:08:08.286Z",
+          "updatedAt": "2024-12-11T14:08:41.591Z"
+        }
+      ],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": []
+    },
+    {
+      "day": "Donnerstag",
+      "suppe": [
+        {
+          "rezeptId": 1,
+          "name": "Galgant Suppe",
+          "rezeptKategorien": [
+            "Suppe"
+          ],
+          "zutaten": [
+            {
+              "id": 33,
+              "name": "Spaghetti",
+              "preisProBasiseinheit": 4.44,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [
+                "Gluten"
+              ],
+              "allergenCodes": [
+                "A"
+              ],
+              "preisProVerwendungseinheit": 0.0044,
+              "menge": 100
+            }
+          ],
+          "infos": "Super Gut",
+          "createdAt": "2024-12-11T14:06:17.488Z",
+          "updatedAt": "2024-12-11T14:06:17.488Z"
+        }
+      ],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": []
+    },
+    {
+      "day": "Freitag",
+      "suppe": [
+        {
+          "rezeptId": 2,
+          "name": "Rindersuppe",
+          "rezeptKategorien": [
+            "Suppe"
+          ],
+          "zutaten": [
+            {
+              "id": 39,
+              "name": "R-Suppen Pulver",
+              "preisProBasiseinheit": 1.7,
+              "basiseinheit": "kg",
+              "verwendungseinheit": "g",
+              "lieferanten": [
+                "Hügli"
+              ],
+              "kategorien": [
+                "trockene Lebensmittel"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0017,
+              "menge": 4.6
+            },
+            {
+              "id": 40,
+              "name": "Wasser",
+              "preisProBasiseinheit": 0.1,
+              "basiseinheit": "l",
+              "verwendungseinheit": "ml",
+              "lieferanten": [
+                "Transgourmet"
+              ],
+              "kategorien": [
+                "Flüssigkeiten"
+              ],
+              "allergene": [],
+              "allergenCodes": [],
+              "preisProVerwendungseinheit": 0.0001,
+              "menge": 200
+            }
+          ],
+          "infos": "",
+          "createdAt": "2024-12-29T15:24:57.784Z",
+          "updatedAt": "2024-12-29T15:34:27.063Z"
+        }
+      ],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": [],
+      "Einrichtungen-Menü1": [],
+      "Einrichtungen-Menü2": []
+    },
+    {
+      "day": "Samstag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    },
+    {
+      "day": "Sonntag",
+      "suppe": [],
+      "menue1": [],
+      "Einrichtungen": [],
+      "menue2": [],
+      "dessert": [],
+      "abendSuppe": [],
+      "milchspeise": [],
+      "normalkost": []
+    }
+  ]
+}

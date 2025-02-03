@@ -1,0 +1,26 @@
+{
+  "einrichtung": "Lebenshilfe",
+  "kuerzel": "LH",
+  "orders": [
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "LH 1",
+      "amount": 10
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 10
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 10
+    }
+  ],
+  "week": 52,
+  "year": 2024
+}

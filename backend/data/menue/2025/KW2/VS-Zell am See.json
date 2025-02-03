@@ -1,0 +1,178 @@
+{
+  "name": "VS-Zell am See",
+  "kuerzel": "VS-Zell",
+  "woche": "KW2",
+  "jahr": "2025",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          },
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          },
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          },
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Haferschleim",
+            "allergene": [
+              "A",
+              "C"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln mit Butter",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kohl",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Faschierte Laibchen",
+            "allergene": [
+              "A",
+              "C",
+              "M"
+            ]
+          },
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kohl",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Farn",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kohl",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

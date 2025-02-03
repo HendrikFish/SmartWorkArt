@@ -1,0 +1,131 @@
+{
+  "resident": "Peter_Peret",
+  "0_menue1": {
+    "day": "Montag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_menue1": {
+    "day": "Dienstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Nudelkuchen"
+      },
+      {
+        "rezeptId": 2,
+        "name": "Kartoffelpüree"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "3_menue1": {
+    "day": "Donnerstag",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Karottengemüse"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue1": {
+    "day": "Mittwoch",
+    "category": "menue1",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      },
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_suppe": {
+    "day": "Mittwoch",
+    "category": "suppe",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Rindersuppe"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "0_menue2": {
+    "day": "Montag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 1,
+        "name": "Kartoffeln mit Butter"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "1_menue2": {
+    "day": "Dienstag",
+    "category": "menue2",
+    "selected": true,
+    "portion": "100%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Knobauch-Dip"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  },
+  "2_menue2": {
+    "day": "Mittwoch",
+    "category": "menue2",
+    "selected": true,
+    "portion": "50%",
+    "meals": [
+      {
+        "rezeptId": 2,
+        "name": "Haferschleim"
+      },
+      {
+        "rezeptId": 4,
+        "name": "Faschierte Laibchen"
+      }
+    ],
+    "comments": [],
+    "alternatives": []
+  }
+}

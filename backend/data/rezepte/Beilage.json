@@ -1,0 +1,85 @@
+[
+  {
+    "rezeptId": 1,
+    "name": "Kartoffeln",
+    "rezeptKategorien": [
+      "Beilage"
+    ],
+    "zutaten": [
+      {
+        "id": 33,
+        "name": "Spaghetti",
+        "preisProBasiseinheit": 4.44,
+        "basiseinheit": "l",
+        "verwendungseinheit": "ml",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "trockene Lebensmittel"
+        ],
+        "allergene": [
+          "Gluten"
+        ],
+        "allergenCodes": [
+          "A"
+        ],
+        "preisProVerwendungseinheit": 0.0044,
+        "menge": 100
+      }
+    ],
+    "infos": "Top Top",
+    "createdAt": "2024-12-11T14:08:08.286Z",
+    "updatedAt": "2024-12-11T14:08:41.591Z"
+  },
+  {
+    "rezeptId": 2,
+    "name": "Kartoffelpüree",
+    "rezeptKategorien": [
+      "Beilage"
+    ],
+    "zutaten": [
+      {
+        "id": 53,
+        "name": "Kartoffelpüreepulver",
+        "preisProBasiseinheit": 6.25,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Hügli"
+        ],
+        "kategorien": [
+          "trockene Lebensmittel"
+        ],
+        "allergene": [
+          "Laktose"
+        ],
+        "allergenCodes": [
+          "S"
+        ],
+        "preisProVerwendungseinheit": 0.0063,
+        "menge": 30
+      },
+      {
+        "id": 40,
+        "name": "Wasser",
+        "preisProBasiseinheit": 0.1,
+        "basiseinheit": "l",
+        "verwendungseinheit": "ml",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Flüssigkeiten"
+        ],
+        "allergene": [],
+        "allergenCodes": [],
+        "preisProVerwendungseinheit": 0.0001,
+        "menge": 110
+      }
+    ],
+    "infos": "",
+    "createdAt": "2025-01-05T20:08:08.664Z",
+    "updatedAt": "2025-01-05T20:08:08.664Z"
+  }
+]

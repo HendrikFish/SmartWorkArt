@@ -1,0 +1,249 @@
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.controls {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+}
+
+button {
+    padding: 8px 16px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background-color: #f4f4f4;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #e4e4e4;
+}
+
+#currentPeriod {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0 20px;
+}
+
+#currentWeek {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+}
+
+#currentWeek:hover {
+    background-color: #45a049;
+}
+
+select {
+    padding: 8px;
+    margin-right: 10px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.tour-header {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.tour-header td {
+    padding: 10px;
+    text-align: left;
+    font-size: 1.1em;
+}
+
+.sum-column {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    color: #45a049;
+    font-size: 1.3em;
+    text-align: center;
+}
+
+.tour-sum {
+    background-color: #eef2f7;
+    font-weight: bold;
+}
+
+.tour-sum td {
+    border-top: 2px solid #ddd;
+}
+
+.info-column {
+    max-width: 200px;
+    white-space: pre-line;
+    font-size: 0.9em;
+    color: #666;
+    padding: 8px;
+    background-color: #fafafa;
+}
+
+.number-cell {
+    background-color: white !important;
+    font-size: 1.2em    ;
+    font-weight: bold;
+    text-align: center;
+}
+
+.info-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.info-button:hover {
+    background-color: #45a049;
+}
+
+.info-button.done {
+    background-color: #888;
+}
+
+.info-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.info-popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.info-popup-content h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.info-popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.info-popup-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 100px;
+    flex: 1;
+    max-width: 150px;
+    transition: all 0.3s ease;
+}
+
+.done-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.done-button.confirm-state {
+    background-color: #dc3545;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.done-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    animation: none;
+}
+
+.close-button {
+    background-color: #f0f0f0;
+}
+
+.total-sum {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    border-top: 3px double #333;
+}
+
+.total-sum td {
+    padding: 15px 12px;
+    font-size: 1.1em;
+}
+
+.total-sum-column {
+    background-color: #e9ecef;
+    color: #2c3e50;
+    font-weight: bold;
+    text-align: center;
+}
+
+.date-display {
+    font-size: 0.8em;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.month-display {
+    font-size: 0.9em;
+    color: #666;
+    display: block;
+    margin-top: 5px;
+    text-align: center;
+}
+
+#orderTable th {
+    text-align: center;
+    padding: 8px;
+    vertical-align: middle;
+}
+

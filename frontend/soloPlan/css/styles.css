@@ -1,0 +1,1362 @@
+/* styles.css */
+:root {
+    --primary-color: #0056D2;
+    --secondary-color: #FF9800;
+    --background-color: #f0f2f5;
+    --text-color: #333;
+    --border-color: #ccc;
+    --font-family: 'Roboto', sans-serif;
+
+    --primary-hover: #0045a8;
+    --secondary-hover: #f57c00;
+    --surface: #ffffff;
+    --text-secondary: #666;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2 {
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Navigation */
+.navigation {
+    margin-bottom: 20px;
+}
+
+.week-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: var(--surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.week-controls button#prevWeek,
+.week-controls button#nextWeek {
+    padding: 8px 15px;
+    font-size: 16px;
+    border: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.week-controls button#prevWeek:hover,
+.week-controls button#nextWeek:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.week-info {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+#currentWeek {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+#currentDate {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* Bewohner-Auswahl */
+.residents-container {
+    margin-bottom: 10px;
+    background-color: var(--surface);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.residents-container h2 {
+    margin-bottom: 5px;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.toggle-residents-button {
+    padding: 8px 15px;
+    background-color: var(--secondary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.toggle-residents-button:hover {
+    background-color: var(--secondary-hover);
+    transform: translateY(-1px);
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-group .filter-button {
+    margin-left: 5px;
+    padding: 8px 12px;
+    background-color: var(--background-color);
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: var(--secondary-color);
+}
+
+.filter-button:hover {
+    background-color: var(--secondary-color);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.residents-list {
+    margin-top: 20px;
+}
+
+.resident-button {
+    display: block;
+    margin-left: 10px;
+    text-align: left;
+    padding: 8px;
+    margin-bottom: 8px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.resident-button.active {
+    background-color: #2e7d32;  /* Dunkleres Grün */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.resident-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.resident-button.has-data {
+    background-color: #2e7d32;  /* Dunkelgrün */
+}
+
+.resident-button.has-data:hover {
+    background-color: #1b5e20;  /* Noch dunkleres Grün beim Hover */
+}
+
+/* Gewählter Bewohner */
+.selected-resident {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: var(--surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.selected-resident h2 {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.selected-resident.empty {
+    display: none;
+}
+
+/* Speiseplan */
+.meal-plan {
+    background-color: var(--surface);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow-x: auto;
+}
+
+.meal-plan table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    position: relative;
+}
+
+.meal-plan th {
+    border: 1px solid var(--border-color);
+    text-align: center;
+    padding: 8px;
+    vertical-align: middle;
+    min-width: 120px;
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.meal-plan td {
+    border: 1px solid var(--border-color);
+    text-align: center;
+    padding: 6px;
+    vertical-align: top;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    height: 140px;
+}
+
+.meal-plan td:first-child {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+    height: auto;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+.meal-plan td.half-height-cell {
+    height: 70px;
+}
+
+.meal-plan td.half-height-cell:first-child {
+    height: auto;
+}
+
+.meal-plan thead {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Card-Style Layout */
+.meal-cell-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.meal-cell-content.selected-100 {
+    background-color: #a5d6a7;
+    
+   
+}
+
+.meal-cell-content.selected-50 {
+    background-color: #ffcc80;
+  
+   
+}
+
+.meal-cell-content.selected-25 {
+    background-color: #90caf9;
+
+}
+
+.meal-cell-content.selected-100 .fab-container,
+.meal-cell-content.selected-50 .fab-container,
+.meal-cell-content.selected-25 .fab-container {
+    display: flex;
+    
+
+}
+
+/* Content Wrapper */
+.content-wrapper {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 45px;
+    align-items: center;
+    padding: 8px;
+    transition: background-color 0.3s ease;
+    height: 100%;
+}
+
+/* FAB Container */
+.fab-container {
+    position: relative;
+    grid-column: 2;
+    width: 40px;
+    height: 40px;
+    justify-self: center;
+    align-self: center;
+    display: none;
+}
+
+
+/* Dialog und Container */
+.dialog,
+.components-container,
+.alternatives-container {
+    display: none;
+
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    margin-top: 12px;
+    border-top: 1px solid #eee;
+    padding: 12px;
+    
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+
+
+
+
+.fab-container.active {
+    display: flex;
+}
+
+
+
+
+
+/* Status-Varianten */
+.meal-options-btn.selected-100 { 
+    background-color: #2196F3; 
+ 
+}
+
+.meal-options-btn.selected-50 { 
+    background-color: #64B5F6; 
+   
+}
+
+.meal-options-btn.selected-25 { 
+    background-color: #BBDEFB; 
+    color: black;
+   
+}
+
+/* Anpassungen für halbe Zellenhöhe */
+
+
+/* Sub-Buttons Container */
+.sub-buttons {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    min-width: 300px;
+    transform-origin: top right;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: scale(0.95);
+   
+}
+
+.fab-container.active .sub-buttons {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: all;
+   
+}
+
+/* Sub-Buttons Row */
+.sub-buttons-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    position: relative;
+ 
+    pointer-events: all;
+}
+
+/* Sub-Button Styles */
+.sub-button {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+ 
+    pointer-events: all;
+}
+
+/* Stelle sicher, dass der Plus-Button unter allen anderen Elementen liegt */
+
+
+/* Sub-Button Varianten */
+.sub-button.comment {
+    background: #2196F3;
+    color: white;
+}
+
+.sub-button.components {
+    background: #FF9800;
+    color: white;
+}
+
+.sub-button.alternative {
+    background: #9C27B0;
+    color: white;
+}
+
+.sub-button.comment:hover { background: #1976D2; }
+.sub-button.components:hover { background: #F57C00; }
+.sub-button.alternative:hover { background: #7B1FA2; }
+
+/* Anpassungen für halbe Zellenhöhe */
+.half-height-cell .content-wrapper {
+    grid-template-columns: 1fr 40px;
+    
+}
+
+
+
+
+.half-height-cell .sub-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+}
+
+.half-height-cell .meal-item {
+    font-size: 0.9em;
+    line-height: 1.1em;
+}
+
+.half-height-cell .meals-container {
+    gap: 3px;
+    padding: 1px 0;
+}
+
+
+
+/* Meals Container */
+.meals-container {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 3px 0;
+    flex: 1;
+    position: relative;
+    padding-right: 5px;
+    overflow: hidden;
+   
+}
+
+/* Meal Item */
+.meal-item {
+    text-align: left;
+    overflow: hidden;
+    line-height: 1.2em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    font-size: 0.95em;
+    padding-right: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.meal-image {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    background-color: #ccc;
+}
+
+.meal-title {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.meal-description {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Separate Options Card */
+.meal-options-container {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    background-color: var(--surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+
+.meal-options-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.1);
+}
+
+.meal-options-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background-color: var(--surface);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;
+  
+}
+
+.meal-options-panel.show {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .week-controls {
+        flex-direction: column;
+    }
+    .button-container, .filter-buttons, .residents-list {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .meal-plan {
+        padding: 8px;
+    }
+    .meal-plan table th, .meal-plan table td {
+        font-size: 0.9em;
+        padding: 4px;
+        min-width: 100px;
+    }
+    .selected-resident {
+        padding: 15px;
+    }
+    .meal-cell-content {
+        padding: 6px 4px 30px 4px;
+    }
+    .meals-container {
+        gap: 4px;
+    }
+}
+
+.meal-item {
+    text-align: left;
+    overflow: hidden;
+    line-height: 1.2em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    font-size: 0.95em;
+    padding-right: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.half-height-cell .meal-item {
+    font-size: 0.9em;
+    line-height: 1.1em;
+}
+
+
+
+.meals-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 3px 0;
+    flex: 1;
+    position: relative;
+   
+}
+
+.half-height-cell .meals-container {
+    gap: 3px;
+    padding: 1px 0;
+}
+
+.meal-item-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px;
+    width: 100%;
+}
+
+
+
+.meals-container {
+    grid-column: 1;
+    padding-right: 5px;
+    overflow: hidden;
+}
+
+.fab-container {
+    position: relative;
+    grid-column: 2;
+    display: none;
+    width: 40px;
+    height: 40px;
+    justify-self: center;
+    align-self: center;
+}
+
+.meal-options-btn {
+    font-weight: bold;
+    padding: 0;
+    line-height: 1;
+    margin-left: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+/* Anpassungen für halbe Zellen */
+.half-height-cell .content-wrapper {
+    grid-template-columns: 1fr 40px;
+}
+
+
+
+
+
+/* Hintergrundfarben für ausgewählte Zellen */
+.meal-cell-content.selected-100 .content-wrapper,
+.meal-cell-content.selected-50 .content-wrapper,
+.meal-cell-content.selected-25 .content-wrapper {
+    background-color: transparent;
+}
+
+.fab-container.active {
+   
+    position: relative;
+    background-color: #2196F3;
+    border-radius: 50%;
+}
+
+
+
+
+.dialog {
+    width: 100%;
+    background: white;
+    margin-top: 12px;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    position: relative;
+   
+}
+
+.dialog.active {
+    display: block;
+   
+}
+
+
+
+
+.components-container.active,
+.alternatives-container.active {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 300px;
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.component-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #f8f9fa;
+    margin: 4px 0;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.component-item:hover {
+    background: #e9ecef;
+}
+
+.switch-container {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.switch-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    position: absolute;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+    user-select: none;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.switch-input:checked + .switch-slider {
+    background-color: var(--primary-color);
+}
+
+.switch-input:checked + .switch-slider:before {
+    transform: translateX(22px);
+}
+
+.switch-label {
+    font-size: 14px;
+    color: var(--text-color);
+    user-select: none;
+    cursor: pointer;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.alternative-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    margin: 6px 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.alternative-item:hover {
+    background: #e9ecef;
+    transform: translateY(-1px);
+}
+
+.meal-header {
+    font-weight: bold;
+    padding: 8px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    color: var(--text-color);
+}
+
+.meal-header:first-child {
+    margin-top: 0;
+}
+
+.delete-week-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.delete-week-button:hover {
+    background-color: #ffebee;
+    transform: scale(1.1);
+}
+
+.delete-week-button:active {
+    transform: scale(0.95);
+}
+
+/* Resident Info Header */
+.resident-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.resident-info-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.resident-info-toggle:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.resident-info-toggle:active {
+    transform: translateY(0);
+}
+
+.resident-info-toggle::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+    margin-right: 8px;
+}
+
+.resident-info-toggle.open::before {
+    transform: rotate(-135deg);
+}
+
+.resident-details {
+    background-color: white;
+    border-radius: 8px;
+    padding: 5px;
+    margin-top: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.resident-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.area-container {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.area-label-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.area-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.area-option-button {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: white;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.area-option-button:hover {
+    background-color: #f1f3f5;
+    border-color: var(--primary-color);
+}
+
+.area-option-button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .resident-areas {
+        grid-template-columns: 1fr;
+    }
+    
+    .area-buttons {
+        justify-content: flex-start;
+    }
+    
+    .resident-info-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+
+
+.alternative-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    margin: 6px 0;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.alternative-item:hover {
+    background: #e9ecef;
+}
+
+.switch-container {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.switch-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+}
+
+.switch-input:focus + .switch-slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.switch-input:checked + .switch-slider {
+    background-color: var(--primary-color);
+}
+
+.switch-input:checked + .switch-slider:before {
+    transform: translateX(22px);
+}
+
+.switch-label {
+    font-size: 14px;
+    color: var(--text-color);
+    user-select: none;
+    cursor: pointer;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+/* Ausgewählte Meal-Options */
+.meal-options-btn.selected-100 {
+    background-color: #2196F3;
+    color: white;
+}
+
+.meal-options-btn.selected-50 {
+    background-color: #64B5F6;
+    color: white;
+}
+
+.meal-options-btn.selected-25 {
+    background-color: #BBDEFB;
+    color: black;
+}
+
+.current-week-btn {
+    padding: 8px 15px;
+    font-size: 16px;
+    border: none;
+    background-color: #2e7d32 !important;  /* Dunkelgrün mit !important */
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 10px;
+}
+
+.current-week-btn:hover {
+    background-color: #1b5e20 !important;  /* Noch dunkleres Grün beim Hover */
+    transform: translateY(-1px);
+}
+
+/* Alternativen Editor Styles */
+.edit-alternatives-btn {
+    background-color: #4a90e2;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.edit-alternatives-btn:hover {
+    background-color: #357abd;
+    transform: translateY(-1px);
+}
+
+.alternatives-editor-container {
+    position: fixed;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+ 
+}
+
+.alternatives-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.alternatives-editor-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.close-editor-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0 8px;
+}
+
+.close-editor-btn:hover {
+    color: #333;
+}
+
+.categories-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.category-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.category-header h3 {
+    margin: 0;
+    color: #444;
+}
+
+.add-alternative-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.add-alternative-btn:hover {
+    background: #218838;
+}
+
+.alternatives-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alternative-field {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.alternative-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.alternative-input:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+.delete-alternative-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #dc3545;
+    padding: 4px;
+}
+
+.delete-alternative-btn:hover {
+    color: #c82333;
+}
+
+/* Overlay für den Editor */
+.alternatives-editor-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+   
+}
+
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.save-alternatives-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.save-alternatives-btn:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2e7d32;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast-notification.error {
+    background-color: #d32f2f;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Stelle sicher, dass der Plus-Button unter allen anderen Elementen liegt */
+
+
+/* Dialog Styles */
+.dialog-header {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+.dialog-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    resize: vertical;
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.dialog-button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.dialog-button.save {
+    background: var(--primary-color);
+    color: white;
+}
+
+.dialog-button.cancel {
+    background: #f5f5f5;
+    color: var(--text-color);
+}
+
+
+.meal-options-btn {
+    z-index: 1;
+}
+.sub-buttons {
+    z-index: 3;
+
+}
+.alternatives-container.active {
+    z-index: 4;
+}
+.components-container.active {
+    z-index: 3;
+}
+.dialog.active {
+    z-index: 3;
+}

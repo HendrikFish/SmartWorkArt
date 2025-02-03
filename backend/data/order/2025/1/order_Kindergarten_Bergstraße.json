@@ -1,0 +1,32 @@
+{
+  "einrichtung": "Kindergarten Bergstraße",
+  "kuerzel": "KG-B",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "krabbel",
+      "amount": 1
+    },
+    {
+      "day": "Dienstag",
+      "component": "information",
+      "info": "Ketchup dazu",
+      "group": "Gesamt"
+    },
+    {
+      "day": "Donnerstag",
+      "component": "information",
+      "info": "Butter- ERLEDIGT",
+      "group": "Gesamt"
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

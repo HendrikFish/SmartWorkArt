@@ -1,0 +1,148 @@
+{
+  "name": "Kindergarten Limberg",
+  "kuerzel": "KG-LB",
+  "woche": "KW2",
+  "jahr": "2025",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          },
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          },
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          },
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln mit Butter",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [
+          {
+            "name": "Faschierte Laibchen",
+            "allergene": [
+              "A",
+              "C",
+              "M"
+            ]
+          },
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          }
+        ],
+        "dessert": [
+          {
+            "name": "Kohl",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln mit Butter",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    }
+  ]
+}

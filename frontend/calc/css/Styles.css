@@ -1,0 +1,537 @@
+/* Allgemeine Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Navigation für die Wochen */
+.week-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* Navigation für die Wochen - Desktop Version */
+.week-nav button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.week-nav button:hover {
+    background-color: #003d80;
+}
+
+#weekNumber, #dateRange {
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+/* Mobile Version für Hochformat */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    .week-nav button {
+        padding: 8px 15px;
+        min-width: 40px;  /* Minimale Breite für den Button */
+        font-size: 20px;  /* Größeres Symbol */
+    }
+    
+    /* Text in den Buttons ausblenden */
+    .week-nav button span {
+        display: none;
+    }
+    
+    /* Plus/Minus Symbole hinzufügen */
+    #prevWeek::before {
+        content: "←"; /* Pfeil statt Minus */
+    }
+    
+    #nextWeek::before {
+        content: "→"; /* Pfeil statt Plus */
+    }
+}
+
+/* Menüplan und Vorschläge */
+.menu-planner-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+}
+
+/* Suchfeld und Vorschläge */
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Platz zwischen den Elementen */
+    position: relative;
+    width: 100%; /* Gesamtbreite */
+}
+
+/* Eingabefeld */
+#recipeSearch {
+    width: 200px; /* Feste Breite des Eingabefelds */
+    height: 40px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Wrapper für Vorschläge und Löschen-Button */
+.suggestions-wrapper {
+    max-width: 40%;
+    flex: 2; /* Breite für Vorschläge */
+    display: flex;
+    align-items: center;
+    height: 40px; /* Gleiche Höhe wie das Eingabefeld */
+    overflow-x: auto; /* Horizontal scrollen, falls nötig */
+    white-space: nowrap; /* Keine Zeilenumbrüche */
+    gap: 5px; /* Platz zwischen Vorschlägen */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Vorschläge */
+#searchResults {
+    display: flex; /* Vorschläge als flexibles Layout */
+    gap: 10px; /* Abstand zwischen Buttons */
+    flex-wrap: wrap; /* Mehrzeilige Anordnung bei Bedarf */
+}
+
+/* Einzelne Vorschläge */
+#searchResults .recipe-item {
+    margin-right: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    cursor: pointer;
+    white-space: nowrap; /* Kein Zeilenumbruch */
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    transition: background-color 0.3s ease-in-out;
+}
+.recipe-item div {
+    font-size: 0.8em; /* Schriftgröße verkleinern */
+    white-space: nowrap; /* Zeilenumbruch verhindern */
+    overflow: hidden; /* Text abschneiden, falls zu lang */
+    text-overflow: ellipsis; /* ... anzeigen, falls Text abgeschnitten wird */
+
+
+}
+
+/* Hover-Effekt für Vorschläge */
+.search-results .recipe-item:hover {
+    background-color: #e1e1e1;
+}
+
+/* Button zum Löschen eines Rezepts */
+.remove-recipe {
+    visibility: hidden; /* Standardmäßig unsichtbar */
+    margin-left: 10px;
+    color: red;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Löschen-Button wird sichtbar */
+.recipe-item:hover .remove-recipe {
+    visibility: visible;
+}
+
+/* Kompletter Plan-Löschen-Button */
+.clear-plan-button {
+    margin-right: 50px;
+    height: 40px; /* Gleiche Höhe wie Eingabefeld */
+    padding: 0 20px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: auto; /* Schiebt den Button ganz nach rechts */
+}
+
+.clear-plan-button:hover {
+    background-color: #cc0000;
+}
+
+/* Tabelle */
+.table-container {
+    flex: 2;
+}
+
+#menuTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+#menuTable th,
+#menuTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    vertical-align: top;
+}
+
+#menuTable th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.drag-over {
+    border: 2px dashed #007bff;
+    background-color: #e6f7ff;
+}
+
+/* Toast-Benachrichtigungen */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.toast {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    font-weight: bold;
+    animation: fadein 0.5s, fadeout 0.5s 3s;
+}
+
+.toast.warning {
+    background-color: #ffc107;
+    color: black;
+}
+
+.toast.success {
+    background-color: #28a745;
+}
+
+.toast.error {
+    background-color: #dc3545;
+}
+#menuTable td:first-child {
+    background-color: #f0f8ff; /* Helle Blautönung */
+    font-weight: bold; /* Kategorien hervorheben */
+    color: #333; /* Dunklere Schriftfarbe */
+}
+divider-row {
+    background-color: #f9f9f9; /* Hintergrundfarbe anpassen */
+    height: 20px; /* Höhe der Trennzeile */
+    border: none; /* Keine sichtbaren Umrandungen */
+}
+.facility-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.facility-row span {
+    width: 70%;
+    padding: 5px;
+    background-color: #f0f8ff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.facility-input {
+    width: 28%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Animationen */
+@keyframes fadein {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeout {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Toggle-Button Styling */
+.toggle-button {
+    width: 100%;
+    padding: 8px;
+    background-color: #64acf4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: left;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: #e1ecf4;
+}
+
+/* Kollabierbare Zeilen */
+.collapsible-header td {
+    padding: 0 !important; /* Überschreibt das Standard-Padding */
+}
+
+.collapsible-detail {
+    transition: all 0.5s ease-in-out;  /* gilt für beide Richtungen */
+    overflow: hidden;
+    display: none; /* Initial versteckt */
+}
+
+/* Animation beim Öffnen */
+.collapsible-detail.expanded {
+    transition: all 0.8s ease-in-out; /* längere Zeit beim Öffnen */
+    max-height: 500px;
+    opacity: 1;
+    display: table-row; /* Zeigt die Zeile als Tabellenzeile an */
+}
+
+/* Animation beim Schließen */
+.collapsible-detail.collapsed {
+    transition: all 0.5s ease-in-out; /* kürzere Zeit beim Schließen */
+    max-height: 0;
+    opacity: 0;
+}
+
+/* Kategorie-Zeile (Button + Input) */
+.category-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+/* Kategorie-Button */
+.category-button {
+    width: 70%;
+    padding: 5px;
+    background-color: #f0f8ff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Kategorie-Input */
+.category-input {
+    width: 28%; /* 30% minus ein bisschen Abstand */
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Gesamt-Zeile Styling */
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 5px;
+}
+
+.total-button {
+    width: 70%;
+    padding: 5px;
+    background-color: #e6e6e6;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.total-input {
+    width: 28%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #f8f8f8;
+    font-weight: bold;
+    color: #333;
+    cursor: default;
+}
+
+/* Styling für die Rezeptmengen-Anzeige */
+.recipe-amount-container {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    white-space: nowrap;
+    gap: 10px;
+    padding: 5px 8px;
+    margin: 3px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: linear-gradient(to right, 
+        #f0f7ff 40%,  /* Hellblauer Hintergrund für 40% */
+        transparent 40%  /* Rest transparent */
+    );
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 2px;
+}
+
+.recipe-amount-container:hover {
+    background: linear-gradient(to right, 
+        #e6f0fa 40%,  /* Dunklerer Blauton beim Hover */
+        #f8f8f8 40%
+    );
+    border-color: #d0d0d0;
+}
+
+.recipe-base-amount {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recipe-name {
+    text-align: left;
+    color: #333;
+}
+
+.recipe-base-quantity {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+.recipe-calc-amount {
+    flex: 0 0 auto;
+    text-align: right;
+    font-weight: bold;
+    color: #0056b3;
+    padding: 0 5px;
+    white-space: nowrap;
+}
+
+.current-week-btn {
+    background-color: #4CAF50; /* Grüne Farbe */
+    color: white;
+}
+
+.current-week-btn:hover {
+    background-color: #45a049; /* Dunkleres Grün beim Hover */
+}
+
+/* Navigation für die Wochen - Desktop Version */
+.week-nav button.current-week-btn {
+    background-color: #4CAF50 !important; /* Grüne Farbe */
+    color: white;
+}
+
+.week-nav button.current-week-btn:hover {
+    background-color: #45a049 !important; /* Dunkleres Grün beim Hover */
+}
+
+/* Navigation für die Wochen - Desktop Version */
+#prevWeek span::before {
+    content: "←"; /* Pfeil nach links */
+    margin-right: 5px;
+}
+
+#nextWeek span::after {
+    content: "→"; /* Pfeil nach rechts */
+    margin-left: 5px;
+}
+
+/* Toast-Styles */
+.toast {
+  padding: 12px 20px;
+  margin: 10px;
+  border-radius: 4px;
+  color: white;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.toast.info {
+  background-color: #4CAF50; /* Grün für Info */
+}
+
+.toast.error {
+  background-color: #f44336; /* Rot für Fehler */
+}
+
+.toast.warning {
+  background-color: #ff9800; /* Orange für Warnungen */
+}
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#menuTable td:not(:first-child) {
+    width: 220px; /* Feste Breite für alle Tageszellen */
+    min-width: 220px; /* Verhindert, dass die Zellen schmaler werden */
+    max-width: 220px; /* Verhindert, dass die Zellen breiter werden */
+}

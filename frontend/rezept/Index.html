@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rezeptverwaltung</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+  <nav id="navbar">
+    <div class="logo">RezeptApp</div>
+
+  </nav>
+
+  <main>
+    <section class="rezept-erstellung">
+      <h2>Rezept erstellen</h2>
+      <form id="rezept-form" aria-labelledby="rezept-erstellung">
+        <div class="form-group">
+          <label for="rezeptName">Rezeptname</label>
+          <input type="text" id="rezeptName" name="rezeptName" autocomplete="off" placeholder="Rezeptnamen eingeben" maxlength="60" required aria-required="true">
+        </div>
+
+        <div class="form-group">
+          <label for="rezeptKategorie">Kategorie</label>
+          <select id="rezeptKategorie" name="rezeptKategorie" required aria-required="true">
+            <option value="" disabled selected>Wähle eine Kategorie</option>
+            <option value="Suppe">Suppe</option>
+            <option value="Soße">Soße</option>
+            <option value="Beilage">Beilage</option>
+            <option value="Hauptgericht">Hauptgericht</option>
+            <option value="Gemüse">Gemüse</option>
+            <option value="Salat">Salat</option>
+            <option value="Gebäck">Gebäck</option>
+            <option value="Dip">Dip</option>
+            <option value="Dessert">Dessert</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="zutatenName">Zutat hinzufügen</label>
+          <input type="text" id="zutatenName" name="zutatenName" autocomplete="off" placeholder="Zutat suchen..." maxlength="20" aria-autocomplete="list" aria-controls="zutaten-ergebnisse">
+          <div id="zutaten-ergebnisse" class="zutaten-ergebnisse" role="listbox"></div>
+        </div>
+
+        <div class="zutaten-liste">
+          <table id="rezeptZutatenTabelle" aria-label="Zutatenliste">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Menge</th>
+                <th>Einheit</th>
+                <th>Preis (€)</th>
+                <th>Aktionen</th>
+              </tr>
+            </thead>
+            <tbody id="rezeptZutatenTabelleBody">
+              <!-- Dynamisch hinzugefügte Zutaten -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="gesamtpreis">
+          <p>Gesamtpreis: <span id="gesamtPreis">0.00 €</span></p>
+        </div>
+
+        <div class="form-group">
+          <label for="rezeptInformationen">Rezeptinformationen</label>
+          <textarea id="rezeptInformationen" name="rezeptInformationen" placeholder="Rezeptinformationen ..."></textarea>
+        </div>
+
+        <button type="submit" class="speichern-btn" aria-label="Rezept speichern">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff">
+            <path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q65 0 123 19t107 53l-58 59q-38-24-81-37.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q32 0 62-6t58-17l60 61q-41 20-86 31t-94 11Zm280-80v-120H640v-80h120v-120h80v120h120v80H840v120h-80ZM424-296 254-466l56-56 114 114 400-401 56 56-456 457Z"/>
+          </svg>
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/script.js" defer></script>
+</body>
+</html>

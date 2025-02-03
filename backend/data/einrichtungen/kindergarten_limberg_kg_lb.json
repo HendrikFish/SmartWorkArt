@@ -1,0 +1,76 @@
+{
+  "name": "Kindergarten Limberg",
+  "kuerzel": "KG-LB",
+  "adresse": "Einöd 21/1",
+  "ansprechperson": "Kathi",
+  "telefon": "06606114036",
+  "email": "nehilanthe@gmail.com",
+  "personengruppe": "Kindergartenkinder",
+  "tour": "2",
+  "gesamtPersonenanzahl": 30,
+  "speiseangebot": [
+    {
+      "tag": "Montag",
+      "alleOptionen": false,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": false
+    },
+    {
+      "tag": "Dienstag",
+      "alleOptionen": true,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Mittwoch",
+      "alleOptionen": false,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": false
+    },
+    {
+      "tag": "Donnerstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": true,
+      "dessert": true
+    },
+    {
+      "tag": "Freitag",
+      "alleOptionen": false,
+      "suppe": true,
+      "hauptspeise": true,
+      "dessert": false
+    },
+    {
+      "tag": "Samstag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    },
+    {
+      "tag": "Sonntag",
+      "alleOptionen": false,
+      "suppe": false,
+      "hauptspeise": false,
+      "dessert": false
+    }
+  ],
+  "gruppen": [
+    {
+      "name": "Krabel",
+      "anzahl": 10
+    },
+    {
+      "name": "AEG",
+      "anzahl": 10
+    },
+    {
+      "name": "KG-Kinder",
+      "anzahl": 10
+    }
+  ]
+}

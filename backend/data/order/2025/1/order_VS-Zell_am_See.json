@@ -1,0 +1,80 @@
+{
+  "einrichtung": "VS-Zell am See",
+  "kuerzel": "VS-Zell",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 44
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 33
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 34
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "Schüler",
+      "amount": 44
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "Schüler",
+      "amount": 33
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "Schüler",
+      "amount": 1
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Schüler",
+      "amount": 34
+    },
+    {
+      "day": "Montag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 44
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 33
+    },
+    {
+      "day": "Mittwoch",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 1
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 34
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

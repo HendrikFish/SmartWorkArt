@@ -1,0 +1,128 @@
+{
+  "einrichtung": "Constantins Psycokinese Zentrum",
+  "kuerzel": "TZ",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 118
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 24
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 25
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 24
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 24
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 24
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 93
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 93
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 93
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 93
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 93
+    },
+    {
+      "day": "Montag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 118
+    },
+    {
+      "day": "Mittwoch",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 117
+    },
+    {
+      "day": "Freitag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 117
+    }
+  ],
+  "week": 52,
+  "year": 2024
+}

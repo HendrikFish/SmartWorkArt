@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menüplanung</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Dein CSS falls vorhanden -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Menüplanung</h1>
+    <div class="week-nav">
+      <button id="prevWeek"><span>Woche zurück</span></button>
+      <div id="weekNumber">KW XX</div>
+      <div id="dateRange">XX.XX.XXXX - XX.XX.XXXX</div>
+      <button id="nextWeek"><span>Woche vor</span></button>
+      <button id="currentWeek" class="current-week-btn"><span>Aktuelle Woche</span></button>
+    </div>
+    <!-- Optional: zum Löschen des Plans
+    <button id="clearPlanButton">Menüplan löschen</button>
+    -->
+  </header>
+
+  <main>
+    <div class="menu-planner-container">
+      <!-- Optional: Suchfeld oder Filter -->
+      <div class="search-container">
+        <!-- z.B. input zum Rezepte-Suchen ... -->
+        <div id="searchResults" style="display:none;"></div>
+      </div>
+
+      <div class="table-container">
+        <table id="menuTable">
+          <thead>
+            <tr>
+              <th>Kategorie</th>
+              <!-- Spalten für jeden Wochentag -->
+              <th>Montag</th>
+              <th>Dienstag</th>
+              <th>Mittwoch</th>
+              <th>Donnerstag</th>
+              <th>Freitag</th>
+              <th>Samstag</th>
+              <th>Sonntag</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamisch generierte Inhalte -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+  </main>
+
+  <!-- Moment.js -->
+  <script src="js/moment.min.js"></script>
+  <!-- Unsere Haupt-Skripte -->
+  <script src="js/script.js"></script>
+</body>
+</html>

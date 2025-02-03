@@ -1,0 +1,87 @@
+[
+  {
+    "rezeptId": 1,
+    "name": "Kartoffeln mit Butter",
+    "rezeptKategorien": [
+      "Gemüse"
+    ],
+    "zutaten": [
+      {
+        "id": 33,
+        "name": "Spaghetti",
+        "preisProBasiseinheit": 4.44,
+        "basiseinheit": "l",
+        "verwendungseinheit": "ml",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "trockene Lebensmittel"
+        ],
+        "allergene": [
+          "Gluten"
+        ],
+        "allergenCodes": [
+          "A"
+        ],
+        "preisProVerwendungseinheit": 0.0044,
+        "menge": 1290
+      },
+      {
+        "id": 34,
+        "name": "Mehl 405",
+        "preisProBasiseinheit": 1.49,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Transgourmet"
+        ],
+        "kategorien": [
+          "Obst"
+        ],
+        "allergene": [
+          "Gluten",
+          "Sesam"
+        ],
+        "allergenCodes": [
+          "A",
+          "N"
+        ],
+        "preisProVerwendungseinheit": 0.0015,
+        "menge": 100
+      }
+    ],
+    "infos": "Kartoffeln",
+    "createdAt": "2024-12-11T13:31:15.942Z",
+    "updatedAt": "2024-12-11T13:55:36.882Z"
+  },
+  {
+    "rezeptId": 2,
+    "name": "Karottengemüse",
+    "rezeptKategorien": [
+      "Gemüse"
+    ],
+    "zutaten": [
+      {
+        "id": 55,
+        "name": "Karotten  (TK)",
+        "preisProBasiseinheit": 2.33,
+        "basiseinheit": "kg",
+        "verwendungseinheit": "g",
+        "lieferanten": [
+          "Kröswang"
+        ],
+        "kategorien": [
+          "Gemüse"
+        ],
+        "allergene": [],
+        "allergenCodes": [],
+        "preisProVerwendungseinheit": 0.0023,
+        "menge": 100
+      }
+    ],
+    "infos": "",
+    "createdAt": "2025-01-05T20:08:52.332Z",
+    "updatedAt": "2025-01-05T20:08:52.332Z"
+  }
+]

@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+  --base-clr: #11121a;
+  --line-clr: #42434a;
+  --hover-clr: #222533;
+  --text-clr: #e6e6ef;
+  --accent-clr: #5e63ff;
+  --secondary-text-clr: #b0b3c1;
+
+  --transition: 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+#sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  background-color: var(--hover-clr);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-clr);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Filter Button */
+#toggle-filter-btn {
+  margin: 1em;
+  padding: 0.5em 1em;
+  background-color: var(--accent-clr);
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+#toggle-filter-btn:hover {
+  background-color: #5058e0;
+}
+
+/* Filter Section */
+#filter-section {
+  margin: 1em;
+  padding: 1em;
+  background-color: var(--hover-clr);
+  border: 1px solid var(--line-clr);
+  border-radius: 5px;
+}
+
+#filter-section label,
+#filter-section input,
+#filter-section select,
+#filter-section button {
+  display: block;
+  margin-bottom: 0.5em;
+  width: 100%;
+}
+
+#filter-section button {
+  padding: 0.5em;
+  background-color: var(--accent-clr);
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+#filter-section button:hover {
+  background-color: #5058e0;
+}
+
+/* Export/Import Buttons */
+#export-btn,
+#import-btn {
+  margin: 1em;
+  padding: 0.5em 1em;
+  background-color: var(--accent-clr);
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color var(--transition);
+}
+
+#export-btn:hover,
+#import-btn:hover {
+  background-color: #5058e0;
+}
+
+/* Formular */
+#zutaten-form {
+  background-color: var(--hover-clr);
+  padding: 2em;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  margin: 2em auto;
+}
+
+#zutaten-form input[type="text"],
+#zutaten-form input[type="number"],
+#zutaten-form select {
+  width: 100%;
+  padding: 0.75em;
+  border: 1px solid var(--line-clr);
+  border-radius: 5px;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  font-size: 1rem;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+#zutaten-form input[type="text"]:focus,
+#zutaten-form input[type="number"]:focus,
+#zutaten-form select:focus {
+  outline: none;
+  border-color: var(--accent-clr);
+  background-color: #1a1b25;
+}
+
+/* Container für Namensfeld und Autocomplete */
+.name-input-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1.5em;
+}
+
+.name-input-container label {
+  margin-bottom: 0;
+  font-weight: 600;
+  margin-right: 0.5em;
+}
+
+.name-input-container input[type="text"] {
+  width: 200px;
+  padding: 0.75em;
+  border: 1px solid var(--line-clr);
+  border-radius: 5px;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  font-size: 1rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.name-input-container input[type="text"]:focus {
+  border-color: var(--accent-clr);
+  box-shadow: 0 0 5px rgba(94,99,255,0.5);
+}
+
+/* Autocomplete-Liste rechts neben dem Eingabefeld */
+.autocomplete-list {
+  position: absolute;
+  top: 0; 
+  left: calc(100% + 10px); /* 10px rechts vom Input */
+  background-color: var(--hover-clr);
+  color: var(--text-clr);
+  width: 200px;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--line-clr);
+  border-radius: 5px;
+  z-index: 1000;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  font-size: 0.9rem;
+}
+
+.autocomplete-list:hover {
+  box-shadow: 0 0 10px rgba(94,99,255,0.5);
+}
+
+.autocomplete-list div {
+  padding: 0.75em;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.autocomplete-list div:hover {
+  background-color: var(--accent-clr);
+  color: #fff;
+}
+
+/* Lieferanten-, Kategorien- und Allergene-Toggle Buttons */
+#lieferanten-buttons,
+#kategorien-buttons,
+#allergene-buttons {
+  margin-bottom: 1.5em;
+}
+
+#lieferanten-buttons p,
+#kategorien-buttons p,
+#allergene-buttons p {
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.toggle-button {
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  border: 1px solid var(--line-clr);
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  margin: 0.3em;
+  cursor: pointer;
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+  font-size: 0.9rem;
+}
+
+.toggle-button:hover {
+  background-color: var(--hover-clr);
+  border-color: var(--accent-clr);
+}
+
+.toggle-button.active {
+  background-color: var(--accent-clr);
+  color: #fff;
+  border: 1px solid var(--accent-clr);
+}
+
+/* Speichern/Aktualisieren Buttons */
+#speichern-btn,
+#aktualisieren-btn {
+  background-color: var(--accent-clr);
+  border: none;
+  padding: 0.75em 1.5em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color var(--transition), box-shadow var(--transition);
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-block;
+  margin-top: 1em;
+}
+
+#speichern-btn:hover,
+#speichern-btn:focus,
+#aktualisieren-btn:hover,
+#aktualisieren-btn:focus {
+  background-color: #5058e0;
+  box-shadow: 0 0 10px rgba(94, 99, 255, 0.5);
+}
+
+/* Tabelle */
+#zutaten-tabelle {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2em auto;
+  max-width: 1200px;
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 0.9rem;
+  background-color: var(--hover-clr);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+#zutaten-tabelle th,
+#zutaten-tabelle td {
+  border: 1px solid var(--line-clr);
+  padding: 0.75em;
+  text-align: center;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+}
+
+#zutaten-tabelle th {
+  color: var(--accent-clr);
+  font-weight: 600;
+  background-color: #1b1c24;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  font-size: 0.9rem;
+}
+
+.delete-btn:hover,
+.delete-btn:focus {
+  background-color: #c0392b;
+}
+.edit-btn {
+  background-color: green;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  font-size: 0.9rem;
+}
+.edit-btn:hover,
+.edit-btn:focus {
+  background-color: green;
+
+  .toggle-button.active {
+    background-color: #4caf50;
+    color: white;
+}
+/* Responsive Design */
+@media (max-width: 800px) {
+  .name-input-container input[type="text"] {
+    width: 150px;
+  }
+
+  .autocomplete-list {
+    left: 0; 
+    top: calc(100% + 5px);
+    width: 180px;
+  }
+
+  .toggle-button {
+    padding: 0.4em 0.8em;
+    font-size: 0.85rem;
+  }
+
+  #zutaten-tabelle th,
+  #zutaten-tabelle td {
+    padding: 0.5em;
+  }
+
+  #zutaten-form {
+    padding: 1em;
+  }
+}}

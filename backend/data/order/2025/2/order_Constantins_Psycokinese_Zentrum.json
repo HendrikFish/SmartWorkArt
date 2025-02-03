@@ -1,0 +1,67 @@
+{
+  "einrichtung": "Constantins Psycokinese Zentrum",
+  "kuerzel": "TZ",
+  "orders": [
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 97
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 37
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 32
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 37
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "Dumm",
+      "amount": 32
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "Schlau",
+      "amount": 97
+    },
+    {
+      "day": "Mittwoch",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 97
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 37
+    },
+    {
+      "day": "Freitag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 32
+    },
+    {
+      "day": "Mittwoch",
+      "component": "information",
+      "info": "SAck"
+    }
+  ],
+  "week": 2,
+  "year": 2025
+}

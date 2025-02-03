@@ -1,0 +1,104 @@
+{
+  "einrichtung": "Lebenshilfe",
+  "kuerzel": "LH",
+  "orders": [
+    {
+      "day": "Montag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Dienstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Mittwoch",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Donnerstag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Freitag",
+      "component": "suppe",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "LH 1",
+      "amount": 8
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "LH 1",
+      "amount": 8
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "LH 1",
+      "amount": 8
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "LH 1",
+      "amount": 8
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "LH 1",
+      "amount": 8
+    },
+    {
+      "day": "Montag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Dienstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Mittwoch",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Donnerstag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Freitag",
+      "component": "dessert",
+      "group": "Gesamt",
+      "amount": 15
+    },
+    {
+      "day": "Mittwoch",
+      "component": "information",
+      "info": "1x Vegi dazu",
+      "group": "Gesamt"
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Kindergarten Limberg",
+  "kuerzel": "KG-LB",
+  "woche": "KW52",
+  "jahr": "2024",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    }
+  ]
+}

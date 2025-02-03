@@ -1,0 +1,129 @@
+{
+  "name": "Lebenshilfe",
+  "kuerzel": "LH",
+  "woche": "1",
+  "jahr": "2025",
+  "tage": [
+    {
+      "tag": "Montag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Nudelkuchen",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          },
+          {
+            "name": "Rahmsoße",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Dienstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln mit Butter",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Mittwoch",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Kartoffeln",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Donnerstag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Galgant Suppe",
+            "allergene": [
+              "A"
+            ]
+          }
+        ],
+        "hauptspeise": [
+          {
+            "name": "Faschierte Laibchen",
+            "allergene": [
+              "A",
+              "C",
+              "M"
+            ]
+          },
+          {
+            "name": "Kartoffelpüree",
+            "allergene": [
+              "S"
+            ]
+          },
+          {
+            "name": "Rahmsoße",
+            "allergene": [
+              "A",
+              "N"
+            ]
+          }
+        ],
+        "dessert": []
+      }
+    },
+    {
+      "tag": "Freitag",
+      "menu": {
+        "suppe": [
+          {
+            "name": "Rindersuppe",
+            "allergene": []
+          }
+        ],
+        "hauptspeise": [],
+        "dessert": []
+      }
+    }
+  ]
+}

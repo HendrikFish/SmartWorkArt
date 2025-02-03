@@ -1,0 +1,138 @@
+{
+  "fields": [
+    {
+      "id": "vergin",
+      "label": "Alter",
+      "type": "number",
+      "required": false
+    }
+  ],
+  "areas": [
+    {
+      "name": "Sexy",
+      "allowMultiple": false,
+      "menuFilter": false,
+      "menuRelevant": false,
+      "buttons": [
+        {
+          "label": "Yes"
+        },
+        {
+          "label": "No"
+        },
+        {
+          "label": "Jup"
+        }
+      ]
+    },
+    {
+      "name": "Allergene",
+      "allowMultiple": true,
+      "menuFilter": false,
+      "menuRelevant": true,
+      "buttons": [
+        {
+          "label": "Laktoseintoleranz"
+        },
+        {
+          "label": "Fruktoseunverträglichkeit"
+        },
+        {
+          "label": "Nussallergie"
+        },
+        {
+          "label": "Breikost"
+        },
+        {
+          "label": "Schwertangst"
+        }
+      ]
+    },
+    {
+      "name": "Frühstück",
+      "allowMultiple": true,
+      "menuFilter": false,
+      "menuRelevant": true,
+      "buttons": [
+        {
+          "label": "Saal"
+        },
+        {
+          "label": "1. OG"
+        },
+        {
+          "label": "2. OG"
+        },
+        {
+          "label": "3. OG "
+        }
+      ]
+    },
+    {
+      "name": "Mittagessen",
+      "allowMultiple": false,
+      "menuFilter": false,
+      "menuRelevant": true,
+      "buttons": [
+        {
+          "label": "Saal "
+        },
+        {
+          "label": "1. OG"
+        },
+        {
+          "label": "2. OG"
+        },
+        {
+          "label": "3. OG"
+        }
+      ]
+    },
+    {
+      "name": "Abendessen ",
+      "allowMultiple": false,
+      "menuFilter": false,
+      "menuRelevant": true,
+      "buttons": [
+        {
+          "label": "Saal"
+        },
+        {
+          "label": "1. OG"
+        },
+        {
+          "label": "2. OG "
+        },
+        {
+          "label": "3. OG "
+        }
+      ]
+    },
+    {
+      "name": "Wo wird das Essen eingetragen!",
+      "allowMultiple": false,
+      "menuFilter": true,
+      "menuRelevant": false,
+      "buttons": [
+        {
+          "label": "Saal"
+        },
+        {
+          "label": "1.OG"
+        },
+        {
+          "label": "2.OG"
+        },
+        {
+          "label": "3.OG"
+        }
+      ]
+    }
+  ],
+  "filters": {
+    "fields": [],
+    "areas": [
+      "Wo wird das Essen eingetragen!"
+    ]
+  }
+}

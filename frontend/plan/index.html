@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menüplanung</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+<script src="/navbar-static/navbar.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Menüplanung</h1>
+        <div class="week-nav">
+            <button id="prevWeek">← Vorherige Woche</button>
+            <span id="weekNumber"></span>
+            <span id="dateRange"></span>
+            <button id="nextWeek">Nächste Woche →</button>
+            <button id="currentWeek">Aktuelle Woche</button>
+        </div>
+    </header>
+    <main>
+        <div class="menu-planner-container">
+            <div class="search-container">
+                <div class="search-area">
+                    <input type="text" id="recipeSearch" placeholder="Rezept suchen..." autocomplete="off" />
+                </div>
+                <div class="suggestions-wrapper">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                <div class="button-group">
+                    <button id="clearPlanButton" class="clear-plan-button">Kompletten Plan löschen</button>
+                    <button id="reloadBaseButton" class="reload-base-button">Basis neu laden</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="menuTable">
+                    <thead>
+                        <tr>
+                            <th>Kategorie</th>
+                            <th>Montag</th>
+                            <th>Dienstag</th>
+                            <th>Mittwoch</th>
+                            <th>Donnerstag</th>
+                            <th>Freitag</th>
+                            <th>Samstag</th>
+                            <th>Sonntag</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="toastContainer" class="toast-container"></div>
+    </main>
+    <script src="js/moment.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

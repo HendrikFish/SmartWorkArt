@@ -1,0 +1,44 @@
+{
+  "einrichtung": "Kindergarten Limberg",
+  "kuerzel": "KG-LB",
+  "orders": [
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "Krabel",
+      "amount": 3
+    },
+    {
+      "day": "Montag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 12
+    },
+    {
+      "day": "Dienstag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 21
+    },
+    {
+      "day": "Mittwoch",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 2
+    },
+    {
+      "day": "Donnerstag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 12
+    },
+    {
+      "day": "Freitag",
+      "component": "hauptspeise",
+      "group": "AEG",
+      "amount": 12
+    }
+  ],
+  "week": 1,
+  "year": 2025
+}

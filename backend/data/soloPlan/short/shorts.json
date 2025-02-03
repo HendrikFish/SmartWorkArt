@@ -1,0 +1,41 @@
+{
+  "suppe": {
+    "alternatives": [
+      "Happy"
+    ]
+  },
+  "menue1": {
+    "alternatives": [
+      "Püree"
+    ]
+  },
+  "menue2": {
+    "alternatives": [
+      "Bruno",
+      "Banana"
+    ]
+  },
+  "dessert": {
+    "alternatives": [
+      "Prüree mit Eiern"
+    ]
+  },
+  "abendSuppe": {
+    "alternatives": [
+      "Toast extra"
+    ]
+  },
+  "milchspeise": {
+    "alternatives": [
+      "Sperma"
+    ]
+  },
+  "normalkost": {
+    "alternatives": [
+      "Leinen-Öl",
+      "Distel-Öl",
+      "Retich-Öl",
+      "Blueberry"
+    ]
+  }
+}

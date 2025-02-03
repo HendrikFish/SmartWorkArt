@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Seniorenheim Portal</title>
+    <link rel="stylesheet" href="/dashboard-static/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1>Seniorenheim Portal</h1>
+        </div>
+        <div class="nav-right">
+            <span id="userInfo"></span>
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Abmelden
+            </button>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <h2>Verfügbare Module</h2>
+        <div id="modulesGrid" class="modules-grid">
+            <!-- Module werden dynamisch eingefügt -->
+        </div>
+    </main>
+
+    <script src="/dashboard-static/js/dashboard.js"></script>
+</body>
+</html> 
