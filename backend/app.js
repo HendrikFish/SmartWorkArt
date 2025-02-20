@@ -1,5 +1,6 @@
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config();
+
 
 const express = require('express');
 const cors = require('cors');
@@ -9,6 +10,7 @@ const connectDB = require('./config/database');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
+
 
 // Statische Module
 const staticModules = [
@@ -70,37 +72,28 @@ app.use(session({
 // CORS Middleware
 app.use(cors({
     origin: [
-        'http://127.0.0.1:5500',
-        'http://localhost:5500',
-        'http://192.168.0.99:5500',
-        'http://192.168.0.99:8088',
-        'http://localhost:8086'
+        'https://smartworkart.onrender.com', // Erlaubt das eigene Backend
+        
     ],
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
     exposedHeaders: ['set-cookie']
 }));
 
+
 // Helmet Middleware mit angepasster CSP
-app.use(helmet({
+helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
+            connectSrc: ["'self'", "https://smartworkart.onrender.com"],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "http://localhost:8086", "ws://localhost:8086"],
-            frameSrc: ["'self'"],
-            objectSrc: ["'none'"],
-            mediaSrc: ["'self'"],
-            workerSrc: ["'self'", "blob:"]
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"]
         }
-    },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
+    }
+});
 
 // MIME-Type Konfiguration für die statischen Dateien
 app.use('/navbar-static', express.static(path.join(__dirname, '../frontend/navbar'), {

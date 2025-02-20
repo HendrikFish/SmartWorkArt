@@ -1,5 +1,5 @@
 // Globale Variablen
-const BASE_URL = "http://localhost:8086"; // Einheitliche Basis-URL für alle APIs
+const BASE_URL = "https://smartworkart.onrender.com"; // Einheitliche Basis-URL für alle APIs
 let zutatenListe = []; // Wird durch ladeZutaten befüllt
 
 const rezeptForm = document.getElementById("rezept-form");

@@ -5,7 +5,7 @@ import * as Plan from './Modules/plan.js';
 import * as Print from './Modules/print.js';
 
 // Constants
-const API_BASE_URL = 'http://localhost:8086/api';
+const API_BASE_URL = "https://smartworkart.onrender.com/api";
 const ENDPOINTS = {
     SOLO_SELECT: 'soloselect',
     PLAN: 'plan'

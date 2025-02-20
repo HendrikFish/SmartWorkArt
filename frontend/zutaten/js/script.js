@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => { 
-  const BASE_URL = "http://localhost:8086"; // Einheitliche Basis-URL für alle APIs
+  const BASE_URL = "https://smartworkart.onrender.com"; // Einheitliche Basis-URL für alle APIs
 
   const zutatenForm = document.getElementById("zutaten-form");
   const zutatenTabelleBody = document.querySelector("#zutaten-tabelle tbody");

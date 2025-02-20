@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8086/api/numbers';
+const API_BASE_URL = "https://smartworkart.onrender.com/api/numbers";
 let currentYear;
 let currentWeek;
 
