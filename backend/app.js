@@ -43,9 +43,7 @@ app.use(session({
 app.use(cors({
     origin: [
         'https://smartworkart.onrender.com',    // Render Backend
-        'https://smartworkart.onrender.com/api', // Render API
-        'http://localhost:8086',                // Lokale Entwicklung
-        'http://localhost:3000'                 // Lokale Frontend-Entwicklung
+        'https://smartworkart.onrender.com/api', // Render API               // Lokale Frontend-Entwicklung
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -62,8 +60,8 @@ app.use(helmet({
                 "'self'", 
                 "https://smartworkart.onrender.com",
                 "https://smartworkart.onrender.com/api",
-                "http://localhost:8086",
-                "http://localhost:3000"
+               
+                
             ],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'"],

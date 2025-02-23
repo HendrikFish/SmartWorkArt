@@ -1,4 +1,5 @@
 export const API_BASE_URL = "https://smartworkart.onrender.com/api";
+console.log('API_BASE_URL wird geladen:', API_BASE_URL);
 
 export const CATEGORIES = {
     'suppe': 'Suppe',

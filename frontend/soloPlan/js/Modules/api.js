@@ -1,6 +1,8 @@
-import { API_BASE_URL } from './konstanten.js';
+const API_BASE_URL = 'https://smartworkart.onrender.com';
 import { getCurrentWeek, getCurrentYear, selectedMeals, mealPlanData, formConfig, residentsData, selectedResident } from './variablen.js';
 import { createResidentButtons } from './interface.js';
+
+console.log('API_BASE_URL in api.js:', API_BASE_URL);
 
 // Bewohner laden
 export async function loadResidents() {
@@ -50,6 +52,13 @@ export async function loadMealPlan() {
         
         const overrideUrl = `${API_BASE_URL}/soloplan/menu/raw/${currentYear}/KW${currentWeek}_override`;
         const standardUrl = `${API_BASE_URL}/soloplan/menu/raw/${currentYear}/KW${currentWeek}`;
+        
+        console.log('Debug - API URLs:', {
+            API_BASE_URL,
+            overrideUrl,
+            standardUrl,
+            window_location: window.location.href
+        });
         
         console.log('Versuche Override-Datei zu laden:', overrideUrl);
         
