@@ -1,0 +1,6 @@
+user.email=127479521+HendrikFish@users.noreply.github.com
+user.name=HendrikFish
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+filter.lfs.clean=git-lfs clean -- %f
