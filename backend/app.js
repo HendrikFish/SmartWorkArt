@@ -1,7 +1,6 @@
 const path = require('path');
 require('dotenv').config();
 
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -10,35 +9,6 @@ const connectDB = require('./config/database');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
-
-
-// Statische Module
-const staticModules = [
-    { route: '/planung-static', dir: '../frontend/plan' },
-    { route: '/einrichtungen-static', dir: '../frontend/einrichtung' },
-    { route: '/rezepte-static', dir: '../frontend/rezept' },
-    { route: '/zutaten-static', dir: '../frontend/zutaten' },
-    { route: '/order-static', dir: '../frontend/order' },
-    { route: '/datenbank-static', dir: '../frontend/datenbank' },
-    { route: '/calc-static', dir: '../frontend/calc' },
-    { route: '/number-static', dir: '../frontend/number' },
-    { route: '/menue-static', dir: '../frontend/menue' },
-    { route: '/solo-static', dir: '../frontend/solo' },
-    { route: '/soloPlan-static', dir: '../frontend/soloPlan' },
-    { route: '/soloSelect-static', dir: '../frontend/soloSelect' },
-    { route: '/login-static', dir: '../frontend/login' },
-    { route: '/dashboard-static', dir: '../frontend/dashboard' },
-    { route: '/customer-static', dir: '../frontend/customer' }
-];
-
-// Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
-const navbarModule = {
-    route: '/navbar-static',
-    dir: '../frontend/navbar'
-};
-
-// Zu den bestehenden staticModules hinzufügen
-staticModules.push(navbarModule);
 
 // Express App erstellen
 const app = express();
@@ -72,37 +42,32 @@ app.use(session({
 // CORS Middleware
 app.use(cors({
     origin: [
-        'https://smartworkart.onrender.com', // Erlaubt das eigene Backend
-        
+        'https://smartworkart.onrender.com',    // Render Backend
+        'https://smartworkart.onrender.com/api', // Render API
+        'http://localhost:8086',                // Lokale Entwicklung
+        'http://localhost:3000'                 // Lokale Frontend-Entwicklung
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     exposedHeaders: ['set-cookie']
 }));
 
-
 // Helmet Middleware mit angepasster CSP
-helmet({
+app.use(helmet({
     contentSecurityPolicy: {
         directives: {
-            defaultSrc: ["'self'"],
-            connectSrc: ["'self'", "https://smartworkart.onrender.com"],
+            defaultSrc: ["'self'", "https://smartworkart.onrender.com"],
+            connectSrc: [
+                "'self'", 
+                "https://smartworkart.onrender.com",
+                "https://smartworkart.onrender.com/api",
+                "http://localhost:8086",
+                "http://localhost:3000"
+            ],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:"]
-        }
-    }
-});
-
-// MIME-Type Konfiguration für die statischen Dateien
-app.use('/navbar-static', express.static(path.join(__dirname, '../frontend/navbar'), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        }
-        if (path.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
         }
     }
 }));
@@ -184,13 +149,6 @@ app.use('/api/solo', auth, soloRoutes);
 app.use('/api/soloplan', auth, soloPlanRoutes);
 app.use('/api/soloselect', auth, soloSelectRoutes);
 app.use('/api', auth, customRoutes);
-
-// Statische Module für authentifizierte Benutzer
-staticModules.forEach(({ route, dir }) => {
-    if (route !== '/login-static') {
-        app.use(route, auth, express.static(path.join(__dirname, dir)));
-    }
-});
 
 // Benutzerverwaltungs-Route (nur für Admins)
 app.get('/customer', auth, checkRole(['admin']), (req, res) => {

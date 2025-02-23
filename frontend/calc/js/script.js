@@ -18,10 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.weekData = {};
 
-      this.baseUrl =
-        window.location.hostname === "localhost"
-          ? "http://localhost:8086"
-          : "http://192.168.0.99:8086";
+      this.baseUrl = "https://smartworkart.onrender.com";
 
       this.initEventListeners();
       this.updateWeekInfo();

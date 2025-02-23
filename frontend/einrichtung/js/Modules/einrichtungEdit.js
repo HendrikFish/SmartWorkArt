@@ -109,7 +109,8 @@ export async function editEinrichtung(fileId, displayName) {
         }
 
         // Dann die Daten laden
-        const response = await fetch(`http://localhost:8086/api/einrichtungen/${fileId}`);
+        const response = await fetch(`https://smartworkart.onrender.com/api/einrichtungen/${fileId}`);
+
         
         if (!response.ok) {
             throw new Error('Einrichtung nicht gefunden');
@@ -304,8 +305,9 @@ async function handleFormSubmit(event) {
     const isEdit = form.dataset.mode === 'edit';
     const fileId = form.dataset.fileId;
     const url = isEdit 
-        ? `http://localhost:8086/api/einrichtungen/${fileId}`
-        : 'http://localhost:8086/api/einrichtungen';
+    ? `https://smartworkart.onrender.com/api/einrichtungen/${fileId}`
+    : `https://smartworkart.onrender.com/api/einrichtungen`;
+
     const method = isEdit ? 'PUT' : 'POST';
 
     try {

@@ -12,10 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.activeButtons = {}; // Initialisierung des Zustands der Buttons
   
       // API-Base-URL festlegen
-      this.baseUrl =
-        window.location.hostname === "localhost"
-          ? "http://localhost:8086"
-          : "http://192.168.0.99:8086";
+      this.baseUrl = "https://smartworkart.onrender.com";
   
       // Event-Listener und UI-Update initialisieren
       this.initEventListeners();

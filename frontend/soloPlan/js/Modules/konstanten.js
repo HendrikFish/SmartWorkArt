@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:8086/api';
+export const API_BASE_URL = "https://smartworkart.onrender.com/api";
 
 export const CATEGORIES = {
     'suppe': 'Suppe',

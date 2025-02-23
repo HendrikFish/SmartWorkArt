@@ -54,8 +54,9 @@ export async function handleFormSubmit(event) {
     const fileId = form.dataset.fileId;
     
     const url = isEdit 
-        ? `http://localhost:8086/api/einrichtungen/${fileId}`
-        : 'http://localhost:8086/api/einrichtungen';
+    ? `https://smartworkart.onrender.com/api/einrichtungen/${fileId}`
+    : `https://smartworkart.onrender.com/api/einrichtungen`;
+
     const method = isEdit ? 'PUT' : 'POST';
 
     try {

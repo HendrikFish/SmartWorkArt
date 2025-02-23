@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await file.text(); // Dateiinhalt lesen
       const zutaten = JSON.parse(data); // JSON parsen
   
-      const response = await fetch('http://localhost:8086/api/zutaten/import', {
+      const response = await fetch('https://smartworkart.onrender.com/api/zutaten/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(zutaten),
@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Zutaten von Backend laden
   async function loadZutaten() {
     try {
-      const response = await fetch("http://localhost:8086/api/zutaten");
+      const response = await fetch("https://smartworkart.onrender.com/api/zutaten");
       if (!response.ok) throw new Error("Fehler beim Laden der Zutaten");
       zutaten = await response.json();
       renderTabelle(zutaten); // Vollständige Liste anzeigen

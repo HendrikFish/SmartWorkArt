@@ -4,20 +4,21 @@ import { showToast } from "./toast.js";
 // Export der Hauptfunktionen
 export async function loadEinrichtungen() {
     try {
-        const response = await fetch('http://localhost:8086/api/einrichtungen');
-        
+        const response = await fetch('https://smartworkart.onrender.com/api/einrichtungen');
+
+
         if (!response.ok) {
             throw new Error(`HTTP-Fehler! Status: ${response.status}`);
         }
 
         const einrichtungen = await response.json();
         console.log('Geladene Einrichtungen:', einrichtungen);
-        
+
         // Listen leeren
         document.getElementById('kindergarten-liste').innerHTML = '';
         document.getElementById('schueler-liste').innerHTML = '';
         document.getElementById('erwachsene-liste').innerHTML = '';
-        
+
         // Einrichtungen nach Kategorien sortieren und anzeigen
         einrichtungen.forEach(einrichtung => {
             const card = createEinrichtungCard(einrichtung);
@@ -27,10 +28,10 @@ export async function loadEinrichtungen() {
                 'Schüler': 'schueler-liste',
                 'Erwachsene': 'erwachsene-liste'
             };
-            
+
             const targetListId = listMapping[einrichtung.personengruppe];
             console.log('Ziel-Liste für', einrichtung.personengruppe, ':', targetListId);
-            
+
             const targetList = document.getElementById(targetListId);
             if (targetList) {
                 targetList.appendChild(card);
@@ -71,7 +72,7 @@ function createEinrichtungCard(einrichtung) {
     div.querySelector('.delete-btn').addEventListener('click', async () => {
         if (confirm(`Möchten Sie die Einrichtung "${einrichtung.name}" wirklich löschen?`)) {
             try {
-                const response = await fetch(`http://localhost:8086/api/einrichtungen/${fileId}`, {
+                const response = await fetch(`https://smartworkart.onrender.com/api/einrichtungen/${fileId}`, {
                     method: 'DELETE'
                 });
 
