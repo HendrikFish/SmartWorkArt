@@ -8,7 +8,7 @@ console.log('API_BASE_URL in api.js:', API_BASE_URL);
 export async function loadResidents() {
     try {
         // Lade zuerst die formConfig
-        const configResponse = await fetch(`${API_BASE_URL}/soloplan/config/formConfig`);
+        const configResponse = await fetch(`${API_BASE_URL}/soloplan/config/formConfig.json`);
         if (!configResponse.ok) {
             console.error('Fehler beim Laden der Konfiguration:', await configResponse.text());
             throw new Error(`Fehler beim Laden der Konfiguration (Status: ${configResponse.status})`);
