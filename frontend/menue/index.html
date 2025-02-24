@@ -6,7 +6,7 @@
     <title>Menüplan</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="/navbar-static/navbar.css">
-<script src="/navbar-static/navbar.js"></script>
+    <script src="/navbar-static/navbar.js"></script>
 </head>
 <body>
     <div class="container">
@@ -31,103 +31,5 @@
         </main>
     </div>
     <script src="js/script.js"></script>
-    <script>
-        // Funktion zum Laden der Benutzerinformationen
-        async function loadUserInfo() {
-            try {
-                const response = await fetch('/api/auth/me', {
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    // Wenn nicht eingeloggt, zum Login weiterleiten
-                    if (response.status === 401) {
-                        window.location.href = '/login';
-                        return null;
-                    }
-                    throw new Error('Fehler beim Laden der Benutzerinformationen');
-                }
-                return await response.json();
-            } catch (error) {
-                console.error('Fehler:', error);
-                return null;
-            }
-        }
-
-        // Funktion zum Laden und Filtern der Einrichtungen
-        async function loadAndFilterFacilities() {
-            try {
-                // Benutzerinformationen laden
-                const user = await loadUserInfo();
-                if (!user) return;
-
-                // Einrichtungen laden
-                const response = await fetch('/api/einrichtungen', {
-                    credentials: 'include'
-                });
-                if (!response.ok) throw new Error('Fehler beim Laden der Einrichtungen');
-                const facilities = await response.json();
-
-                // Select-Element finden
-                const selectElement = document.getElementById('einrichtungSelect');
-                if (!selectElement) {
-                    console.error('Select-Element #einrichtungSelect nicht gefunden');
-                    return;
-                }
-
-                // Einrichtungen filtern basierend auf Benutzerrolle und Berechtigungen
-                let allowedFacilities = facilities;
-                if (user.role !== 'admin') {
-                    if (user.allowedFacilities && user.allowedFacilities.length > 0) {
-                        allowedFacilities = facilities.filter(facility => 
-                            user.allowedFacilities.includes(facility.kuerzel)
-                        );
-                    } else if (user.role === 'co-admin') {
-                        allowedFacilities = facilities.filter(facility => 
-                            facility.kuerzel === user.facility
-                        );
-                    }
-                }
-
-                console.log('Erstelle Options für', allowedFacilities.length, 'Einrichtungen');
-
-                // Bestehende Optionen löschen, außer der ersten "Einrichtung wählen..." Option
-                while (selectElement.options.length > 1) {
-                    selectElement.remove(1);
-                }
-
-                // Options für erlaubte Einrichtungen erstellen
-                allowedFacilities.forEach(facility => {
-                    const option = document.createElement('option');
-                    option.value = facility.kuerzel;
-                    option.textContent = facility.name;
-                    selectElement.appendChild(option);
-                });
-
-                // Event Listener für Änderungen
-                selectElement.addEventListener('change', function() {
-                    const selectedFacility = allowedFacilities.find(f => f.kuerzel === this.value);
-                    if (selectedFacility) {
-                        console.log('Ausgewählte Einrichtung:', selectedFacility);
-                        // Hier können Sie weitere Aktionen basierend auf der Auswahl durchführen
-                    }
-                });
-
-            } catch (error) {
-                console.error('Fehler beim Laden der Einrichtungen:', error);
-                showError('Fehler beim Laden der Einrichtungen');
-            }
-        }
-
-        // Hilfsfunktion für Fehlermeldungen
-        function showError(message) {
-            // Toast-Modul importieren und Fehler anzeigen
-            import('./js/Modules/toast.js').then(module => {
-                module.showToast(message, false);
-            });
-        }
-
-        // Initial Einrichtungen laden
-        document.addEventListener('DOMContentLoaded', loadAndFilterFacilities);
-    </script>
 </body>
 </html>

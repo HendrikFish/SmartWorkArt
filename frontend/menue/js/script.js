@@ -296,27 +296,75 @@ class MenuPlan {
 
     async loadEinrichtungen() {
         try {
-            const response = await fetch('/api/menue/einrichtungen');
+            // Zuerst Benutzerinformationen laden
+            const userResponse = await fetch('/api/auth/me', {
+                credentials: 'include'
+            });
+            if (!userResponse.ok) {
+                if (userResponse.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Fehler beim Laden der Benutzerinformationen');
+            }
+            const user = await userResponse.json();
+
+            // Dann Einrichtungen laden
+            const response = await fetch('/api/einrichtungen', {
+                credentials: 'include'
+            });
             if (!response.ok) {
                 throw new Error('Fehler beim Laden der Einrichtungen');
             }
+            const facilities = await response.json();
             
-            const data = await response.json();
-            
+            // Einrichtungen basierend auf Benutzerrolle und Berechtigungen filtern
+            let allowedFacilities = facilities;
+            if (user.role !== 'admin') {
+                if (user.allowedFacilities && user.allowedFacilities.length > 0) {
+                    allowedFacilities = facilities.filter(facility => 
+                        user.allowedFacilities.includes(facility.kuerzel)
+                    );
+                } else if (user.role === 'co-admin') {
+                    allowedFacilities = facilities.filter(facility => 
+                        facility.kuerzel === user.facility
+                    );
+                }
+            }
+
             // Leere das Select und füge die Default-Option hinzu
             this.einrichtungSelect.innerHTML = '<option value="">Einrichtung wählen...</option>';
             
-            // Füge die Einrichtungen hinzu
-            data.forEach(einrichtung => {
+            // Füge nur die erlaubten Einrichtungen hinzu
+            allowedFacilities.forEach(einrichtung => {
                 const option = document.createElement('option');
                 option.value = einrichtung.name;
                 option.textContent = einrichtung.name;
                 this.einrichtungSelect.appendChild(option);
             });
+
+            // Wenn nur eine Einrichtung verfügbar ist, diese automatisch auswählen
+            if (allowedFacilities.length === 1) {
+                this.einrichtungSelect.value = allowedFacilities[0].name;
+                this.selectedEinrichtung = allowedFacilities[0].name;
+                await this.loadAndDisplayPlan();
+            }
+
         } catch (error) {
             console.error('Fehler beim Laden der Einrichtungen:', error);
             this.einrichtungSelect.innerHTML = '<option value="">Fehler beim Laden</option>';
+            this.showError('Fehler beim Laden der Einrichtungen');
         }
+    }
+
+    // Hilfsfunktion für Fehlermeldungen
+    showError(message) {
+        import('./Modules/toast.js').then(module => {
+            module.showToast(message, false);
+        }).catch(error => {
+            console.error('Fehler beim Laden des Toast-Moduls:', error);
+            alert(message);
+        });
     }
 
     getMonthsForWeek(year, week) {
