@@ -5,18 +5,10 @@ const fs = require('fs').promises;
 const SoloPlanModel = require('../models/soloPlanModels');
 const SoloPlanController = require('../controllers/soloPlanController');
 
-// Route für formConfig
-router.get('/config/formConfig', async (req, res) => {
-    try {
-        const formConfig = await SoloPlanModel.getFormConfig();
-        if (!formConfig) {
-            return res.status(404).json({ error: 'Konfiguration nicht gefunden' });
-        }
-        res.json(formConfig);
-    } catch (error) {
-        console.error('Fehler beim Laden der formConfig:', error);
-        res.status(500).json({ error: 'Interner Serverfehler' });
-    }
+// Neue Route für formConfig
+router.get('/config/formConfig', (req, res) => {
+    const configPath = path.join(__dirname, '../data/solo/config/formConfig.json');
+    res.sendFile(configPath);
 });
 
 // Route zum Abrufen aller Bewohner

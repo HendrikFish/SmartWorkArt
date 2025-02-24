@@ -7,8 +7,8 @@ console.log('API_BASE_URL in api.js:', API_BASE_URL);
 // Bewohner laden
 export async function loadResidents() {
     try {
-        // Verwende den korrekten Pfad zur Konfigurationsdatei
-        const configPath = '/solo/config/formConfig';
+        // Verwende den API-Endpunkt für die Konfiguration
+        const configPath = '/soloplan/config/formConfig';
         console.log(`Versuche Konfiguration zu laden von: ${API_BASE_URL}${configPath}`);
         
         const configResponse = await fetch(`${API_BASE_URL}${configPath}`);
