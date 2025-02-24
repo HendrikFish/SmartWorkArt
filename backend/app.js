@@ -31,7 +31,7 @@ const staticModules = [
     { route: '/customer-static', dir: process.env.NODE_ENV === 'production' ? './frontend/customer' : '../frontend/customer' }
 ];
 
-// Navbar-Konfiguration
+// Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
 const navbarModule = {
     route: '/navbar-static',
     dir: process.env.NODE_ENV === 'production' ? './frontend/navbar' : '../frontend/navbar'
@@ -72,10 +72,9 @@ app.use(session({
 // CORS Middleware
 app.use(cors({
     origin: [
-        'https://smartworkart.onrender.com',    // Render Backend
-        'https://smartworkart.onrender.com/api', // Render API
-        'http://localhost:8086',                // Lokale Entwicklung
-        'http://localhost:3000'                 // Lokale Frontend-Entwicklung
+        'https://smartworkart.onrender.com', // Render Backend
+        'http://localhost:8086',            // Lokale Entwicklung
+        process.env.FRONTEND_URL || '*'     // Dynamische Frontend-URL
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -88,14 +87,8 @@ app.use(cors({
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
-            defaultSrc: ["'self'", "https://smartworkart.onrender.com"],
-            connectSrc: [
-                "'self'", 
-                "https://smartworkart.onrender.com",
-                "https://smartworkart.onrender.com/api",
-                "http://localhost:8086",
-                "http://localhost:3000"
-            ],
+            defaultSrc: ["'self'"],
+            connectSrc: ["'self'", "https://smartworkart.onrender.com", "http://localhost:8086", process.env.FRONTEND_URL || '*'],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:"]
