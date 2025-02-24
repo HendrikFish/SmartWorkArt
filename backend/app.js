@@ -186,7 +186,7 @@ app.use('/api/solo', auth, soloRoutes);
 app.use('/api/soloplan', auth, soloPlanRoutes);
 app.use('/api/soloselect', auth, soloSelectRoutes);
 app.use('/api', auth, customRoutes);
-
+app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/config')));
 // Statische Module für authentifizierte Benutzer
 staticModules.forEach(({ route, dir }) => {
     if (route !== '/login-static') {
