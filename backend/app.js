@@ -90,11 +90,13 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             connectSrc: ["'self'", "https://smartworkart.onrender.com", "http://localhost:8086", process.env.FRONTEND_URL || '*'],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:"],
             imgSrc: ["'self'", "data:", "https:"]
         }
     }
 }));
+
 
 // MIME-Type Konfiguration für die statischen Dateien
 app.use('/navbar-static', express.static(path.join(__dirname, '../frontend/navbar'), {
