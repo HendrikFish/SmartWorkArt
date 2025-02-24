@@ -7,37 +7,18 @@ console.log('API_BASE_URL in api.js:', API_BASE_URL);
 // Bewohner laden
 export async function loadResidents() {
     try {
-        // Versuche verschiedene mögliche Pfade für die Konfiguration
-        const configPaths = [
-            '/soloplan/formConfig',
-            '/soloplan/config',
-            '/config/soloplan',
-            '/formConfig/soloplan'
-        ];
-
-        let configResponse;
-        let configData;
-        let success = false;
-
-        for (const path of configPaths) {
-            try {
-                console.log(`Versuche Konfiguration zu laden von: ${API_BASE_URL}${path}`);
-                configResponse = await fetch(`${API_BASE_URL}${path}`);
-                if (configResponse.ok) {
-                    configData = await configResponse.json();
-                    success = true;
-                    console.log(`Erfolgreicher Pfad: ${path}`);
-                    break;
-                }
-            } catch (e) {
-                console.log(`Pfad ${path} nicht erfolgreich:`, e);
-            }
+        // Verwende den korrekten Pfad zur Konfigurationsdatei
+        const configPath = '/solo/config/formConfig';
+        console.log(`Versuche Konfiguration zu laden von: ${API_BASE_URL}${configPath}`);
+        
+        const configResponse = await fetch(`${API_BASE_URL}${configPath}`);
+        if (!configResponse.ok) {
+            console.error(`Fehler beim Laden der Konfiguration (Status: ${configResponse.status})`);
+            throw new Error(`Fehler beim Laden der Konfiguration (Status: ${configResponse.status})`);
         }
-
-        if (!success) {
-            throw new Error('Keine der Konfigurationspfade war erfolgreich');
-        }
-
+        
+        const configData = await configResponse.json();
+        
         // Leere das formConfig Objekt und fülle es mit den neuen Daten
         Object.keys(formConfig).forEach(key => delete formConfig[key]);
         Object.assign(formConfig, configData);
