@@ -1,6 +1,7 @@
 const path = require('path');
 require('dotenv').config();
 
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -9,6 +10,35 @@ const connectDB = require('./config/database');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
+
+
+// Statische Module
+const staticModules = [
+    { route: '/planung-static', dir: process.env.NODE_ENV === 'production' ? './frontend/plan' : '../frontend/plan' },
+    { route: '/einrichtungen-static', dir: process.env.NODE_ENV === 'production' ? './frontend/einrichtung' : '../frontend/einrichtung' },
+    { route: '/rezepte-static', dir: process.env.NODE_ENV === 'production' ? './frontend/rezept' : '../frontend/rezept' },
+    { route: '/zutaten-static', dir: process.env.NODE_ENV === 'production' ? './frontend/zutaten' : '../frontend/zutaten' },
+    { route: '/order-static', dir: process.env.NODE_ENV === 'production' ? './frontend/order' : '../frontend/order' },
+    { route: '/datenbank-static', dir: process.env.NODE_ENV === 'production' ? './frontend/datenbank' : '../frontend/datenbank' },
+    { route: '/calc-static', dir: process.env.NODE_ENV === 'production' ? './frontend/calc' : '../frontend/calc' },
+    { route: '/number-static', dir: process.env.NODE_ENV === 'production' ? './frontend/number' : '../frontend/number' },
+    { route: '/menue-static', dir: process.env.NODE_ENV === 'production' ? './frontend/menue' : '../frontend/menue' },
+    { route: '/solo-static', dir: process.env.NODE_ENV === 'production' ? './frontend/solo' : '../frontend/solo' },
+    { route: '/soloPlan-static', dir: process.env.NODE_ENV === 'production' ? './frontend/soloPlan' : '../frontend/soloPlan' },
+    { route: '/soloSelect-static', dir: process.env.NODE_ENV === 'production' ? './frontend/soloSelect' : '../frontend/soloSelect' },
+    { route: '/login-static', dir: process.env.NODE_ENV === 'production' ? './frontend/login' : '../frontend/login' },
+    { route: '/dashboard-static', dir: process.env.NODE_ENV === 'production' ? './frontend/dashboard' : '../frontend/dashboard' },
+    { route: '/customer-static', dir: process.env.NODE_ENV === 'production' ? './frontend/customer' : '../frontend/customer' }
+];
+
+// Navbar-Konfiguration
+const navbarModule = {
+    route: '/navbar-static',
+    dir: process.env.NODE_ENV === 'production' ? './frontend/navbar' : '../frontend/navbar'
+};
+
+// Zu den bestehenden staticModules hinzufügen
+staticModules.push(navbarModule);
 
 // Express App erstellen
 const app = express();
@@ -43,13 +73,16 @@ app.use(session({
 app.use(cors({
     origin: [
         'https://smartworkart.onrender.com',    // Render Backend
-        'https://smartworkart.onrender.com/api', // Render API               // Lokale Frontend-Entwicklung
+        'https://smartworkart.onrender.com/api', // Render API
+        'http://localhost:8086',                // Lokale Entwicklung
+        'http://localhost:3000'                 // Lokale Frontend-Entwicklung
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     exposedHeaders: ['set-cookie']
 }));
+
 
 // Helmet Middleware mit angepasster CSP
 app.use(helmet({
@@ -60,12 +93,24 @@ app.use(helmet({
                 "'self'", 
                 "https://smartworkart.onrender.com",
                 "https://smartworkart.onrender.com/api",
-               
-                
+                "http://localhost:8086",
+                "http://localhost:3000"
             ],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:"]
+        }
+    }
+}));
+
+// MIME-Type Konfiguration für die statischen Dateien
+app.use('/navbar-static', express.static(path.join(__dirname, '../frontend/navbar'), {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        }
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
         }
     }
 }));
@@ -147,6 +192,13 @@ app.use('/api/solo', auth, soloRoutes);
 app.use('/api/soloplan', auth, soloPlanRoutes);
 app.use('/api/soloselect', auth, soloSelectRoutes);
 app.use('/api', auth, customRoutes);
+
+// Statische Module für authentifizierte Benutzer
+staticModules.forEach(({ route, dir }) => {
+    if (route !== '/login-static') {
+        app.use(route, auth, express.static(path.join(__dirname, dir)));
+    }
+});
 
 // Benutzerverwaltungs-Route (nur für Admins)
 app.get('/customer', auth, checkRole(['admin']), (req, res) => {
