@@ -14,27 +14,27 @@ const PORT = process.env.PORT || 8086;
 
 // Statische Module
 const staticModules = [
-    { route: '/planung-static', dir: process.env.NODE_ENV === 'production' ? './frontend/plan' : '../frontend/plan' },
-    { route: '/einrichtungen-static', dir: process.env.NODE_ENV === 'production' ? './frontend/einrichtung' : '../frontend/einrichtung' },
-    { route: '/rezepte-static', dir: process.env.NODE_ENV === 'production' ? './frontend/rezept' : '../frontend/rezept' },
-    { route: '/zutaten-static', dir: process.env.NODE_ENV === 'production' ? './frontend/zutaten' : '../frontend/zutaten' },
-    { route: '/order-static', dir: process.env.NODE_ENV === 'production' ? './frontend/order' : '../frontend/order' },
-    { route: '/datenbank-static', dir: process.env.NODE_ENV === 'production' ? './frontend/datenbank' : '../frontend/datenbank' },
-    { route: '/calc-static', dir: process.env.NODE_ENV === 'production' ? './frontend/calc' : '../frontend/calc' },
-    { route: '/number-static', dir: process.env.NODE_ENV === 'production' ? './frontend/number' : '../frontend/number' },
-    { route: '/menue-static', dir: process.env.NODE_ENV === 'production' ? './frontend/menue' : '../frontend/menue' },
-    { route: '/solo-static', dir: process.env.NODE_ENV === 'production' ? './frontend/solo' : '../frontend/solo' },
-    { route: '/soloPlan-static', dir: process.env.NODE_ENV === 'production' ? './frontend/soloPlan' : '../frontend/soloPlan' },
-    { route: '/soloSelect-static', dir: process.env.NODE_ENV === 'production' ? './frontend/soloSelect' : '../frontend/soloSelect' },
-    { route: '/login-static', dir: process.env.NODE_ENV === 'production' ? './frontend/login' : '../frontend/login' },
-    { route: '/dashboard-static', dir: process.env.NODE_ENV === 'production' ? './frontend/dashboard' : '../frontend/dashboard' },
-    { route: '/customer-static', dir: process.env.NODE_ENV === 'production' ? './frontend/customer' : '../frontend/customer' }
+    { route: '/planung-static', dir: '../frontend/plan' },
+    { route: '/einrichtungen-static', dir: '../frontend/einrichtung' },
+    { route: '/rezepte-static', dir: '../frontend/rezept' },
+    { route: '/zutaten-static', dir: '../frontend/zutaten' },
+    { route: '/order-static', dir: '../frontend/order' },
+    { route: '/datenbank-static', dir: '../frontend/datenbank' },
+    { route: '/calc-static', dir: '../frontend/calc' },
+    { route: '/number-static', dir: '../frontend/number' },
+    { route: '/menue-static', dir: '../frontend/menue' },
+    { route: '/solo-static', dir: '../frontend/solo' },
+    { route: '/soloPlan-static', dir: '../frontend/soloPlan' },
+    { route: '/soloSelect-static', dir: '../frontend/soloSelect' },
+    { route: '/login-static', dir: '../frontend/login' },
+    { route: '/dashboard-static', dir: '../frontend/dashboard' },
+    { route: '/customer-static', dir: '../frontend/customer' }
 ];
 
 // Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
 const navbarModule = {
     route: '/navbar-static',
-    dir: process.env.NODE_ENV === 'production' ? './frontend/navbar' : '../frontend/navbar'
+    dir: '../frontend/navbar'
 };
 
 // Zu den bestehenden staticModules hinzufügen
@@ -96,7 +96,6 @@ app.use(helmet({
         }
     }
 }));
-
 
 // MIME-Type Konfiguration für die statischen Dateien
 app.use('/navbar-static', express.static(path.join(__dirname, '../frontend/navbar'), {
