@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://smartworkart.onrender.com';
+const API_BASE_URL = "https://smartworkart.onrender.com/api";
 import { getCurrentWeek, getCurrentYear, selectedMeals, mealPlanData, formConfig, residentsData, selectedResident } from './variablen.js';
 import { createResidentButtons } from './interface.js';
 
