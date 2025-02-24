@@ -143,9 +143,6 @@ userSchema.pre('save', async function(next) {
     }
 });
 
-// E-Mail-Index erstellen
-userSchema.index({ email: 1 }, { unique: true });
-
 // Passwort vergleichen
 userSchema.methods.comparePassword = async function(candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
