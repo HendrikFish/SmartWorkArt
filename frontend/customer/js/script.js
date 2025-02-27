@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) throw new Error('Fehler beim Laden der Benutzer');
-            
+
             currentUsers = await response.json();
             displayUsers(currentUsers);
             updateStats();
@@ -44,9 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><span class="status-badge ${getStatusClass(user)}">${getStatusText(user)}</span></td>
                 <td>${new Date(user.registrationDate).toLocaleDateString()}</td>
                 <td>
-                    <button class="action-btn btn-view" data-id="${user._id}">
-                        <i class="fas fa-eye"></i>
-                    </button>
                     <button class="action-btn btn-edit" data-id="${user._id}">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -134,13 +131,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Berechtigungen basierend auf der Rolle aktualisieren
     function updatePermissionCheckboxes(role, allowedModules = []) {
         console.log('Aktualisiere Berechtigungen für Rolle:', role, 'mit Modulen:', allowedModules);
-        
+
         // Alle Modul-Checkboxen finden
         const moduleCheckboxes = document.querySelectorAll('.permissions-grid input[type="checkbox"]');
-        
+
         moduleCheckboxes.forEach(checkbox => {
             const modulePath = checkbox.dataset.module;
-            
+
             switch (role) {
                 case 'admin':
                     // Admin hat Zugriff auf alle Module
@@ -189,13 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
         allFacilities.forEach(facility => {
             const div = document.createElement('div');
             div.className = 'facility-item';
-            
+
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             const facilityId = facility.kuerzel; // Kürzel als ID verwenden
             checkbox.id = `facility-${facilityId}`;
             checkbox.value = facilityId;
-            
+
             // Checkbox-Status setzen
             if (isAdmin) {
                 checkbox.checked = true;
@@ -224,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const role = e.target.value;
         const user = currentUsers.find(u => u._id === currentUserId);
         updatePermissionCheckboxes(role, user?.allowedModules || []);
-        
+
         // Einrichtungen aktualisieren
         if (user) {
             user.role = role;
@@ -291,17 +288,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Verbesserte Checkbox-Erfassung
             const moduleCheckboxes = document.querySelectorAll('.permissions-grid input[type="checkbox"]');
             const facilityCheckboxes = document.querySelectorAll('#facilitiesContainer input[type="checkbox"]');
-            
+
             const userData = {
                 role: document.getElementById('modalRole').value,
                 isApproved: document.getElementById('modalStatus').value === 'approved',
                 notes: document.getElementById('modalNotes').value,
-                
+
                 // Explizite Erfassung der ausgewählten Einrichtungen
                 allowedFacilities: Array.from(facilityCheckboxes)
                     .filter(checkbox => checkbox.checked)
                     .map(checkbox => checkbox.value),
-                
+
                 // Explizite Erfassung der ausgewählten Module
                 allowedModules: Array.from(moduleCheckboxes)
                     .filter(checkbox => checkbox.checked)
@@ -317,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             console.log('Zu speichernde Daten:', userData);
-            
+
             const response = await fetch(`/api/auth/user/${userId}`, {
                 method: 'PUT',
                 headers: {
@@ -384,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Suche
     searchInput.addEventListener('input', () => {
         const searchTerm = searchInput.value.toLowerCase();
-        const filteredUsers = currentUsers.filter(user => 
+        const filteredUsers = currentUsers.filter(user =>
             user.firstName.toLowerCase().includes(searchTerm) ||
             user.lastName.toLowerCase().includes(searchTerm) ||
             user.email.toLowerCase().includes(searchTerm) ||
