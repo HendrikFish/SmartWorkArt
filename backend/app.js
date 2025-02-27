@@ -252,6 +252,76 @@ app.get('/customer', auth, checkRole(['admin']), (req, res) => {
     res.sendFile(customerPath);
 });
 
+// Neue Debug-Route hinzufügen
+app.get('/debug-auth', (req, res) => {
+    const authToken = req.cookies.auth_token;
+    const loggedInCookie = req.cookies.logged_in;
+    
+    let tokenStatus = 'Kein Token gefunden';
+    let tokenData = null;
+    
+    if (authToken) {
+        try {
+            tokenData = jwt.verify(authToken, process.env.JWT_SECRET);
+            tokenStatus = 'Token gültig';
+        } catch (error) {
+            tokenStatus = `Token ungültig: ${error.message}`;
+        }
+    }
+    
+    res.send(`
+        <html>
+        <head>
+            <title>Auth Debugging</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .container { max-width: 800px; margin: 0 auto; }
+                .status-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
+                .valid { background-color: #d4edda; }
+                .invalid { background-color: #f8d7da; }
+                pre { background-color: #f5f5f5; padding: 10px; overflow: auto; }
+                button { padding: 10px; margin-top: 10px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Authentifizierungs-Debugging</h1>
+                
+                <div class="status-box ${authToken ? 'valid' : 'invalid'}">
+                    <h2>Auth-Token Status: ${tokenStatus}</h2>
+                    <pre>${tokenData ? JSON.stringify(tokenData, null, 2) : 'Kein Token-Daten'}</pre>
+                </div>
+                
+                <div class="status-box ${loggedInCookie ? 'valid' : 'invalid'}">
+                    <h2>Logged-In Cookie: ${loggedInCookie || 'Nicht gefunden'}</h2>
+                </div>
+                
+                <div class="status-box">
+                    <h2>Alle Cookies:</h2>
+                    <pre>${JSON.stringify(req.cookies, null, 2)}</pre>
+                </div>
+                
+                <div class="status-box">
+                    <h2>Aktionen:</h2>
+                    <button onclick="window.location.href='/login'">Zum Login</button>
+                    <button onclick="window.location.href='/dashboard'">Zum Dashboard</button>
+                    <button onclick="clearCookies()">Cookies löschen</button>
+                </div>
+            </div>
+            
+            <script>
+                function clearCookies() {
+                    document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    document.cookie = 'logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    alert('Cookies gelöscht');
+                    window.location.reload();
+                }
+            </script>
+        </body>
+        </html>
+    `);
+});
+
 // Error Handler für 404
 app.use((req, res, next) => {
     console.log('404 für Route:', req.url);

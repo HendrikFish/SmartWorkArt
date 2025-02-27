@@ -30,59 +30,163 @@ function getCookie(name) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard wird geladen');
     
-    // Prüfe, ob das nicht-httpOnly Cookie vorhanden ist
-    const isLoggedIn = document.cookie.includes('logged_in=true');
-    console.log('Logged-in Cookie gefunden:', isLoggedIn);
+    // Prüfe Authentifizierungsstatus
+    const isLoggedInByCookie = document.cookie.includes('logged_in=true') || 
+                               document.cookie.includes('client_logged_in=true');
+    const userDataInStorage = localStorage.getItem('user');
     
-    // Auch lokalen Speicher für Benutzerinformationen prüfen
-    const userInStorage = localStorage.getItem('user');
-    console.log('Benutzer im lokalen Speicher:', !!userInStorage);
+    console.log('Anmeldestatus: Cookie:', isLoggedInByCookie, 'User in Storage:', !!userDataInStorage);
     
-    if (!isLoggedIn && !userInStorage) {
+    // Wenn keinerlei Anmeldehinweise vorhanden, sofort zum Login umleiten
+    if (!isLoggedInByCookie && !userDataInStorage) {
         console.warn('Keine Anmeldehinweise gefunden, leite zum Login weiter');
         window.location.href = '/login';
         return;
     }
     
-    // Testen, ob API-Zugriff funktioniert
-    fetchAuthStatus();
+    // Anzeige des Benutzernamens initialisieren (falls Daten im Storage)
+    if (userDataInStorage) {
+        try {
+            const userData = JSON.parse(userDataInStorage);
+            initUserInfo(userData);
+        } catch (error) {
+            console.error('Fehler beim Verarbeiten der Benutzerdaten aus dem Speicher:', error);
+        }
+    }
     
-    // Rest des Dashboard-Initialisierungscodes...
+    // Versuche auf jeden Fall, den Authentifizierungsstatus vom Server zu prüfen
+    checkAuthAndInitialize();
 });
 
-// Helfer-Funktion zum Testen des Auth-Status
-async function fetchAuthStatus() {
+// Prüft Authentifizierung und initialisiert Dashboard
+async function checkAuthAndInitialize() {
     try {
+        console.log('Prüfe Server-Authentifizierung...');
         const response = await fetch('/api/auth/status', {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache'
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
         });
         
         console.log('Auth-Status-Antwort:', response.status);
         
         if (!response.ok) {
-            console.error('Authentifizierung fehlgeschlagen, Status:', response.status);
-            // Nur bei 401 zum Login weiterleiten
-            if (response.status === 401) {
-                console.warn('Nicht authentifiziert, leite zum Login weiter');
-                // Cookies und localStorage bereinigen
-                document.cookie = 'logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-                localStorage.removeItem('user');
+            console.warn('Nicht authentifiziert laut Server, Status:', response.status);
+            
+            // Bei 401/403 zum Login umleiten
+            if (response.status === 401 || response.status === 403) {
+                clearAuthData();
                 window.location.href = '/login';
+                return false;
             }
-            return false;
+            
+            // Bei anderen Fehlern versuchen, mit lokalen Daten fortzufahren
+            return initializeDashboardWithLocalData();
         }
         
+        // Authentifizierung erfolgreich
         const data = await response.json();
         console.log('Authentifiziert als:', data.user.email);
+        
+        // Benutzerdaten im Speicher aktualisieren
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Dashboard mit Benutzerdaten initialisieren
+        initUserInfo(data.user);
+        loadDashboardData();
+        
         return true;
     } catch (error) {
-        console.error('Fehler beim Prüfen des Auth-Status:', error);
+        console.error('Fehler beim Prüfen des Authentifizierungsstatus:', error);
+        
+        // Bei Netzwerkfehlern mit lokalen Daten fortfahren
+        return initializeDashboardWithLocalData();
+    }
+}
+
+// Initialisiert Dashboard mit lokalen Daten
+function initializeDashboardWithLocalData() {
+    const userDataInStorage = localStorage.getItem('user');
+    
+    if (!userDataInStorage) {
+        console.warn('Keine Benutzerdaten im Speicher, kann Dashboard nicht initialisieren');
         return false;
+    }
+    
+    try {
+        const userData = JSON.parse(userDataInStorage);
+        console.log('Verwende lokale Daten für Benutzer:', userData.email);
+        
+        initUserInfo(userData);
+        loadDashboardData();
+        
+        return true;
+    } catch (error) {
+        console.error('Fehler beim Initialisieren mit lokalen Daten:', error);
+        return false;
+    }
+}
+
+// Initialisiert Benutzerinfo-Bereich
+function initUserInfo(userData) {
+    const userNameElement = document.getElementById('userName');
+    if (userNameElement) {
+        userNameElement.textContent = `${userData.firstName} ${userData.lastName}`;
+    }
+    
+    const userRoleElement = document.getElementById('userRole');
+    if (userRoleElement) {
+        userRoleElement.textContent = translateRole(userData.role);
+    }
+}
+
+// Lädt Dashboard-Daten
+function loadDashboardData() {
+    // Hier die eigentliche Datenladung für das Dashboard implementieren
+    console.log('Dashboard-Daten werden geladen...');
+    
+    // Weitere Dashboard-Initialisierungen...
+}
+
+// Löscht alle Auth-Daten
+function clearAuthData() {
+    console.log('Lösche Authentifizierungsdaten');
+    
+    // Cookies löschen
+    document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'client_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    
+    // LocalStorage löschen
+    localStorage.removeItem('user');
+}
+
+// Übersetzt Rollen ins Deutsche
+function translateRole(role) {
+    const roleMap = {
+        'admin': 'Administrator',
+        'co-admin': 'Co-Administrator',
+        'user': 'Benutzer'
+    };
+    
+    return roleMap[role] || role;
+}
+
+// Logout-Funktionalität (für Logout-Buttons)
+async function logout() {
+    try {
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        clearAuthData();
+        window.location.href = '/login';
+    } catch (error) {
+        console.error('Fehler beim Abmelden:', error);
+        // Trotzdem zum Login umleiten
+        clearAuthData();
+        window.location.href = '/login';
     }
 }
 
