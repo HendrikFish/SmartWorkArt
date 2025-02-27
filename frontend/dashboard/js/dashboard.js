@@ -1,5 +1,40 @@
+// Am Anfang des Dokuments, vor allen anderen Code
+// Error-Handler für Ressourcen-Probleme
+window.addEventListener('error', function(e) {
+    const target = e.target;
+    // Prüfe, ob der Fehler durch ein Ressourcen-Element verursacht wurde
+    if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) {
+        console.error('Ressource konnte nicht geladen werden:', target.src || target.href);
+        
+        // Wenn es ein Authentifizierungsproblem sein könnte
+        if (e.message && e.message.includes('401')) {
+            console.error('Authentifizierungsfehler beim Laden von Ressourcen. Leite zur Login-Seite weiter...');
+            // Kurze Verzögerung, damit die Konsole den Fehler anzeigen kann
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+    }
+}, true);
+
+// Funktion zum Abrufen eines Cookie-Werts
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        // Prüfe zu Beginn auf gültigen Auth-Token
+        const authToken = getCookie('auth_token');
+        if (!authToken) {
+            console.warn('Kein Authentifizierungs-Token gefunden. Leite zur Login-Seite um...');
+            window.location.href = '/login';
+            return;
+        }
+
         // Benutzerinformationen laden
         const userResponse = await fetch('/api/auth/me', {
             credentials: 'include'

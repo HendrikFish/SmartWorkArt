@@ -29,7 +29,8 @@ const staticModules = [
     { route: '/login-static', dir: '../frontend/login' },
     { route: '/dashboard-static', dir: '../frontend/dashboard' },
     { route: '/customer-static', dir: '../frontend/customer' },
-    { route: '/profile-static', dir: '../frontend/profile' }
+    { route: '/profile-static', dir: '../frontend/profile' },
+    { route: '/register-static', dir: '../frontend/register' }
 ];
 
 // Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
@@ -98,16 +99,23 @@ app.use(helmet({
     }
 }));
 
-// Korrigierte Konfiguration für statische Dateien
-app.use(express.static(path.join(__dirname, '../frontend'), {
-    setHeaders: (res, path, stat) => {
-        if (path.endsWith('.css')) {
-            res.set('Content-Type', 'text/css');
-        } else if (path.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript');
+// Korrigiere die statischen Dateien Middleware
+const serveStatic = (directory, options = {}) => {
+    return express.static(path.join(__dirname, directory), {
+        setHeaders: (res, filePath) => {
+            // Setze korrekte MIME-Types
+            if (filePath.endsWith('.css')) {
+                res.set('Content-Type', 'text/css');
+            } else if (filePath.endsWith('.js')) {
+                res.set('Content-Type', 'application/javascript');
+            }
+            // Weitere Header aus optionalen Parametern anwenden
+            if (options.setHeaders) {
+                options.setHeaders(res, filePath);
+            }
         }
-    }
-}));
+    });
+};
 
 // API-Routen registrieren
 const einrichtungRoutes = require('./routes/einrichtungRoutes');
@@ -141,8 +149,9 @@ app.get('/login', (req, res) => {
     res.sendFile(loginPath);
 });
 
-// Statische Login-Dateien (öffentlich zugänglich)
-app.use('/login-static', express.static(path.join(__dirname, '../frontend/login')));
+// Registriere statische Pfade ohne Authentifizierung
+app.use('/login-static', serveStatic('../frontend/login'));
+app.use('/register-static', serveStatic('../frontend/register'));
 
 // Auth-Check Middleware für geschützte Routen
 app.use('/dashboard*', auth, (req, res, next) => {
@@ -153,41 +162,38 @@ app.use('/dashboard*', auth, (req, res, next) => {
 });
 
 // Dashboard-Routen
-app.get('/dashboard', auth, (req, res) => {
-    console.log('Dashboard-Route aufgerufen, User:', req.user);
-    if (!req.user) {
-        console.log('Kein Benutzer gefunden, Weiterleitung zum Login');
+app.get('/dashboard', (req, res) => {
+    const authToken = req.cookies.auth_token;
+    if (!authToken) {
         return res.redirect('/login');
     }
-    console.log('Benutzer authentifiziert, Weiterleitung zum Dashboard');
-    res.redirect('/dashboard-static/index.html');
+    res.sendFile(path.join(__dirname, '../frontend/dashboard/index.html'));
 });
 
-// Statische Dashboard-Dateien (mit Auth)
+// Registriere geschützte statische Pfade mit Authentifizierung
 app.use('/dashboard-static', auth, (req, res, next) => {
-    console.log('Dashboard-Static-Route aufgerufen, User:', req.user);
     if (!req.user) {
-        console.log('Kein Benutzer gefunden, Weiterleitung zum Login');
-        return res.redirect('/login');
+        return res.status(401).json({ message: 'Nicht authentifiziert' });
     }
     next();
-}, express.static(path.join(__dirname, '../frontend/dashboard')));
+}, serveStatic('../frontend/dashboard'));
 
 // Profil-Route (nach der Dashboard-Route)
-app.get('/profile', auth, (req, res) => {
-    if (!req.user) {
+app.get('/profile', (req, res) => {
+    const authToken = req.cookies.auth_token;
+    if (!authToken) {
         return res.redirect('/login');
     }
     res.sendFile(path.join(__dirname, '../frontend/profile/index.html'));
 });
 
-// Statische Profil-Dateien
+// Registriere geschützte statische Pfade mit Authentifizierung
 app.use('/profile-static', auth, (req, res, next) => {
     if (!req.user) {
-        return res.redirect('/login');
+        return res.status(401).json({ message: 'Nicht authentifiziert' });
     }
     next();
-}, express.static(path.join(__dirname, '../frontend/profile')));
+}, serveStatic('../frontend/profile'));
 
 // Geschützte API-Routen
 app.use('/api/einrichtungen', auth, einrichtungRoutes);
@@ -205,22 +211,19 @@ app.use('/api/soloselect', auth, soloSelectRoutes);
 app.use('/api', auth, customRoutes);
 app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/config')));
 
-// Für jede statische Route
+// Behandle restliche statische Module über die Liste
 staticModules.forEach(module => {
+    // Überspringe bereits definierte Module
+    if (['/login-static', '/register-static', '/dashboard-static', '/profile-static'].includes(module.route)) {
+        return;
+    }
+    
     app.use(module.route, auth, (req, res, next) => {
         if (!req.user) {
-            return res.redirect('/login');
+            return res.status(401).json({ message: 'Nicht authentifiziert' });
         }
         next();
-    }, express.static(path.join(__dirname, module.dir), {
-        setHeaders: (res, path, stat) => {
-            if (path.endsWith('.css')) {
-                res.set('Content-Type', 'text/css');
-            } else if (path.endsWith('.js')) {
-                res.set('Content-Type', 'application/javascript');
-            }
-        }
-    }));
+    }, serveStatic(module.dir));
 });
 
 // Benutzerverwaltungs-Route (nur für Admins)
