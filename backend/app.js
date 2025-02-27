@@ -7,6 +7,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/database');
+const jwt = require('jsonwebtoken');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
@@ -161,13 +162,28 @@ app.use('/dashboard*', auth, (req, res, next) => {
     next();
 });
 
-// Dashboard-Routen
-app.get('/dashboard', (req, res) => {
+// Verbesserte HTML-Routen mit explizitem Handling für Trailing Slash
+app.get(['/dashboard', '/dashboard/'], (req, res) => {
     const authToken = req.cookies.auth_token;
+    
+    // Debug-Ausgabe
+    console.log('Dashboard-Zugriff, Auth-Token vorhanden:', !!authToken);
+    
     if (!authToken) {
+        console.log('Kein Auth-Token gefunden, Weiterleitung zu /login');
         return res.redirect('/login');
     }
-    res.sendFile(path.join(__dirname, '../frontend/dashboard/index.html'));
+    
+    // Token validieren
+    try {
+        const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
+        console.log('Token erfolgreich validiert für Benutzer-ID:', decoded.user._id);
+        res.sendFile(path.join(__dirname, '../frontend/dashboard/index.html'));
+    } catch (error) {
+        console.error('Ungültiger Token:', error.message);
+        res.clearCookie('auth_token');
+        res.redirect('/login');
+    }
 });
 
 // Registriere geschützte statische Pfade mit Authentifizierung

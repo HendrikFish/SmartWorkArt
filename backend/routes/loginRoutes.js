@@ -86,7 +86,6 @@ router.post('/login', async (req, res) => {
         }
         
         // Passwort überprüfen
-        console.log('Vergleiche eingegebenes Passwort mit gespeichertem Hash');
         const isMatch = await bcrypt.compare(password, user.password);
         
         if (!isMatch) {
@@ -115,12 +114,16 @@ router.post('/login', async (req, res) => {
             (err, token) => {
                 if (err) throw err;
                 
-                // Token als Cookie setzen
+                // Token als Cookie setzen mit korrekten Optionen
                 res.cookie('auth_token', token, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    maxAge: 24 * 60 * 60 * 1000 // 1 Tag
+                    sameSite: 'strict',
+                    maxAge: 24 * 60 * 60 * 1000, // 1 Tag
+                    path: '/' // Wichtig: Stellt sicher, dass das Cookie für die gesamte Domain gilt
                 });
+                
+                console.log('Auth-Token-Cookie gesetzt für:', email);
                 
                 res.json({
                     message: 'Login erfolgreich',

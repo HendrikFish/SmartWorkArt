@@ -4,58 +4,62 @@ const User = require('../models/loginModels');
 
 const auth = async (req, res, next) => {
     try {
-        console.log('Auth-Middleware aufgerufen');
-        console.log('Cookies:', req.cookies);
+        // Token aus Cookies holen
+        const token = req.cookies.auth_token;
         
-        const token = req.cookies.token;
+        console.log('Auth Middleware - Pfad:', req.path);
+        console.log('Auth Middleware - Token vorhanden:', !!token);
         
         if (!token) {
             console.log('Kein Token gefunden');
-            return res.status(401).json({ message: 'Nicht authentifiziert' });
+            
+            // Bei API-Anfragen 401 zurückgeben
+            if (req.path.startsWith('/api/')) {
+                return res.status(401).json({ message: 'Nicht authentifiziert' });
+            }
+            
+            // Bei HTML-Seiten zur Login-Seite umleiten
+            if (req.path.match(/^\/(dashboard|profile|admin)/)) {
+                return res.redirect('/login');
+            }
+            
+            // Bei Anfragen für statische Dateien 401 zurückgeben
+            if (req.path.includes('-static/')) {
+                return res.status(401).json({ message: 'Nicht authentifiziert' });
+            }
+            
+            // Für andere Routen fortfahren (z.B. Login, Register)
+            return next();
         }
-
-        console.log('Token gefunden, verifiziere...');
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Token verifiziert:', decoded);
-
-        // Benutzer mit allen relevanten Feldern laden, aber ohne Passwort
-        const user = await User.findById(decoded.userId)
-            .select('-password')
-            .lean();  // Für bessere Performance
         
-        if (!user) {
-            console.log('Benutzer nicht in der Datenbank gefunden');
-            res.clearCookie('token');
-            return res.status(401).json({ message: 'Benutzer nicht gefunden' });
-        }
-
-        if (!user.isApproved) {
-            console.log('Benutzer nicht freigegeben');
-            res.clearCookie('token');
-            return res.status(401).json({ message: 'Account nicht freigegeben' });
-        }
-
-        console.log('Benutzer gefunden:', user.email);
-        req.user = {
-            _id: user._id,
-            userId: user._id,
-            email: user.email,
-            role: user.role,
-            facility: user.facility,
-            allowedFacilities: user.allowedFacilities,
-            allowedModules: user.allowedModules,
-            permissions: user.permissions
-        };
+        // Token verifizieren
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded.user;
+        
+        console.log('Benutzer authentifiziert:', req.user._id);
         next();
     } catch (error) {
-        console.error('Auth-Middleware-Fehler:', error);
-        res.clearCookie('token', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/'
-        });
-        return res.status(401).json({ message: 'Nicht authentifiziert' });
+        console.error('Auth-Fehler:', error.message);
+        
+        // Bei abgelaufenem/ungültigem Token Cookie löschen
+        res.clearCookie('auth_token');
+        
+        // Bei API-Anfragen 401 zurückgeben
+        if (req.path.startsWith('/api/')) {
+            return res.status(401).json({ message: 'Nicht authentifiziert' });
+        }
+        
+        // Bei HTML-Seiten zur Login-Seite umleiten
+        if (req.path.match(/^\/(dashboard|profile|admin)/)) {
+            return res.redirect('/login');
+        }
+        
+        // Bei statischen Dateianfragen 401 zurückgeben
+        if (req.path.includes('-static/')) {
+            return res.status(401).json({ message: 'Nicht authentifiziert' });
+        }
+        
+        next();
     }
 };
 
