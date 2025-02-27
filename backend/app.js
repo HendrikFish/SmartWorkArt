@@ -129,6 +129,7 @@ const { auth, checkRole } = require('./middleware/auth');
 
 // API-Routen registrieren
 app.use('/api/auth', loginRoutes);
+app.use('/api', customRoutes);
 
 // Login-Routen (öffentlich zugänglich)
 app.get('/', (req, res) => {
@@ -227,6 +228,19 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     console.error('Server Fehler:', err);
     res.status(500).send('Interner Server Fehler');
+});
+
+// Nach der Registrierung aller Routen
+app._router.stack.forEach(function(r){
+    if (r.route && r.route.path){
+        console.log(`${Object.keys(r.route.methods)} ${r.route.path}`);
+    } else if (r.name === 'router') {
+        r.handle.stack.forEach(function(h){
+            if (h.route){
+                console.log(`${Object.keys(h.route.methods)} ${r.regexp} ${h.route.path}`);
+            }
+        });
+    }
 });
 
 // Server starten

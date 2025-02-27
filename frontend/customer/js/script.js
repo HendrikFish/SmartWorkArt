@@ -423,6 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         try {
+            console.log('Verwende folgenden API-Endpunkt:', `/api/customers/${userId}/reset-password`);
             const response = await fetch(`/api/customers/${userId}/reset-password`, {
                 method: 'POST',
                 headers: {
