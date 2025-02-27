@@ -143,6 +143,15 @@ function initForms() {
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         
+        // Debug: Prüfe Eingabewerte (ohne Passwörter zu loggen)
+        console.log('Eingaben überprüfen:', {
+            hatCurrentPassword: !!currentPassword, 
+            hatNewPassword: !!newPassword,
+            hatConfirmPassword: !!confirmPassword,
+            newPasswordLength: newPassword.length,
+            passwörterStimmenÜberein: newPassword === confirmPassword
+        });
+        
         // Validierung
         if (newPassword !== confirmPassword) {
             showMessage('passwordChangeMessage', 'Die Passwörter stimmen nicht überein', 'error');
@@ -170,15 +179,22 @@ function initForms() {
             });
             
             console.log('API-Antwort erhalten:', response.status);
+            const responseData = await response.json();
+            console.log('API-Antwortdaten:', responseData);
             
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error('API-Fehlerdaten:', errorData);
-                throw new Error(errorData.message || 'Fehler beim Ändern des Passworts');
+                console.error('API-Fehler:', responseData);
+                throw new Error(responseData.message || 'Fehler beim Ändern des Passworts');
             }
             
-            showMessage('passwordChangeMessage', 'Passwort erfolgreich geändert', 'success');
+            showMessage('passwordChangeMessage', 'Passwort erfolgreich geändert. Bitte melden Sie sich mit dem neuen Passwort erneut an.', 'success');
             this.reset();
+            
+            // Optional: Nach erfolgreicher Passwortänderung automatisch abmelden
+            setTimeout(() => {
+                logout();
+            }, 3000);
+            
         } catch (error) {
             console.error('Fehler bei der Passwortänderung:', error);
             showMessage('passwordChangeMessage', error.message, 'error');
@@ -197,4 +213,20 @@ function showMessage(elementId, message, type) {
         messageElement.textContent = '';
         messageElement.className = 'message';
     }, 5000);
+}
+
+// Hilfsfunktion zum Abmelden
+async function logout() {
+    try {
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            window.location.href = '/login';
+        }
+    } catch (error) {
+        console.error('Abmeldung fehlgeschlagen:', error);
+    }
 } 

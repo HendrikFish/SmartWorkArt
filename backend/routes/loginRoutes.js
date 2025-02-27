@@ -68,68 +68,75 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
     try {
-        console.log('Login-Anfrage erhalten:', req.body.email);
         const { email, password } = req.body;
+        
+        console.log('Login-Versuch für:', email);
+        
+        // Benutzer finden
         const user = await User.findOne({ email });
-
-        if (!user || !await bcrypt.compare(password, user.password)) {
-            console.log('Ungültige Anmeldedaten');
-            return res.status(401).json({ message: 'Ungültige Anmeldedaten' });
+        
+        if (!user) {
+            console.log('Benutzer nicht gefunden:', email);
+            return res.status(401).json({ message: 'Ungültige Anmeldeinformationen' });
         }
-
+        
         if (!user.isApproved) {
-            console.log('Account nicht freigegeben');
-            return res.status(403).json({ message: 'Account wartet auf Freigabe' });
+            console.log('Benutzer nicht genehmigt:', email);
+            return res.status(401).json({ message: 'Ihr Konto wurde noch nicht genehmigt' });
         }
-
-        console.log('Login erfolgreich, erstelle Token');
-        const token = jwt.sign(
-            { 
-                userId: user._id,
-                role: user.role,
-                facility: user.facility,
-                allowedFacilities: user.allowedFacilities,
-                sessionId: req.sessionID // Session-ID hinzufügen
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
-        // Session-Daten speichern
-        req.session.user = {
-            userId: user._id,
-            email: user.email,
-            role: user.role
-        };
-
-        // Token als Cookie setzen
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000,
-            sameSite: 'lax',
-            path: '/'
-        });
-
+        
+        // Passwort überprüfen
+        console.log('Vergleiche eingegebenes Passwort mit gespeichertem Hash');
+        const isMatch = await bcrypt.compare(password, user.password);
+        
+        if (!isMatch) {
+            console.log('Passwort falsch für:', email);
+            return res.status(401).json({ message: 'Ungültige Anmeldeinformationen' });
+        }
+        
         // Aktualisiere lastLogin
         user.lastLogin = new Date();
         await user.save();
-
-        console.log('Login abgeschlossen, sende Antwort');
-        res.json({ 
-            message: 'Login erfolgreich',
+        
+        console.log('Login erfolgreich für:', email);
+        
+        // JWT-Token erstellen
+        const payload = {
             user: {
-                role: user.role,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                facility: user.facility,
-                allowedFacilities: user.allowedFacilities,
-                allowedModules: user.allowedModules
+                _id: user._id,
+                role: user.role
             }
-        });
+        };
+        
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' },
+            (err, token) => {
+                if (err) throw err;
+                
+                // Token als Cookie setzen
+                res.cookie('auth_token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: 24 * 60 * 60 * 1000 // 1 Tag
+                });
+                
+                res.json({
+                    message: 'Login erfolgreich',
+                    user: {
+                        _id: user._id,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.email,
+                        role: user.role
+                    }
+                });
+            }
+        );
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Login fehlgeschlagen', error: error.message });
+        console.error('Login-Fehler:', error);
+        res.status(500).json({ message: 'Serverfehler' });
     }
 });
 
@@ -331,7 +338,13 @@ router.post('/change-password', auth, async (req, res) => {
         
         const { currentPassword, newPassword } = req.body;
         
-        console.log('Validiere Eingaben');
+        // Debug: Prüfe Eingabedaten (ohne Passwörter zu loggen)
+        console.log('Eingaben vorhanden:', {
+            hatCurrentPassword: !!currentPassword,
+            hatNewPassword: !!newPassword,
+            newPasswordLength: newPassword ? newPassword.length : 0
+        });
+        
         // Validierung
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ message: 'Aktuelles und neues Passwort sind erforderlich' });
@@ -341,16 +354,19 @@ router.post('/change-password', auth, async (req, res) => {
             return res.status(400).json({ message: 'Das neue Passwort muss mindestens 6 Zeichen lang sein' });
         }
         
-        console.log('Suche Benutzer in der Datenbank');
+        console.log('Suche Benutzer in der Datenbank mit ID:', req.user._id);
         // Benutzer finden
         const user = await User.findById(req.user._id);
         if (!user) {
+            console.error('Benutzer nicht gefunden mit ID:', req.user._id);
             return res.status(404).json({ message: 'Benutzer nicht gefunden' });
         }
         
-        console.log('Überprüfe aktuelles Passwort');
+        console.log('Benutzer gefunden, überprüfe aktuelles Passwort');
         // Aktuelles Passwort überprüfen
         const isMatch = await bcrypt.compare(currentPassword, user.password);
+        console.log('Passwort-Vergleich Ergebnis:', isMatch);
+        
         if (!isMatch) {
             return res.status(400).json({ message: 'Aktuelles Passwort ist falsch' });
         }
@@ -358,17 +374,27 @@ router.post('/change-password', auth, async (req, res) => {
         console.log('Setze neues Passwort');
         // Neues Passwort setzen
         const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        console.log('Hash erstellt. HashLength:', hashedPassword.length);
         
-        console.log('Speichere Benutzer');
-        // Benutzer speichern
-        await user.save();
+        // Password direkt setzen statt User-Objekt zu modifizieren
+        const updateResult = await User.updateOne(
+            { _id: req.user._id }, 
+            { $set: { password: hashedPassword } }
+        );
+        
+        console.log('Update-Ergebnis:', updateResult);
+        
+        if (updateResult.modifiedCount !== 1) {
+            console.error('Problem beim Speichern des Passworts. ModifiedCount:', updateResult.modifiedCount);
+            return res.status(500).json({ message: 'Passwort konnte nicht aktualisiert werden' });
+        }
         
         console.log('Passwort erfolgreich geändert');
         res.json({ message: 'Passwort erfolgreich geändert' });
     } catch (error) {
         console.error('Fehler beim Ändern des Passworts:', error);
-        res.status(500).json({ message: 'Interner Server Fehler' });
+        res.status(500).json({ message: 'Interner Server Fehler: ' + error.message });
     }
 });
 
