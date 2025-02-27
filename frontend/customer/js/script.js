@@ -106,6 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const user = currentUsers.find(u => u._id === userId);
         if (!user) return;
 
+        // Benutzer-ID im Dataset speichern
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.dataset.userId = userId;
+        console.log('Modal geöffnet für Benutzer-ID:', userId); // Debug-Ausgabe
+
         // Grundlegende Informationen
         document.getElementById('modalFirstName').textContent = user.firstName;
         document.getElementById('modalLastName').textContent = user.lastName;
@@ -407,31 +412,57 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const userId = this.closest('.modal-content').dataset.userId;
+        // Korrigierte Methode zum Abrufen der userId
+        const userId = document.querySelector('.modal-content').dataset.userId;
+        
+        console.log('Reset Passwort für Benutzer-ID:', userId); // Debug-Ausgabe
+        
+        if (!userId) {
+            alert('Fehler: Benutzer-ID konnte nicht ermittelt werden.');
+            return;
+        }
         
         try {
             const response = await fetch(`/api/customers/${userId}/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server-Antwort:', errorText);
+                throw new Error(`Fehler beim Zurücksetzen des Passworts: ${response.status} ${response.statusText}`);
+            }
             
             const data = await response.json();
             
-            if (response.ok) {
-                // Neues Passwort anzeigen
-                document.getElementById('newPassword').textContent = data.newPassword;
-                document.getElementById('newPasswordContainer').style.display = 'block';
-                
-                // Meldung anzeigen
-                showMessage('success', 'Passwort erfolgreich zurückgesetzt');
-            } else {
-                showMessage('error', data.message || 'Fehler beim Zurücksetzen des Passworts');
-            }
+            // Neues Passwort anzeigen
+            document.getElementById('newPassword').textContent = data.newPassword;
+            document.getElementById('newPasswordContainer').style.display = 'block';
+            
+            // Kopier-Button Funktionalität
+            document.getElementById('copyPassword').addEventListener('click', function() {
+                const password = document.getElementById('newPassword').textContent;
+                navigator.clipboard.writeText(password)
+                    .then(() => {
+                        this.innerHTML = '<i class="fas fa-check"></i> Kopiert';
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fas fa-copy"></i> Kopieren';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Fehler beim Kopieren:', err);
+                        alert('Fehler beim Kopieren des Passworts');
+                    });
+            });
+            
+            showMessage('success', 'Passwort wurde erfolgreich zurückgesetzt');
         } catch (error) {
             console.error('Fehler:', error);
-            showMessage('error', 'Ein Fehler ist aufgetreten');
+            showMessage('error', error.message);
         }
     });
 

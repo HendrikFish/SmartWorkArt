@@ -344,14 +344,15 @@ router.post('/change-password', auth, async (req, res) => {
             return res.status(404).json({ message: 'Benutzer nicht gefunden' });
         }
         
-        // Aktuelles Passwort überprüfen
-        const isMatch = await user.comparePassword(currentPassword);
+        // Aktuelles Passwort überprüfen (direkte Verwendung von bcrypt statt einer Methode)
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Aktuelles Passwort ist falsch' });
         }
         
         // Neues Passwort setzen
-        user.password = await bcrypt.hash(newPassword, 10);
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
         await user.save();
         
         res.json({ message: 'Passwort erfolgreich geändert' });
