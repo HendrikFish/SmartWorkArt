@@ -139,52 +139,17 @@ const { auth, checkRole } = require('./middleware/auth');
 app.use('/api/auth', loginRoutes);
 app.use('/api', customRoutes);
 
-// Root-Route verbessern
+// Root-Route korrigieren
 app.get('/', (req, res) => {
-    // Prüfen, ob ein gültiger Auth-Token vorhanden ist
-    const authToken = req.cookies.auth_token;
-    
-    if (authToken) {
-        try {
-            // Token validieren
-            const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
-            console.log('Root-Route: Gültiges Token für Benutzer:', decoded.user._id);
-            
-            // Wenn das Token gültig ist, zum Dashboard weiterleiten
-            return res.redirect('/dashboard');
-        } catch (error) {
-            console.error('Root-Route: Ungültiges Token:', error.message);
-            // Bei ungültigem Token Cookie löschen
-            res.clearCookie('auth_token');
-        }
-    }
-    
-    console.log('Root-Route: Kein gültiges Token, Weiterleitung zu /login');
-    // Wenn kein Token oder ungültiges Token, zum Login weiterleiten
+    // Wir leiten von der Root-Route einfach zum Login weiter
+    // ohne Auth-Token zu prüfen
+    console.log('Root-Route: Weiterleitung zu /login');
     res.redirect('/login');
 });
 
-// Login-Route verbessern
+// Login-Route korrigieren - KEIN automatisches Weiterleiten
 app.get('/login', (req, res) => {
-    // Prüfen, ob bereits ein gültiger Auth-Token vorhanden ist
-    const authToken = req.cookies.auth_token;
-    
-    if (authToken) {
-        try {
-            // Token validieren
-            const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
-            console.log('Login-Route: Benutzer bereits angemeldet:', decoded.user._id);
-            
-            // Wenn das Token gültig ist, zum Dashboard weiterleiten
-            return res.redirect('/dashboard');
-        } catch (error) {
-            console.error('Login-Route: Ungültiges Token:', error.message);
-            // Bei ungültigem Token Cookie löschen
-            res.clearCookie('auth_token');
-        }
-    }
-    
-    // Ansonsten Login-Seite anzeigen
+    // Wir zeigen immer die Login-Seite an
     console.log('Login-Route: Zeige Login-Seite');
     res.sendFile(path.join(__dirname, '../frontend/login/index.html'));
 });
@@ -205,9 +170,9 @@ app.use('/dashboard*', auth, (req, res, next) => {
 app.get(['/dashboard', '/dashboard/'], (req, res) => {
     const authToken = req.cookies.auth_token;
     
-    // Debug-Ausgabe
     console.log('Dashboard-Zugriff, Auth-Token vorhanden:', !!authToken);
     
+    // Wenn kein Token vorhanden ist, zum Login weiterleiten
     if (!authToken) {
         console.log('Kein Auth-Token gefunden, Weiterleitung zu /login');
         return res.redirect('/login');
