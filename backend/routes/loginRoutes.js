@@ -107,48 +107,47 @@ router.post('/login', async (req, res) => {
             }
         };
         
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' },
-            (err, token) => {
-                if (err) throw err;
-                
-                // Detaillierte Debug-Ausgabe
-                console.log('JWT Token erstellt, Länge:', token.length);
-                
-                // Token als Cookie setzen mit korrekten Optionen
-                res.cookie('auth_token', token, {
-                    httpOnly: true,
-                    secure: false, // Für Entwicklung auf false setzen, für Produktion true
-                    sameSite: 'lax', // 'lax' erlaubt Cookies bei Weiterleitungen
-                    maxAge: 24 * 60 * 60 * 1000, // 1 Tag
-                    path: '/' // Stellt sicher, dass das Cookie für alle Pfade gilt
-                });
-                
-                console.log('Auth-Token-Cookie gesetzt für', email, 'mit diesen Optionen:', {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: 'lax',
-                    maxAge: '24 Stunden',
-                    path: '/'
-                });
-                
-                res.json({
-                    message: 'Login erfolgreich',
-                    user: {
-                        _id: user._id,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        email: user.email,
-                        role: user.role
-                    }
-                });
+        // Token direkt generieren ohne callback
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
+        
+        // Debug-Info
+        console.log('Token generiert, Länge:', token.length);
+        
+        // Token als Cookie setzen mit absolut einfachsten Einstellungen für Entwicklung
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: false, // Für Entwicklung auf false setzen
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 24 * 60 * 60 * 1000 // 1 Tag
+        });
+        
+        console.log('Cookie gesetzt für Benutzer:', email);
+        
+        // Bei erfolgreicher Anmeldung auch ein Nicht-HttpOnly-Cookie setzen
+        // für Frontend-Validierung
+        res.cookie('logged_in', 'true', {
+            httpOnly: false,
+            secure: false,
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 24 * 60 * 60 * 1000
+        });
+        
+        // Erfolgreiche Antwort senden
+        res.json({
+            message: 'Login erfolgreich',
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role
             }
-        );
+        });
     } catch (error) {
         console.error('Login-Fehler:', error);
-        res.status(500).json({ message: 'Serverfehler' });
+        res.status(500).json({ message: 'Serverfehler: ' + error.message });
     }
 });
 
@@ -448,6 +447,36 @@ router.put('/profile', auth, async (req, res) => {
     } catch (error) {
         console.error('Fehler beim Aktualisieren des Profils:', error);
         res.status(500).json({ message: 'Interner Server Fehler' });
+    }
+});
+
+// Neuer Endpoint zum Prüfen des Auth-Status
+router.get('/status', auth, async (req, res) => {
+    try {
+        console.log('Auth-Status-Anfrage von Benutzer-ID:', req.user._id);
+        
+        // Benutzer in DB suchen, um aktuelle Informationen zu erhalten
+        const user = await User.findById(req.user._id).select('-password');
+        
+        if (!user) {
+            console.log('Benutzer nicht in Datenbank gefunden, trotz gültigem Token');
+            return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+        }
+        
+        // Erfolgreiche Antwort senden
+        res.json({ 
+            authenticated: true,
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Fehler beim Abrufen des Auth-Status:', error);
+        res.status(500).json({ message: 'Serverfehler' });
     }
 });
 

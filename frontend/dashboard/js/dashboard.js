@@ -25,6 +25,67 @@ function getCookie(name) {
     return null;
 }
 
+// Am Anfang des dashboard.js
+// Authentifizierungsstatus prüfen
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard wird geladen');
+    
+    // Prüfe, ob das nicht-httpOnly Cookie vorhanden ist
+    const isLoggedIn = document.cookie.includes('logged_in=true');
+    console.log('Logged-in Cookie gefunden:', isLoggedIn);
+    
+    // Auch lokalen Speicher für Benutzerinformationen prüfen
+    const userInStorage = localStorage.getItem('user');
+    console.log('Benutzer im lokalen Speicher:', !!userInStorage);
+    
+    if (!isLoggedIn && !userInStorage) {
+        console.warn('Keine Anmeldehinweise gefunden, leite zum Login weiter');
+        window.location.href = '/login';
+        return;
+    }
+    
+    // Testen, ob API-Zugriff funktioniert
+    fetchAuthStatus();
+    
+    // Rest des Dashboard-Initialisierungscodes...
+});
+
+// Helfer-Funktion zum Testen des Auth-Status
+async function fetchAuthStatus() {
+    try {
+        const response = await fetch('/api/auth/status', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache'
+            },
+            credentials: 'include'
+        });
+        
+        console.log('Auth-Status-Antwort:', response.status);
+        
+        if (!response.ok) {
+            console.error('Authentifizierung fehlgeschlagen, Status:', response.status);
+            // Nur bei 401 zum Login weiterleiten
+            if (response.status === 401) {
+                console.warn('Nicht authentifiziert, leite zum Login weiter');
+                // Cookies und localStorage bereinigen
+                document.cookie = 'logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+            return false;
+        }
+        
+        const data = await response.json();
+        console.log('Authentifiziert als:', data.user.email);
+        return true;
+    } catch (error) {
+        console.error('Fehler beim Prüfen des Auth-Status:', error);
+        return false;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Prüfe zu Beginn auf gültigen Auth-Token
