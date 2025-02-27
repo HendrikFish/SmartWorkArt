@@ -139,15 +139,54 @@ const { auth, checkRole } = require('./middleware/auth');
 app.use('/api/auth', loginRoutes);
 app.use('/api', customRoutes);
 
-// Login-Routen (öffentlich zugänglich)
+// Root-Route verbessern
 app.get('/', (req, res) => {
+    // Prüfen, ob ein gültiger Auth-Token vorhanden ist
+    const authToken = req.cookies.auth_token;
+    
+    if (authToken) {
+        try {
+            // Token validieren
+            const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
+            console.log('Root-Route: Gültiges Token für Benutzer:', decoded.user._id);
+            
+            // Wenn das Token gültig ist, zum Dashboard weiterleiten
+            return res.redirect('/dashboard');
+        } catch (error) {
+            console.error('Root-Route: Ungültiges Token:', error.message);
+            // Bei ungültigem Token Cookie löschen
+            res.clearCookie('auth_token');
+        }
+    }
+    
+    console.log('Root-Route: Kein gültiges Token, Weiterleitung zu /login');
+    // Wenn kein Token oder ungültiges Token, zum Login weiterleiten
     res.redirect('/login');
 });
 
+// Login-Route verbessern
 app.get('/login', (req, res) => {
-    const loginPath = path.join(__dirname, '../frontend/login/index.html');
-    console.log('Sende Login-Seite:', loginPath);
-    res.sendFile(loginPath);
+    // Prüfen, ob bereits ein gültiger Auth-Token vorhanden ist
+    const authToken = req.cookies.auth_token;
+    
+    if (authToken) {
+        try {
+            // Token validieren
+            const decoded = jwt.verify(authToken, process.env.JWT_SECRET);
+            console.log('Login-Route: Benutzer bereits angemeldet:', decoded.user._id);
+            
+            // Wenn das Token gültig ist, zum Dashboard weiterleiten
+            return res.redirect('/dashboard');
+        } catch (error) {
+            console.error('Login-Route: Ungültiges Token:', error.message);
+            // Bei ungültigem Token Cookie löschen
+            res.clearCookie('auth_token');
+        }
+    }
+    
+    // Ansonsten Login-Seite anzeigen
+    console.log('Login-Route: Zeige Login-Seite');
+    res.sendFile(path.join(__dirname, '../frontend/login/index.html'));
 });
 
 // Registriere statische Pfade ohne Authentifizierung

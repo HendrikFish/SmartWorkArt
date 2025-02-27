@@ -114,16 +114,25 @@ router.post('/login', async (req, res) => {
             (err, token) => {
                 if (err) throw err;
                 
+                // Detaillierte Debug-Ausgabe
+                console.log('JWT Token erstellt, Länge:', token.length);
+                
                 // Token als Cookie setzen mit korrekten Optionen
                 res.cookie('auth_token', token, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    secure: false, // Für Entwicklung auf false setzen, für Produktion true
+                    sameSite: 'lax', // 'lax' erlaubt Cookies bei Weiterleitungen
                     maxAge: 24 * 60 * 60 * 1000, // 1 Tag
-                    path: '/' // Wichtig: Stellt sicher, dass das Cookie für die gesamte Domain gilt
+                    path: '/' // Stellt sicher, dass das Cookie für alle Pfade gilt
                 });
                 
-                console.log('Auth-Token-Cookie gesetzt für:', email);
+                console.log('Auth-Token-Cookie gesetzt für', email, 'mit diesen Optionen:', {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'lax',
+                    maxAge: '24 Stunden',
+                    path: '/'
+                });
                 
                 res.json({
                     message: 'Login erfolgreich',

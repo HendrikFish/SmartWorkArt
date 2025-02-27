@@ -29,15 +29,21 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             return;
         }
         
-        console.log('Login erfolgreich, leite weiter zum Dashboard');
+        console.log('Login erfolgreich, Benutzerinfo:', data.user);
         messageElement.textContent = 'Login erfolgreich, Sie werden weitergeleitet...';
         messageElement.className = 'message success';
         
-        // Kurze Verzögerung für die Weiterleitung
-        setTimeout(() => {
-            // Explizit auf /dashboard ohne Trailing Slash weiterleiten
-            window.location.href = '/dashboard';
-        }, 1000);
+        // Benutzerinfo im localStorage speichern (ohne sensible Daten)
+        localStorage.setItem('user', JSON.stringify({
+            _id: data.user._id,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+            email: data.user.email,
+            role: data.user.role
+        }));
+        
+        // Direkte Weiterleitung zum Dashboard ohne Verzögerung
+        window.location.href = '/dashboard';
         
     } catch (error) {
         console.error('Login-Fehler:', error);
