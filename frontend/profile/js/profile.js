@@ -101,13 +101,11 @@ function displayUserModules(modules) {
 
 // Formulare initialisieren
 function initForms() {
-    // Profil aktualisieren
+    // Persönliche Informationen aktualisieren
     document.getElementById('updateProfileBtn').addEventListener('click', async function() {
-        const updateData = {
-            phoneNumber: document.getElementById('phoneNumber').value,
-            employer: document.getElementById('employer').value,
-            position: document.getElementById('position').value
-        };
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const employer = document.getElementById('employer').value;
+        const position = document.getElementById('position').value;
         
         try {
             const response = await fetch('/api/auth/profile', {
@@ -116,24 +114,30 @@ function initForms() {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify(updateData)
+                body: JSON.stringify({
+                    phoneNumber,
+                    employer,
+                    position
+                })
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Fehler beim Aktualisieren des Profils');
+                throw new Error('Fehler beim Aktualisieren des Profils');
             }
             
+            const userData = await response.json();
             showMessage('profileUpdateMessage', 'Profil erfolgreich aktualisiert', 'success');
+            
         } catch (error) {
             console.error('Fehler:', error);
             showMessage('profileUpdateMessage', error.message, 'error');
         }
     });
     
-    // Passwort ändern
+    // Passwortänderungsformular
     document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        console.log('Passwortänderungsformular abgeschickt');
         
         const currentPassword = document.getElementById('currentPassword').value;
         const newPassword = document.getElementById('newPassword').value;
@@ -151,10 +155,12 @@ function initForms() {
         }
         
         try {
+            console.log('Sende Passwortänderung an API...');
             const response = await fetch('/api/auth/change-password', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
                 },
                 credentials: 'include',
                 body: JSON.stringify({
@@ -163,15 +169,18 @@ function initForms() {
                 })
             });
             
+            console.log('API-Antwort erhalten:', response.status);
+            
             if (!response.ok) {
                 const errorData = await response.json();
+                console.error('API-Fehlerdaten:', errorData);
                 throw new Error(errorData.message || 'Fehler beim Ändern des Passworts');
             }
             
             showMessage('passwordChangeMessage', 'Passwort erfolgreich geändert', 'success');
             this.reset();
         } catch (error) {
-            console.error('Fehler:', error);
+            console.error('Fehler bei der Passwortänderung:', error);
             showMessage('passwordChangeMessage', error.message, 'error');
         }
     });

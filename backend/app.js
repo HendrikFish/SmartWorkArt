@@ -98,14 +98,13 @@ app.use(helmet({
     }
 }));
 
-// MIME-Type Konfiguration für die statischen Dateien
-app.use('/navbar-static', express.static(path.join(__dirname, '../frontend/navbar'), {
-    setHeaders: (res, path) => {
+// Korrigierte Konfiguration für statische Dateien
+app.use(express.static(path.join(__dirname, '../frontend'), {
+    setHeaders: (res, path, stat) => {
         if (path.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        }
-        if (path.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
+            res.set('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.set('Content-Type', 'application/javascript');
         }
     }
 }));
@@ -205,11 +204,23 @@ app.use('/api/soloplan', auth, soloPlanRoutes);
 app.use('/api/soloselect', auth, soloSelectRoutes);
 app.use('/api', auth, customRoutes);
 app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/config')));
-// Statische Module für authentifizierte Benutzer
-staticModules.forEach(({ route, dir }) => {
-    if (route !== '/login-static') {
-        app.use(route, auth, express.static(path.join(__dirname, dir)));
-    }
+
+// Für jede statische Route
+staticModules.forEach(module => {
+    app.use(module.route, auth, (req, res, next) => {
+        if (!req.user) {
+            return res.redirect('/login');
+        }
+        next();
+    }, express.static(path.join(__dirname, module.dir), {
+        setHeaders: (res, path, stat) => {
+            if (path.endsWith('.css')) {
+                res.set('Content-Type', 'text/css');
+            } else if (path.endsWith('.js')) {
+                res.set('Content-Type', 'application/javascript');
+            }
+        }
+    }));
 });
 
 // Benutzerverwaltungs-Route (nur für Admins)

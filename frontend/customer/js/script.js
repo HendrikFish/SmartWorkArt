@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(message);
     }
 
-    // Passwort-Reset-Funktionalität
+    // Passwort-Reset-Funktionalität überarbeiten
     document.getElementById('resetPassword').addEventListener('click', async function() {
         if (!confirm('Möchten Sie wirklich ein neues Passwort für diesen Benutzer generieren?')) {
             return;
@@ -415,36 +415,58 @@ document.addEventListener('DOMContentLoaded', () => {
         // Korrigierte Methode zum Abrufen der userId
         const userId = document.querySelector('.modal-content').dataset.userId;
         
-        console.log('Reset Passwort für Benutzer-ID:', userId); // Debug-Ausgabe
+        console.log('Reset Passwort für Benutzer-ID:', userId);
         
         if (!userId) {
             alert('Fehler: Benutzer-ID konnte nicht ermittelt werden.');
             return;
         }
         
+        const apiEndpoint = `/api/customers/${userId}/reset-password`;
+        console.log('Verwende folgenden API-Endpunkt:', apiEndpoint);
+        
         try {
-            console.log('Verwende folgenden API-Endpunkt:', `/api/customers/${userId}/reset-password`);
-            const response = await fetch(`/api/customers/${userId}/reset-password`, {
+            // Frischen CSRF-Token laden (falls verwendet)
+            // Optional: await refreshCSRFToken();
+            
+            const response = await fetch(apiEndpoint, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache' // Verhindert Caching
                 },
-                credentials: 'include'
+                credentials: 'include',
+                cache: 'no-store' // Verhindert Caching der Anfrage
             });
             
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Server-Antwort:', errorText);
-                throw new Error(`Fehler beim Zurücksetzen des Passworts: ${response.status} ${response.statusText}`);
+                
+                // Bei 401 neu laden oder zum Login weiterleiten
+                if (response.status === 401) {
+                    alert('Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                throw new Error(`Fehler beim Zurücksetzen des Passworts: ${response.status}`);
             }
             
             const data = await response.json();
             
-            // Neues Passwort anzeigen
-            document.getElementById('newPassword').textContent = data.newPassword;
-            document.getElementById('newPasswordContainer').style.display = 'block';
+            // Neues Passwort anzeigen und sicherstellen, dass das Container-Element leer ist
+            const passwordContainer = document.getElementById('newPasswordContainer');
+            const passwordElement = document.getElementById('newPassword');
             
-            // Kopier-Button Funktionalität
+            passwordElement.textContent = data.newPassword;
+            passwordContainer.style.display = 'block';
+            
+            // Event Listener entfernen, um Doppelanmeldung zu vermeiden
+            const copyBtn = document.getElementById('copyPassword');
+            copyBtn.replaceWith(copyBtn.cloneNode(true));
+            
+            // Neuen Event Listener hinzufügen
             document.getElementById('copyPassword').addEventListener('click', function() {
                 const password = document.getElementById('newPassword').textContent;
                 navigator.clipboard.writeText(password)

@@ -327,8 +327,11 @@ router.put('/user/:userId', auth, checkRole(['admin']), async (req, res) => {
 // Passwort ändern (für alle Benutzer)
 router.post('/change-password', auth, async (req, res) => {
     try {
+        console.log('Passwortänderungsanfrage erhalten');
+        
         const { currentPassword, newPassword } = req.body;
         
+        console.log('Validiere Eingaben');
         // Validierung
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ message: 'Aktuelles und neues Passwort sind erforderlich' });
@@ -338,23 +341,30 @@ router.post('/change-password', auth, async (req, res) => {
             return res.status(400).json({ message: 'Das neue Passwort muss mindestens 6 Zeichen lang sein' });
         }
         
+        console.log('Suche Benutzer in der Datenbank');
         // Benutzer finden
         const user = await User.findById(req.user._id);
         if (!user) {
             return res.status(404).json({ message: 'Benutzer nicht gefunden' });
         }
         
-        // Aktuelles Passwort überprüfen (direkte Verwendung von bcrypt statt einer Methode)
+        console.log('Überprüfe aktuelles Passwort');
+        // Aktuelles Passwort überprüfen
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Aktuelles Passwort ist falsch' });
         }
         
+        console.log('Setze neues Passwort');
         // Neues Passwort setzen
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(newPassword, salt);
+        
+        console.log('Speichere Benutzer');
+        // Benutzer speichern
         await user.save();
         
+        console.log('Passwort erfolgreich geändert');
         res.json({ message: 'Passwort erfolgreich geändert' });
     } catch (error) {
         console.error('Fehler beim Ändern des Passworts:', error);
