@@ -383,3 +383,49 @@ tr:hover {
     height: 16px;
     cursor: pointer;
 }
+
+.password-reset-group {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.new-password {
+    font-family: monospace;
+    background-color: #fff;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+#newPasswordContainer {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}

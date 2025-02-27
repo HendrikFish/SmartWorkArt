@@ -177,6 +177,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
+        // Profil-Button Event-Handler
+        document.getElementById('profileBtn').addEventListener('click', function() {
+            window.location.href = '/profile';
+        });
+
     } catch (error) {
         console.error('Fehler beim Laden des Dashboards:', error);
         if (error.message === 'Nicht autorisiert') {

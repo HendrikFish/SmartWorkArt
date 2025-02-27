@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/loginModels');
+const bcrypt = require('bcryptjs');
 const { auth, checkRole } = require('../middleware/auth');
 
 // Alle Benutzer abrufen (nur für Admins)

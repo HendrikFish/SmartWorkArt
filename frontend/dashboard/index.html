@@ -14,6 +14,9 @@
         </div>
         <div class="nav-right">
             <span id="userInfo"></span>
+            <button id="profileBtn" class="profile-btn">
+                <i class="fas fa-user"></i> Profil
+            </button>
             <button id="logoutBtn" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Abmelden
             </button>
@@ -24,6 +27,25 @@
         <h2>Verfügbare Module</h2>
         <div id="modulesGrid" class="modules-grid">
             <!-- Module werden dynamisch eingefügt -->
+        </div>
+        <div class="profile-section">
+            <h3>Passwort ändern</h3>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Aktuelles Passwort</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Neues Passwort</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Passwort bestätigen</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Passwort ändern</button>
+                <div id="passwordChangeMessage" class="message"></div>
+            </form>
         </div>
     </main>
 

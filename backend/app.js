@@ -28,7 +28,8 @@ const staticModules = [
     { route: '/soloSelect-static', dir: '../frontend/soloSelect' },
     { route: '/login-static', dir: '../frontend/login' },
     { route: '/dashboard-static', dir: '../frontend/dashboard' },
-    { route: '/customer-static', dir: '../frontend/customer' }
+    { route: '/customer-static', dir: '../frontend/customer' },
+    { route: '/profile-static', dir: '../frontend/profile' }
 ];
 
 // Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
@@ -171,6 +172,22 @@ app.use('/dashboard-static', auth, (req, res, next) => {
     }
     next();
 }, express.static(path.join(__dirname, '../frontend/dashboard')));
+
+// Profil-Route (nach der Dashboard-Route)
+app.get('/profile', auth, (req, res) => {
+    if (!req.user) {
+        return res.redirect('/login');
+    }
+    res.sendFile(path.join(__dirname, '../frontend/profile/index.html'));
+});
+
+// Statische Profil-Dateien
+app.use('/profile-static', auth, (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/login');
+    }
+    next();
+}, express.static(path.join(__dirname, '../frontend/profile')));
 
 // Geschützte API-Routen
 app.use('/api/einrichtungen', auth, einrichtungRoutes);

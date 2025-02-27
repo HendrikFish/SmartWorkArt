@@ -121,6 +121,18 @@
                 </select>
             </div>
 
+            <!-- Passwort-Reset-Bereich hinzufügen -->
+            <div class="detail-group password-reset-group">
+                <label>Passwort-Verwaltung:</label>
+                <button id="resetPassword" class="btn-warning">Passwort zurücksetzen</button>
+                <div id="newPasswordContainer" style="display: none;">
+                    <p>Neues Passwort: <span id="newPassword" class="new-password"></span></p>
+                    <button id="copyPassword" class="btn-secondary">
+                        <i class="fas fa-copy"></i> Kopieren
+                    </button>
+                </div>
+            </div>
+
             <!-- Berechtigungen -->
             <div class="detail-group permissions-group">
                 <label>Verfügbare Module:</label>

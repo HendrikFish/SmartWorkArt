@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzerprofil - Seniorenheim Portal</title>
+    <link rel="stylesheet" href="/profile-static/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <h1>Benutzerprofil</h1>
+        </div>
+        <div class="nav-right">
+            <button id="backToDashboard" class="nav-btn">
+                <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+            </button>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <div class="profile-card">
+            <h2>Meine Daten</h2>
+            
+            <div class="profile-section">
+                <h3>Persönliche Informationen</h3>
+                <form id="personalInfoForm">
+                    <div class="form-group">
+                        <label for="firstName">Vorname</label>
+                        <input type="text" id="firstName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Nachname</label>
+                        <input type="text" id="lastName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-Mail</label>
+                        <input type="email" id="email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Telefonnummer</label>
+                        <input type="tel" id="phoneNumber">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="profile-section">
+                <h3>Berufliche Informationen</h3>
+                <form id="professionalInfoForm">
+                    <div class="form-group">
+                        <label for="employer">Arbeitgeber</label>
+                        <input type="text" id="employer">
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Position</label>
+                        <input type="text" id="position">
+                    </div>
+                    <div class="form-group">
+                        <label for="facility">Einrichtung</label>
+                        <input type="text" id="facility" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Rolle</label>
+                        <input type="text" id="role" readonly>
+                    </div>
+                </form>
+                <button id="updateProfileBtn" class="btn-primary">Profil aktualisieren</button>
+                <div id="profileUpdateMessage" class="message"></div>
+            </div>
+            
+            <div class="profile-section">
+                <h3>Meine Module</h3>
+                <div class="modules-grid" id="userModules">
+                    <!-- Module werden dynamisch geladen -->
+                </div>
+            </div>
+            
+            <div class="profile-section">
+                <h3>Passwort ändern</h3>
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Aktuelles Passwort</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Neues Passwort</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Passwort bestätigen</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Passwort ändern</button>
+                    <div id="passwordChangeMessage" class="message"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="/profile-static/js/profile.js"></script>
+</body>
+</html> 

@@ -324,4 +324,82 @@ router.put('/user/:userId', auth, checkRole(['admin']), async (req, res) => {
     }
 });
 
+// Passwort ändern (für alle Benutzer)
+router.post('/change-password', auth, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        
+        // Validierung
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: 'Aktuelles und neues Passwort sind erforderlich' });
+        }
+        
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Das neue Passwort muss mindestens 6 Zeichen lang sein' });
+        }
+        
+        // Benutzer finden
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+        }
+        
+        // Aktuelles Passwort überprüfen
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Aktuelles Passwort ist falsch' });
+        }
+        
+        // Neues Passwort setzen
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+        
+        res.json({ message: 'Passwort erfolgreich geändert' });
+    } catch (error) {
+        console.error('Fehler beim Ändern des Passworts:', error);
+        res.status(500).json({ message: 'Interner Server Fehler' });
+    }
+});
+
+// Benutzerprofil abrufen
+router.get('/profile', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+        }
+        res.json(user);
+    } catch (error) {
+        console.error('Fehler beim Abrufen des Profils:', error);
+        res.status(500).json({ message: 'Interner Server Fehler' });
+    }
+});
+
+// Benutzerprofil aktualisieren
+router.put('/profile', auth, async (req, res) => {
+    try {
+        const { phoneNumber, employer, position } = req.body;
+        
+        // Benutzer finden und aktualisieren
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { 
+                phoneNumber, 
+                employer, 
+                position
+            },
+            { new: true }
+        ).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+        }
+        
+        res.json(user);
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Profils:', error);
+        res.status(500).json({ message: 'Interner Server Fehler' });
+    }
+});
+
 module.exports = router;

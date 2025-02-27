@@ -401,6 +401,78 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(message);
     }
 
+    // Passwort-Reset-Funktionalität
+    document.getElementById('resetPassword').addEventListener('click', async function() {
+        if (!confirm('Möchten Sie wirklich ein neues Passwort für diesen Benutzer generieren?')) {
+            return;
+        }
+        
+        const userId = this.closest('.modal-content').dataset.userId;
+        
+        try {
+            const response = await fetch(`/api/customers/${userId}/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                // Neues Passwort anzeigen
+                document.getElementById('newPassword').textContent = data.newPassword;
+                document.getElementById('newPasswordContainer').style.display = 'block';
+                
+                // Meldung anzeigen
+                showMessage('success', 'Passwort erfolgreich zurückgesetzt');
+            } else {
+                showMessage('error', data.message || 'Fehler beim Zurücksetzen des Passworts');
+            }
+        } catch (error) {
+            console.error('Fehler:', error);
+            showMessage('error', 'Ein Fehler ist aufgetreten');
+        }
+    });
+
+    // Passwort-Kopier-Funktionalität
+    document.getElementById('copyPassword').addEventListener('click', function() {
+        const passwordText = document.getElementById('newPassword').textContent;
+        
+        navigator.clipboard.writeText(passwordText)
+            .then(() => {
+                showMessage('success', 'Passwort in die Zwischenablage kopiert');
+            })
+            .catch(() => {
+                showMessage('error', 'Fehler beim Kopieren');
+            });
+    });
+
+    // Hilfsfunktion für Meldungen
+    function showMessage(type, message) {
+        // Bestehende Meldungen entfernen
+        const existingMessages = document.querySelectorAll('.message');
+        existingMessages.forEach(msg => msg.remove());
+        
+        // Neue Meldung erstellen
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message message-${type}`;
+        messageDiv.textContent = message;
+        
+        // Zur Modal-Content hinzufügen
+        document.querySelector('.modal-content').appendChild(messageDiv);
+        
+        // Nach 3 Sekunden ausblenden
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 3000);
+    }
+
+    // Beim Öffnen des Modals das Passwort-Container zurücksetzen
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('newPasswordContainer').style.display = 'none';
+    });
+
     // Initial Benutzer und Einrichtungen laden
     loadUsers();
     loadFacilities();
