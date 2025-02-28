@@ -101,22 +101,17 @@ function displayUserModules(modules) {
 
 // Formulare initialisieren
 function initForms() {
-    // Persönliche Informationen aktualisieren
-    document.getElementById('personalInfoForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const formData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            email: document.getElementById('email').value,
-            phoneNumber: document.getElementById('phoneNumber').value,
-            employer: document.getElementById('employer').value,
-            position: document.getElementById('position').value
-        };
-        
+    // Event-Handler für den "Profil aktualisieren" Button
+    document.getElementById('updateProfileBtn').addEventListener('click', async function() {
         try {
-            const response = await fetch('/api/auth/update-profile', {
-                method: 'POST',
+            const formData = {
+                phoneNumber: document.getElementById('phoneNumber').value,
+                employer: document.getElementById('employer').value,
+                position: document.getElementById('position').value
+            };
+
+            const response = await fetch('/api/auth/profile', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-cache'
@@ -124,18 +119,22 @@ function initForms() {
                 credentials: 'include',
                 body: JSON.stringify(formData)
             });
-            
+
             if (!response.ok) {
-                throw new Error('Fehler beim Aktualisieren der Informationen');
+                throw new Error('Fehler beim Aktualisieren des Profils');
             }
+
+            const updatedData = await response.json();
+            showMessage('profileUpdateMessage', 'Profil erfolgreich aktualisiert', 'success');
             
-            showMessage('personalInfoMessage', 'Informationen erfolgreich aktualisiert', 'success');
+            // Aktualisiere die Anzeige mit den neuen Daten
+            displayUserData(updatedData);
         } catch (error) {
-            console.error('Fehler:', error);
-            showMessage('personalInfoMessage', error.message, 'error');
+            console.error('Fehler beim Aktualisieren:', error);
+            showMessage('profileUpdateMessage', error.message, 'error');
         }
     });
-    
+
     // Passwort-Reset-Funktionalität
     document.getElementById('resetPassword').addEventListener('click', async function() {
         if (!confirm('Möchten Sie wirklich ein neues Passwort generieren?')) {

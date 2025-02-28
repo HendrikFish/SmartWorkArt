@@ -6,18 +6,19 @@
     border: 1px solid #ddd;
 }
 
-.btn-warning {
-    background-color: #ffc107;
-    color: #000;
+.btn-primary {
+    background-color: #007bff;
+    color: white;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
     margin-bottom: 0.5rem;
+    transition: background-color 0.2s;
 }
 
-.btn-warning:hover {
-    background-color: #ffb300;
+.btn-primary:hover {
+    background-color: #0056b3;
 }
 
 .btn-secondary {
