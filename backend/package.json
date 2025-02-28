@@ -2,10 +2,10 @@
   "name": "seniorenheim-backend",
   "version": "1.0.0",
   "description": "Backend für das Seniorenheim-Portal",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "build": "echo 'Build step completed'",
     "postinstall": "node -e \"try { require('./admin/createAdmin.js') } catch(e) { console.log('Admin setup skipped:', e.message) }\""
   },
