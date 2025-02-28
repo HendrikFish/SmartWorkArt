@@ -413,4 +413,39 @@ router.put('/profile', auth, async (req, res) => {
     }
 });
 
+// Eigenes Passwort zurücksetzen
+router.post('/reset-own-password', auth, async (req, res) => {
+    try {
+        // Zufälliges Passwort generieren (8 Zeichen)
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+        let newPassword = '';
+        for (let i = 0; i < 12; i++) {
+            newPassword += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        
+        // Passwort hashen
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        
+        // Benutzer aktualisieren
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { password: hashedPassword },
+            { new: true }
+        ).select('-password');
+        
+        if (!user) {
+            return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+        }
+        
+        res.json({ 
+            message: 'Passwort erfolgreich zurückgesetzt',
+            newPassword: newPassword
+        });
+    } catch (error) {
+        console.error('Fehler beim Zurücksetzen des Passworts:', error);
+        res.status(500).json({ message: 'Interner Server Fehler' });
+    }
+});
+
 module.exports = router;

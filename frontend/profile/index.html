@@ -78,22 +78,16 @@
             
             <div class="profile-section">
                 <h3>Passwort ändern</h3>
-                <form id="changePasswordForm">
-                    <div class="form-group">
-                        <label for="currentPassword">Aktuelles Passwort</label>
-                        <input type="password" id="currentPassword" required>
+                <div class="password-reset-group">
+                    <button id="resetPassword" class="btn-warning">Neues Passwort generieren</button>
+                    <div id="newPasswordContainer" style="display: none;">
+                        <p>Neues Passwort: <span id="newPassword" class="new-password"></span></p>
+                        <button id="copyPassword" class="btn-secondary">
+                            <i class="fas fa-copy"></i> Kopieren
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="newPassword">Neues Passwort</label>
-                        <input type="password" id="newPassword" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Passwort bestätigen</label>
-                        <input type="password" id="confirmPassword" required>
-                    </div>
-                    <button type="submit" class="btn-primary">Passwort ändern</button>
                     <div id="passwordChangeMessage" class="message"></div>
-                </form>
+                </div>
             </div>
         </div>
     </main>

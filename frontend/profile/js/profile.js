@@ -102,85 +102,79 @@ function displayUserModules(modules) {
 // Formulare initialisieren
 function initForms() {
     // Persönliche Informationen aktualisieren
-    document.getElementById('updateProfileBtn').addEventListener('click', async function() {
-        const phoneNumber = document.getElementById('phoneNumber').value;
-        const employer = document.getElementById('employer').value;
-        const position = document.getElementById('position').value;
-        
-        try {
-            const response = await fetch('/api/auth/profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    phoneNumber,
-                    employer,
-                    position
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error('Fehler beim Aktualisieren des Profils');
-            }
-            
-            const userData = await response.json();
-            showMessage('profileUpdateMessage', 'Profil erfolgreich aktualisiert', 'success');
-            
-        } catch (error) {
-            console.error('Fehler:', error);
-            showMessage('profileUpdateMessage', error.message, 'error');
-        }
-    });
-    
-    // Passwortänderungsformular
-    document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+    document.getElementById('personalInfoForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        console.log('Passwortänderungsformular abgeschickt');
         
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        // Validierung
-        if (newPassword !== confirmPassword) {
-            showMessage('passwordChangeMessage', 'Die Passwörter stimmen nicht überein', 'error');
-            return;
-        }
-        
-        if (newPassword.length < 6) {
-            showMessage('passwordChangeMessage', 'Das neue Passwort muss mindestens 6 Zeichen lang sein', 'error');
-            return;
-        }
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            employer: document.getElementById('employer').value,
+            position: document.getElementById('position').value
+        };
         
         try {
-            console.log('Sende Passwortänderung an API...');
-            const response = await fetch('/api/auth/change-password', {
+            const response = await fetch('/api/auth/update-profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Cache-Control': 'no-cache'
                 },
                 credentials: 'include',
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword
-                })
+                body: JSON.stringify(formData)
             });
             
-            console.log('API-Antwort erhalten:', response.status);
-            
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error('API-Fehlerdaten:', errorData);
-                throw new Error(errorData.message || 'Fehler beim Ändern des Passworts');
+                throw new Error('Fehler beim Aktualisieren der Informationen');
             }
             
-            showMessage('passwordChangeMessage', 'Passwort erfolgreich geändert', 'success');
-            this.reset();
+            showMessage('personalInfoMessage', 'Informationen erfolgreich aktualisiert', 'success');
         } catch (error) {
-            console.error('Fehler bei der Passwortänderung:', error);
+            console.error('Fehler:', error);
+            showMessage('personalInfoMessage', error.message, 'error');
+        }
+    });
+    
+    // Passwort-Reset-Funktionalität
+    document.getElementById('resetPassword').addEventListener('click', async function() {
+        if (!confirm('Möchten Sie wirklich ein neues Passwort generieren?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/auth/reset-own-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Fehler beim Zurücksetzen des Passworts');
+            }
+            
+            const data = await response.json();
+            
+            // Neues Passwort anzeigen
+            document.getElementById('newPassword').textContent = data.newPassword;
+            document.getElementById('newPasswordContainer').style.display = 'block';
+            showMessage('passwordChangeMessage', 'Neues Passwort wurde generiert', 'success');
+            
+            // Copy-Button Funktionalität
+            document.getElementById('copyPassword').addEventListener('click', function() {
+                const password = document.getElementById('newPassword').textContent;
+                navigator.clipboard.writeText(password).then(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i> Kopiert';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-copy"></i> Kopieren';
+                    }, 2000);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Fehler:', error);
             showMessage('passwordChangeMessage', error.message, 'error');
         }
     });
@@ -188,13 +182,15 @@ function initForms() {
 
 // Hilfsfunktion für Meldungen
 function showMessage(elementId, message, type) {
-    const messageElement = document.getElementById(elementId);
-    messageElement.textContent = message;
-    messageElement.className = `message ${type}`;
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.className = `message ${type}`;
+    }
     
     // Nach 3 Sekunden ausblenden
     setTimeout(() => {
-        messageElement.textContent = '';
-        messageElement.className = 'message';
+        element.textContent = '';
+        element.className = 'message';
     }, 5000);
 } 
