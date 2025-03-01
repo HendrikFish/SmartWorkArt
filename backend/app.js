@@ -169,6 +169,17 @@ app.get('/login', (req, res) => {
     res.sendFile(loginPath);
 });
 
+// Explizite Routen für Login CSS und JS mit korrektem MIME-Typ
+app.get('/login-static/css/styles.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css');
+    res.sendFile(path.join(__dirname, '../frontend/login/css/styles.css'));
+});
+
+app.get('/login-static/js/script.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '../frontend/login/js/script.js'));
+});
+
 // Auth-Check Middleware für geschützte Routen
 app.use('/dashboard*', auth, (req, res, next) => {
     if (!req.user) {
@@ -232,20 +243,34 @@ app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/confi
 
 // Für jede statische Route
 staticModules.forEach(module => {
-    app.use(module.route, auth, (req, res, next) => {
-        if (!req.user) {
-            return res.redirect('/login');
-        }
-        next();
-    }, express.static(path.join(__dirname, module.dir), {
-        setHeaders: (res, path, stat) => {
-            if (path.endsWith('.css')) {
-                res.set('Content-Type', 'text/css');
-            } else if (path.endsWith('.js')) {
-                res.set('Content-Type', 'application/javascript');
+    // Login-Ressourcen sollten öffentlich zugänglich sein
+    if (module.route === '/login-static') {
+        app.use(module.route, express.static(path.join(__dirname, module.dir), {
+            setHeaders: (res, path, stat) => {
+                if (path.endsWith('.css')) {
+                    res.set('Content-Type', 'text/css');
+                } else if (path.endsWith('.js')) {
+                    res.set('Content-Type', 'application/javascript');
+                }
             }
-        }
-    }));
+        }));
+    } else {
+        // Alle anderen statischen Ressourcen erfordern Authentifizierung
+        app.use(module.route, auth, (req, res, next) => {
+            if (!req.user) {
+                return res.redirect('/login');
+            }
+            next();
+        }, express.static(path.join(__dirname, module.dir), {
+            setHeaders: (res, path, stat) => {
+                if (path.endsWith('.css')) {
+                    res.set('Content-Type', 'text/css');
+                } else if (path.endsWith('.js')) {
+                    res.set('Content-Type', 'application/javascript');
+                }
+            }
+        }));
+    }
 });
 
 // Benutzerverwaltungs-Route (nur für Admins)
