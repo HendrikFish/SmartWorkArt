@@ -29,7 +29,8 @@ const staticModules = [
     { route: '/login-static', dir: '../frontend/login' },
     { route: '/dashboard-static', dir: '../frontend/dashboard' },
     { route: '/customer-static', dir: '../frontend/customer' },
-    { route: '/profile-static', dir: '../frontend/profile' }
+    { route: '/profile-static', dir: '../frontend/profile' },
+    { route: '/visit-static', dir: '../frontend/visit' }
 ];
 
 // Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
@@ -130,19 +131,24 @@ const { auth, checkRole } = require('./middleware/auth');
 app.use('/api/auth', loginRoutes);
 app.use('/api', customRoutes);
 
-// Login-Routen (öffentlich zugänglich)
+// Visit-Route (öffentlich zugänglich)
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
 });
 
+app.get('/visit', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
+});
+
+// Statische Visit-Dateien (öffentlich zugänglich)
+app.use('/visit-static', express.static(path.join(__dirname, '../frontend/visit')));
+
+// Login-Routen (weiterhin öffentlich zugänglich, aber nicht mehr der Einstiegspunkt)
 app.get('/login', (req, res) => {
     const loginPath = path.join(__dirname, '../frontend/login/index.html');
     console.log('Sende Login-Seite:', loginPath);
     res.sendFile(loginPath);
 });
-
-// Statische Login-Dateien (öffentlich zugänglich)
-app.use('/login-static', express.static(path.join(__dirname, '../frontend/login')));
 
 // Auth-Check Middleware für geschützte Routen
 app.use('/dashboard*', auth, (req, res, next) => {
