@@ -110,6 +110,17 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
     }
 }));
 
+// Statische Dateien im Wurzelverzeichnis (für Startseite)
+app.use(express.static(path.join(__dirname, '..'), {
+    setHeaders: (res, path, stat) => {
+        if (path.endsWith('.css')) {
+            res.set('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.set('Content-Type', 'application/javascript');
+        }
+    }
+}));
+
 // API-Routen registrieren
 const einrichtungRoutes = require('./routes/einrichtungRoutes');
 const datenbankRoutes = require('./routes/datenbankRoutes');
