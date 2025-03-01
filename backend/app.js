@@ -131,16 +131,7 @@ const { auth, checkRole } = require('./middleware/auth');
 app.use('/api/auth', loginRoutes);
 app.use('/api', customRoutes);
 
-// Visit-Route (öffentlich zugänglich)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
-});
-
-app.get('/visit', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
-});
-
-// Statische Visit-Dateien (öffentlich zugänglich) - mit korrekter MIME-Typ-Konfiguration
+// Statische Visit-Dateien (öffentlich zugänglich)
 app.use('/visit-static', express.static(path.join(__dirname, '../frontend/visit'), {
     setHeaders: (res, path, stat) => {
         if (path.endsWith('.css')) {
@@ -151,16 +142,14 @@ app.use('/visit-static', express.static(path.join(__dirname, '../frontend/visit'
     }
 }));
 
-// Root-Route für Zugriff auf Ressourcen im Root-Verzeichnis
-app.use(express.static(path.join(__dirname, '../frontend/visit'), {
-    setHeaders: (res, path, stat) => {
-        if (path.endsWith('.css')) {
-            res.set('Content-Type', 'text/css');
-        } else if (path.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript');
-        }
-    }
-}));
+// Root-Route für Visit-Seite
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
+});
+
+app.get('/visit', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
+});
 
 // Login-Routen (weiterhin öffentlich zugänglich, aber nicht mehr der Einstiegspunkt)
 app.get('/login', (req, res) => {
