@@ -133,12 +133,12 @@ app.use('/api', customRoutes);
 
 // Frontpage-Route (öffentlich zugänglich)
 app.get('/', (req, res) => {
-    const frontpagePath = path.join(__dirname, '../frontend/frontpage/index.html');
+    const frontpagePath = path.join(__dirname, '../index.html');
     res.sendFile(frontpagePath);
 });
 
 // Statische Frontpage-Dateien (öffentlich zugänglich)
-app.use('/frontpage-static', express.static(path.join(__dirname, '../frontend/frontpage')));
+app.use('/frontpage-static', express.static(path.join(__dirname, '..')));
 
 // Login-Route
 app.get('/login', (req, res) => {
