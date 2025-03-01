@@ -121,6 +121,18 @@ app.use(express.static(path.join(__dirname, '..'), {
     }
 }));
 
+// Explizite Route für styles.css mit korrektem MIME-Typ
+app.get('/styles.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css');
+    res.sendFile(path.join(__dirname, '../styles.css'));
+});
+
+// Explizite Route für app.js mit korrektem MIME-Typ
+app.get('/app.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '../app.js'));
+});
+
 // API-Routen registrieren
 const einrichtungRoutes = require('./routes/einrichtungRoutes');
 const datenbankRoutes = require('./routes/datenbankRoutes');
