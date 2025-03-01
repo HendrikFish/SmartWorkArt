@@ -110,28 +110,19 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
     }
 }));
 
-// API-Routen registrieren
-const einrichtungRoutes = require('./routes/einrichtungRoutes');
-const datenbankRoutes = require('./routes/datenbankRoutes');
-const rezepteRoutes = require('./routes/rezepteRoutes');
-const zutatenRoutes = require('./routes/zutatenRoutes');
-const planRoutes = require('./routes/planRoutes');
-const calcRoutes = require('./routes/calcRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const numberRoutes = require('./routes/numberRoutes');
-const menueRoutes = require('./routes/menueRoutes');
-const soloRoutes = require('./routes/soloRoutes');
-const soloPlanRoutes = require('./routes/soloPlanRoutes');
-const soloSelectRoutes = require('./routes/soloSelectRoutes');
-const loginRoutes = require('./routes/loginRoutes');
-const customRoutes = require('./routes/customRoutes');
-const { auth, checkRole } = require('./middleware/auth');
+// WICHTIG: Diese Zeile zuerst, vor den anderen statischen Route-Konfigurationen
+// Root statische Dateien für Visit (ohne Authentifizierung)
+app.use('/', express.static(path.join(__dirname, '../frontend/visit'), {
+    setHeaders: (res, path, stat) => {
+        if (path.endsWith('.css')) {
+            res.set('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.set('Content-Type', 'application/javascript');
+        }
+    }
+}));
 
-// API-Routen registrieren
-app.use('/api/auth', loginRoutes);
-app.use('/api', customRoutes);
-
-// Statische Visit-Dateien (öffentlich zugänglich)
+// Statische Visit-Dateien auch über den visit-static Pfad
 app.use('/visit-static', express.static(path.join(__dirname, '../frontend/visit'), {
     setHeaders: (res, path, stat) => {
         if (path.endsWith('.css')) {
