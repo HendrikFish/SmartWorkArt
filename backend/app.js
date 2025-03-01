@@ -1,30 +1,12 @@
 const path = require('path');
 require('dotenv').config();
 
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/database');
-
-// Import der Auth-Middleware
-const auth = require('./middleware/auth');
-const checkRole = require('./middleware/checkRole');
-
-// Import der Routen
-const einrichtungRoutes = require('./routes/einrichtungRoutes');
-const datenbankRoutes = require('./routes/datenbankRoutes');
-const rezepteRoutes = require('./routes/rezepteRoutes');
-const zutatenRoutes = require('./routes/zutatenRoutes');
-const planRoutes = require('./routes/planRoutes');
-const calcRoutes = require('./routes/calcRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const numberRoutes = require('./routes/numberRoutes');
-const menueRoutes = require('./routes/menueRoutes');
-const soloRoutes = require('./routes/soloRoutes');
-const soloPlanRoutes = require('./routes/soloPlanRoutes');
-const soloSelectRoutes = require('./routes/soloSelectRoutes');
-const customRoutes = require('./routes/customRoutes');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
@@ -48,7 +30,7 @@ const staticModules = [
     { route: '/dashboard-static', dir: '../frontend/dashboard' },
     { route: '/customer-static', dir: '../frontend/customer' },
     { route: '/profile-static', dir: '../frontend/profile' },
-    { route: '/visit-static', dir: '../frontend/visit' }
+    { route: '/frontpage-static', dir: '../frontend/frontpage' }
 ];
 
 // Navbar-Konfiguration hinzufügen (nach den bestehenden staticModules)
@@ -128,42 +110,39 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
     }
 }));
 
-// WICHTIG: Diese Zeile zuerst, vor den anderen statischen Route-Konfigurationen
-// Root statische Dateien für Visit (ohne Authentifizierung)
-app.use('/', express.static(path.join(__dirname, '../frontend/visit'), {
-    setHeaders: (res, path, stat) => {
-        if (path.endsWith('.css')) {
-            res.set('Content-Type', 'text/css');
-        } else if (path.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript');
-        }
-    }
-}));
+// API-Routen registrieren
+const einrichtungRoutes = require('./routes/einrichtungRoutes');
+const datenbankRoutes = require('./routes/datenbankRoutes');
+const rezepteRoutes = require('./routes/rezepteRoutes');
+const zutatenRoutes = require('./routes/zutatenRoutes');
+const planRoutes = require('./routes/planRoutes');
+const calcRoutes = require('./routes/calcRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const numberRoutes = require('./routes/numberRoutes');
+const menueRoutes = require('./routes/menueRoutes');
+const soloRoutes = require('./routes/soloRoutes');
+const soloPlanRoutes = require('./routes/soloPlanRoutes');
+const soloSelectRoutes = require('./routes/soloSelectRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const customRoutes = require('./routes/customRoutes');
+const { auth, checkRole } = require('./middleware/auth');
 
-// Statische Visit-Dateien auch über den visit-static Pfad
-app.use('/visit-static', express.static(path.join(__dirname, '../frontend/visit'), {
-    setHeaders: (res, path, stat) => {
-        if (path.endsWith('.css')) {
-            res.set('Content-Type', 'text/css');
-        } else if (path.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript');
-        }
-    }
-}));
+// API-Routen registrieren
+app.use('/api/auth', loginRoutes);
+app.use('/api', customRoutes);
 
-// Root-Route für Visit-Seite
+// Frontpage-Route (öffentlich zugänglich)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
+    const frontpagePath = path.join(__dirname, '../frontend/frontpage/index.html');
+    res.sendFile(frontpagePath);
 });
 
-app.get('/visit', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/visit/index.html'));
-});
+// Statische Frontpage-Dateien (öffentlich zugänglich)
+app.use('/frontpage-static', express.static(path.join(__dirname, '../frontend/frontpage')));
 
-// Login-Routen (weiterhin öffentlich zugänglich, aber nicht mehr der Einstiegspunkt)
+// Login-Route
 app.get('/login', (req, res) => {
     const loginPath = path.join(__dirname, '../frontend/login/index.html');
-    console.log('Sende Login-Seite:', loginPath);
     res.sendFile(loginPath);
 });
 
