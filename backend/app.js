@@ -1,12 +1,30 @@
 const path = require('path');
 require('dotenv').config();
 
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/database');
+
+// Import der Auth-Middleware
+const auth = require('./middleware/auth');
+const checkRole = require('./middleware/checkRole');
+
+// Import der Routen
+const einrichtungRoutes = require('./routes/einrichtungRoutes');
+const datenbankRoutes = require('./routes/datenbankRoutes');
+const rezepteRoutes = require('./routes/rezepteRoutes');
+const zutatenRoutes = require('./routes/zutatenRoutes');
+const planRoutes = require('./routes/planRoutes');
+const calcRoutes = require('./routes/calcRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const numberRoutes = require('./routes/numberRoutes');
+const menueRoutes = require('./routes/menueRoutes');
+const soloRoutes = require('./routes/soloRoutes');
+const soloPlanRoutes = require('./routes/soloPlanRoutes');
+const soloSelectRoutes = require('./routes/soloSelectRoutes');
+const customRoutes = require('./routes/customRoutes');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
