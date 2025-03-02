@@ -1,0 +1,29 @@
+{
+  "extraCategories": [
+    {
+      "id": "kaltePlatte",
+      "displayName": "Kalte Platte",
+      "type": "abend"
+    },
+    {
+      "id": "wurstbrotToast",
+      "displayName": "Wurstbrot-Toast",
+      "type": "abend"
+    },
+    {
+      "id": "wurstbrotSchwarzBrot",
+      "displayName": "Wurstbrot-Schw. Brot",
+      "type": "abend"
+    },
+    {
+      "id": "kaesebrotToast",
+      "displayName": "Käsebrot-Toast",
+      "type": "abend"
+    },
+    {
+      "id": "kaesebrotSchwarzBrot",
+      "displayName": "Käsebrot-Schw. Brot",
+      "type": "abend"
+    }
+  ]
+} 

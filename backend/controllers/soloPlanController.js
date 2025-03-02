@@ -116,24 +116,32 @@ class SoloPlanController {
     static async checkExistingData(req, res) {
         try {
             const { year, week, resident } = req.params;
-            const filePath = path.join(__dirname, '..', 'data', 'soloPlan', year, `KW${week}`, `${resident}.json`);
-            
-            try {
-                await fs.access(filePath);
-                res.json({ exists: true });
-            } catch (error) {
-                if (error.code === 'ENOENT') {
-                    res.json({ exists: false });
-                } else {
-                    throw error;
-                }
-            }
+            const result = await SoloPlanModel.checkExistingData(year, week, resident);
+            res.json(result);
         } catch (error) {
-            console.error('Fehler beim Prüfen der Daten:', error);
-            res.status(500).json({ 
-                message: 'Fehler beim Prüfen der Daten',
-                error: error.message 
-            });
+            console.error('Fehler beim Prüfen vorhandener Daten:', error);
+            res.status(500).json({ error: 'Serverinterner Fehler beim Prüfen vorhandener Daten' });
+        }
+    }
+
+    static async getExtraCategories(req, res) {
+        try {
+            const extraCategories = await SoloPlanModel.getExtraCategories();
+            res.json(extraCategories);
+        } catch (error) {
+            console.error('Fehler beim Laden der Extra-Kategorien:', error);
+            res.status(500).json({ error: 'Serverinterner Fehler beim Laden der Extra-Kategorien' });
+        }
+    }
+
+    static async saveExtraCategories(req, res) {
+        try {
+            const extraCategories = req.body;
+            await SoloPlanModel.saveExtraCategories(extraCategories);
+            res.json({ success: true, message: 'Extra-Kategorien erfolgreich gespeichert' });
+        } catch (error) {
+            console.error('Fehler beim Speichern der Extra-Kategorien:', error);
+            res.status(500).json({ error: 'Serverinterner Fehler beim Speichern der Extra-Kategorien' });
         }
     }
 }

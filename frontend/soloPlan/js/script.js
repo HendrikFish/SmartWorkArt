@@ -1,7 +1,7 @@
 import { getCurrentWeek, getCurrentYear, initializeDOMElements } from './Modules/variablen.js';
-import { loadResidents, loadMealPlan } from './Modules/api.js';
+import { loadResidents, loadMealPlan, loadExtraCategories } from './Modules/api.js';
 import { initializeEventListeners } from './Modules/event-handling.js';
-import { updateUI } from './Modules/interface.js';
+import { updateUI, initCategoryManager } from './Modules/interface.js';
 
 // Initialisierungsfunktion
 async function init() {
@@ -25,12 +25,19 @@ async function init() {
         console.log('Lade Bewohner...');
         await loadResidents();
         
+        console.log('Lade Extra-Kategorien...');
+        await loadExtraCategories();
+        
         console.log('Lade Speiseplan...');
         await loadMealPlan();
         
-        // Aktualisiere UI
-        console.log('Aktualisiere UI...');
-    updateUI();
+        // Initialisiere Kategorie-Manager
+        console.log('Initialisiere Kategorie-Manager...');
+        initCategoryManager();
+        
+        // Aktualisiere die Benutzeroberfläche
+        console.log('Aktualisiere Benutzeroberfläche...');
+        updateUI();
         
         console.log('Initialisierung abgeschlossen');
     } catch (error) {
@@ -39,5 +46,5 @@ async function init() {
     }
 }
 
-// Starte Initialisierung
-document.addEventListener('DOMContentLoaded', init);
+// Starte die Anwendung
+init();

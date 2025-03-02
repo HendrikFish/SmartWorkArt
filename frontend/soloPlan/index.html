@@ -33,6 +33,9 @@
 
         <!-- Speiseplan -->
         <div class="meal-plan">
+            <!-- Button zum Verwalten der Extra-Kategorien -->
+            <button id="manageCategoriesBtn" class="add-category-btn">Abendessen-Kategorien verwalten</button>
+            
             <table id="mealTable">
                 <thead>
                     <tr>
@@ -49,6 +52,34 @@
                 <tbody id="mealTableBody"></tbody>
             </table>
         </div>
+        
+        <!-- Dialog zum Hinzufügen einer neuen Kategorie -->
+        <div id="categoryDialog" class="category-dialog">
+            <h3>Neue Abendessen-Kategorie hinzufügen</h3>
+            <div class="category-dialog-form">
+                <input type="text" id="categoryNameInput" class="category-input" placeholder="Name der Kategorie">
+                <input type="text" id="categoryIdInput" class="category-input" placeholder="ID (z.B. salamiBrot)" pattern="[a-zA-Z0-9]+" title="Nur Buchstaben und Zahlen erlaubt">
+                <div class="category-dialog-buttons">
+                    <button id="cancelCategoryBtn" class="category-dialog-button cancel">Abbrechen</button>
+                    <button id="saveCategoryBtn" class="category-dialog-button save">Speichern</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kategorie-Manager -->
+        <div id="categoryManager" class="category-manager">
+            <h3>Abendessen-Kategorien verwalten</h3>
+            <div id="categoriesList" class="categories-list">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+            <div class="category-manager-buttons">
+                <button id="addCategoryBtn" class="add-category-btn">Neue Kategorie</button>
+                <button id="closeCategoryManagerBtn" class="category-dialog-button cancel">Schließen</button>
+            </div>
+        </div>
+        
+        <!-- Overlay für Dialoge -->
+        <div id="overlay" class="overlay"></div>
     </div>
 
     <script type="module" src="js/script.js"></script>

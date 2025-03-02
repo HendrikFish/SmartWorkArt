@@ -4,6 +4,12 @@ import { createResidentButtons } from './interface.js';
 
 console.log('API_BASE_URL in api.js:', API_BASE_URL);
 
+// Globale Variablen
+export let mealPlanData = null;
+export let selectedResident = null;
+export let selectedMeals = {};
+export let extraCategories = []; // Neue Variable für Extra-Kategorien
+
 // Bewohner laden
 export async function loadResidents() {
     try {
@@ -246,4 +252,50 @@ function processMealPlanData(data) {
     });
     
     console.log('Finale verarbeitete Daten:', mealPlanData);
+}
+
+// Funktion zum Laden der Extra-Kategorien
+export async function loadExtraCategories() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/soloplan/extras`);
+        
+        if (!response.ok) {
+            throw new Error('Fehler beim Laden der Extra-Kategorien');
+        }
+        
+        const data = await response.json();
+        extraCategories = data.extraCategories || [];
+        console.log('Extra-Kategorien geladen:', extraCategories);
+        return extraCategories;
+    } catch (error) {
+        console.error('Fehler beim Laden der Extra-Kategorien:', error);
+        return [];
+    }
+}
+
+// Funktion zum Speichern der Extra-Kategorien
+export async function saveExtraCategories(categories) {
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/soloplan/extras`, 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ extraCategories: categories })
+            }
+        );
+        
+        if (!response.ok) {
+            throw new Error('Fehler beim Speichern der Extra-Kategorien');
+        }
+        
+        extraCategories = categories;
+        console.log('Extra-Kategorien erfolgreich gespeichert');
+        return true;
+    } catch (error) {
+        console.error('Fehler beim Speichern der Extra-Kategorien:', error);
+        throw error;
+    }
 }

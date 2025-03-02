@@ -101,4 +101,8 @@ router.post('/shorts', async (req, res) => {
     }
 });
 
+// Neue Routen für Extra-Kategorien
+router.get('/extras', SoloPlanController.getExtraCategories);
+router.post('/extras', SoloPlanController.saveExtraCategories);
+
 module.exports = router;

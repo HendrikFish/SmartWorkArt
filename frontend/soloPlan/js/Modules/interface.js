@@ -1,7 +1,7 @@
 import { getCurrentWeek, getCurrentYear, selectedResident, selectedMeals, mealPlanData, formConfig, domElements, residentsData } from './variablen.js';
-import { WEEKDAYS, CATEGORIES, API_BASE_URL } from './konstanten.js';
+import { WEEKDAYS, CATEGORIES, API_BASE_URL, API_CATEGORY_MAPPING, mergeExtraCategories } from './konstanten.js';
 import { formatDate, getWeekStartDate, createStorageKey, createNewSelection, extractMinimalMealData } from './hilfsfunktionen.js';
-import { checkExistingData, loadResidentSelections, saveResidentSelections, updateResidentArea } from './api.js';
+import { checkExistingData, loadResidentSelections, saveResidentSelections, updateResidentArea, loadExtraCategories, saveExtraCategories } from './api.js';
 import { closeFabMenus, closeAllDialogs, toggleMealSelection, selectResident, resetResidentSelection } from './event-handling.js';
 import { initializePanelHandling, togglePanel, keepPanelOpen, closeAllPanels } from './panel-handling.js';
 
@@ -291,7 +291,7 @@ export function showResidentDetails(resident) {
     selectedResidentDiv.appendChild(infoContainer);
 }
 
-export function updateMealTable() {
+export async function updateMealTable() {
     const activeFab = document.querySelector('.fab-container.active');
     let openKey = null;
     if (activeFab) {
@@ -322,13 +322,24 @@ export function updateMealTable() {
 
     console.log('Beginne Tabellen-Update mit Daten:', mealPlanData);
 
-    Object.entries(CATEGORIES).forEach(([apiCategory, displayName], rowIndex) => {
+    // Kombiniere feste und Extra-Kategorien
+    const { categories: mergedCategories } = mergeExtraCategories(extraCategories);
+    
+    // Erstelle die Tabelle mit allen Kategorien
+    Object.entries(mergedCategories).forEach(([apiCategory, displayName], rowIndex) => {
         console.log(`Verarbeite Kategorie: ${apiCategory} (${displayName})`);
         
         const row = document.createElement('tr');
         
         const categoryCell = document.createElement('td');
         categoryCell.textContent = displayName;
+        
+        // Markiere Extra-Kategorien visuell
+        const isExtraCategory = !CATEGORIES[apiCategory];
+        if (isExtraCategory) {
+            categoryCell.classList.add('extra-category');
+        }
+        
         row.appendChild(categoryCell);
         
         WEEKDAYS.forEach((weekday, cellIndex) => {
@@ -342,26 +353,34 @@ export function updateMealTable() {
                 cell.classList.add('half-height-cell');
             }
             
-            if (dayData && dayData[apiCategory]) {
+            // Für Extra-Kategorien müssen wir prüfen, ob es Daten gibt und wenn nicht,
+            // eine leere Zelle erstellen, die trotzdem auswählbar ist
+            if ((dayData && dayData[apiCategory]) || isExtraCategory) {
                 const cellContent = document.createElement('div');
                 cellContent.className = 'meal-cell-content';
                 cellContent.dataset.cellKey = `${rowIndex}-${cellIndex}`;
+                cellContent.dataset.category = apiCategory;
                 
                 const storageKey = createStorageKey(weekday, apiCategory);
                 const savedSelection = selectedMeals[storageKey];
-
+                
                 if (savedSelection) {
-                    // Portion-Klasse hinzufügen
-                    switch(savedSelection.portion) {
-                        case '100%':
-                            cellContent.classList.add('selected-100');
-                            break;
-                        case '50%':
-                            cellContent.classList.add('selected-50');
-                            break;
-                        case '25%':
-                            cellContent.classList.add('selected-25');
-                            break;
+                    // Für Extra-Kategorien gibt es nur 100%
+                    if (isExtraCategory) {
+                        cellContent.classList.add('selected-100');
+                    } else {
+                        // Portion-Klasse für reguläre Kategorien hinzufügen
+                        switch(savedSelection.portion) {
+                            case '100%':
+                                cellContent.classList.add('selected-100');
+                                break;
+                            case '50%':
+                                cellContent.classList.add('selected-50');
+                                break;
+                            case '25%':
+                                cellContent.classList.add('selected-25');
+                                break;
+                        }
                     }
                 }
                 
@@ -374,18 +393,59 @@ export function updateMealTable() {
                         return;
                     }
 
-                    // Prüfe ob ein Bewohner ausgewählt ist
                     if (!selectedResident || Object.keys(selectedResident).length === 0) {
-                        alert('Bitte wählen Sie zuerst einen Bewohner aus.');
+                        alert('Bitte wählen Sie zuerst einen Bewohner aus');
                         return;
                     }
-
-                    e.stopPropagation();
-
+                    
+                    const storageKey = createStorageKey(weekday, apiCategory);
+                    
+                    // Für Extra-Kategorien gibt es nur Ein/Aus
+                    if (isExtraCategory) {
+                        if (cellContent.classList.contains('selected-100')) {
+                            // Entfernen der Auswahl
+                            cellContent.classList.remove('selected-100');
+                            delete selectedMeals[storageKey];
+                        } else {
+                            // Hinzufügen der Auswahl (nur 100%)
+                            cellContent.classList.add('selected-100');
+                            selectedMeals[storageKey] = {
+                                portion: '100%',
+                                alternative: null,
+                                comment: null,
+                                components: []
+                            };
+                        }
+                    } else {
+                        // Reguläre Kategorien-Logik
+                        if (cellContent.classList.contains('selected-100')) {
+                            cellContent.classList.remove('selected-100');
+                            cellContent.classList.add('selected-50');
+                            selectedMeals[storageKey].portion = '50%';
+                        } else if (cellContent.classList.contains('selected-50')) {
+                            cellContent.classList.remove('selected-50');
+                            cellContent.classList.add('selected-25');
+                            selectedMeals[storageKey].portion = '25%';
+                        } else if (cellContent.classList.contains('selected-25')) {
+                            cellContent.classList.remove('selected-25');
+                            delete selectedMeals[storageKey];
+                        } else {
+                            // Neues Objekt erstellen
+                            selectedMeals[storageKey] = {
+                                portion: '100%',
+                                alternative: null,
+                                comment: null,
+                                components: []
+                            };
+                            cellContent.classList.add('selected-100');
+                        }
+                    }
+                    
+                    // Speichern der Auswahl
                     try {
-                        await toggleMealSelection(weekday, apiCategory, dayData[apiCategory]);
+                        await saveResidentSelections();
                     } catch (error) {
-                        console.error('Fehler bei der Mahlzeitauswahl:', error);
+                        console.error('Fehler beim Speichern:', error);
                         alert('Fehler beim Speichern der Auswahl');
                     }
                 });
@@ -789,5 +849,159 @@ export async function filterResidents(areaName, filterValue) {
         const resident = JSON.parse(button.dataset.resident);
         const hasData = await checkExistingData(resident);
         button.classList.toggle('has-data', hasData);
+    }
+}
+
+// Funktion zum Initialisieren der Kategorienverwaltung
+export function initCategoryManager() {
+    const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+    const categoryManager = document.getElementById('categoryManager');
+    const overlay = document.getElementById('overlay');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    const closeCategoryManagerBtn = document.getElementById('closeCategoryManagerBtn');
+    const categoryDialog = document.getElementById('categoryDialog');
+    const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+    const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+    const categoryNameInput = document.getElementById('categoryNameInput');
+    const categoryIdInput = document.getElementById('categoryIdInput');
+    
+    // Button zum Öffnen des Kategorie-Managers
+    manageCategoriesBtn.addEventListener('click', () => {
+        loadCategoriesList();
+        categoryManager.classList.add('active');
+        overlay.classList.add('active');
+    });
+    
+    // Button zum Schließen des Kategorie-Managers
+    closeCategoryManagerBtn.addEventListener('click', () => {
+        categoryManager.classList.remove('active');
+        overlay.classList.remove('active');
+    });
+    
+    // Button zum Öffnen des Dialogs für neue Kategorie
+    addCategoryBtn.addEventListener('click', () => {
+        categoryNameInput.value = '';
+        categoryIdInput.value = '';
+        categoryDialog.classList.add('active');
+        categoryManager.classList.remove('active');
+    });
+    
+    // Button zum Abbrechen des Hinzufügens
+    cancelCategoryBtn.addEventListener('click', () => {
+        categoryDialog.classList.remove('active');
+        categoryManager.classList.add('active');
+    });
+    
+    // Button zum Speichern der neuen Kategorie
+    saveCategoryBtn.addEventListener('click', async () => {
+        const displayName = categoryNameInput.value.trim();
+        let id = categoryIdInput.value.trim();
+        
+        if (!displayName) {
+            alert('Bitte geben Sie einen Namen für die Kategorie ein');
+            return;
+        }
+        
+        // Generiere automatisch eine ID, wenn keine angegeben wurde
+        if (!id) {
+            id = displayName.toLowerCase()
+                .replace(/ä/g, 'ae')
+                .replace(/ö/g, 'oe')
+                .replace(/ü/g, 'ue')
+                .replace(/ß/g, 'ss')
+                .replace(/\s+/g, '')
+                .replace(/[^a-z0-9]/gi, '');
+        }
+        
+        // Prüfe, ob ID bereits existiert
+        const existingCategory = extraCategories.find(cat => cat.id === id);
+        if (existingCategory) {
+            alert('Eine Kategorie mit dieser ID existiert bereits');
+            return;
+        }
+        
+        // Neue Kategorie hinzufügen
+        const newCategory = {
+            id: id,
+            displayName: displayName,
+            type: 'abend'
+        };
+        
+        extraCategories.push(newCategory);
+        
+        try {
+            // Speichere die aktualisierte Liste
+            await saveExtraCategories(extraCategories);
+            
+            // Schließe Dialog und aktualisiere Ansicht
+            categoryDialog.classList.remove('active');
+            loadCategoriesList();
+            categoryManager.classList.add('active');
+            
+            // Aktualisiere die Tabelle
+            updateMealTable();
+        } catch (error) {
+            console.error('Fehler beim Speichern der Kategorie:', error);
+            alert('Fehler beim Speichern der Kategorie');
+        }
+    });
+}
+
+// Funktion zum Laden der Kategorien-Liste
+async function loadCategoriesList() {
+    const categoriesList = document.getElementById('categoriesList');
+    categoriesList.innerHTML = '';
+    
+    try {
+        // Lade Kategorien, falls noch nicht geladen
+        if (extraCategories.length === 0) {
+            extraCategories = await loadExtraCategories();
+        }
+        
+        // Erstelle Einträge in der Liste
+        extraCategories.forEach(category => {
+            const categoryItem = document.createElement('div');
+            categoryItem.className = 'category-item';
+            
+            const categoryName = document.createElement('div');
+            categoryName.className = 'category-name';
+            categoryName.textContent = `${category.displayName} (${category.id})`;
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-category-btn';
+            deleteButton.textContent = 'Löschen';
+            deleteButton.addEventListener('click', () => deleteCategory(category.id));
+            
+            categoryItem.appendChild(categoryName);
+            categoryItem.appendChild(deleteButton);
+            categoriesList.appendChild(categoryItem);
+        });
+    } catch (error) {
+        console.error('Fehler beim Laden der Kategorien:', error);
+    }
+}
+
+// Funktion zum Löschen einer Kategorie
+async function deleteCategory(categoryId) {
+    if (!confirm(`Sind Sie sicher, dass Sie die Kategorie "${categoryId}" löschen möchten?`)) {
+        return;
+    }
+    
+    try {
+        // Entferne Kategorie aus der Liste
+        const index = extraCategories.findIndex(cat => cat.id === categoryId);
+        if (index !== -1) {
+            extraCategories.splice(index, 1);
+            
+            // Speichere aktualisierte Liste
+            await saveExtraCategories(extraCategories);
+            
+            // Aktualisiere Ansicht
+            loadCategoriesList();
+            updateMealTable();
+        }
+    } catch (error) {
+        console.error('Fehler beim Löschen der Kategorie:', error);
+        alert('Fehler beim Löschen der Kategorie');
     }
 }

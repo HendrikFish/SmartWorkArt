@@ -155,6 +155,102 @@ class SoloPlanModel {
             throw error;
         }
     }
+
+    static async checkExistingData(year, week, resident) {
+        try {
+            const filePath = path.join(__dirname, '..', 'data', 'soloPlan', year, `KW${week}`, `${resident}.json`);
+            
+            try {
+                await fs.access(filePath);
+                return { exists: true };
+            } catch (error) {
+                if (error.code === 'ENOENT') {
+                    return { exists: false };
+                } else {
+                    throw error;
+                }
+            }
+        } catch (error) {
+            console.error('Fehler beim Prüfen der Daten:', error);
+            throw error;
+        }
+    }
+
+    // Extra-Kategorien laden
+    static async getExtraCategories() {
+        try {
+            const filePath = path.join(__dirname, '..', 'data', 'soloPlan', 'extra', 'extras.json');
+            
+            try {
+                const content = await fs.readFile(filePath, 'utf-8');
+                return JSON.parse(content);
+            } catch (error) {
+                if (error.code === 'ENOENT') {
+                    // Erstelle Standardkategorien, wenn die Datei nicht existiert
+                    const defaultCategories = {
+                        extraCategories: [
+                            {
+                                id: "kaltePlatte",
+                                displayName: "Kalte Platte",
+                                type: "abend"
+                            },
+                            {
+                                id: "wurstbrotToast",
+                                displayName: "Wurstbrot-Toast",
+                                type: "abend"
+                            },
+                            {
+                                id: "wurstbrotSchwarzBrot",
+                                displayName: "Wurstbrot-Schw. Brot",
+                                type: "abend"
+                            },
+                            {
+                                id: "kaesebrotToast",
+                                displayName: "Käsebrot-Toast",
+                                type: "abend"
+                            },
+                            {
+                                id: "kaesebrotSchwarzBrot",
+                                displayName: "Käsebrot-Schw. Brot",
+                                type: "abend"
+                            }
+                        ]
+                    };
+                    
+                    // Stelle sicher, dass das Verzeichnis existiert
+                    await fs.mkdir(path.dirname(filePath), { recursive: true });
+                    
+                    // Speichere die Standard-Kategorien
+                    await fs.writeFile(filePath, JSON.stringify(defaultCategories, null, 2));
+                    
+                    return defaultCategories;
+                } else {
+                    throw error;
+                }
+            }
+        } catch (error) {
+            console.error('Fehler beim Laden der Extra-Kategorien:', error);
+            throw error;
+        }
+    }
+
+    // Extra-Kategorien speichern
+    static async saveExtraCategories(categories) {
+        try {
+            const filePath = path.join(__dirname, '..', 'data', 'soloPlan', 'extra', 'extras.json');
+            
+            // Stelle sicher, dass das Verzeichnis existiert
+            await fs.mkdir(path.dirname(filePath), { recursive: true });
+            
+            // Speichere die Kategorien
+            await fs.writeFile(filePath, JSON.stringify(categories, null, 2));
+            
+            return true;
+        } catch (error) {
+            console.error('Fehler beim Speichern der Extra-Kategorien:', error);
+            throw error;
+        }
+    }
 }
 
 module.exports = SoloPlanModel;
