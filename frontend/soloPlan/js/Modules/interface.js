@@ -1,7 +1,7 @@
 import { getCurrentWeek, getCurrentYear, selectedResident, selectedMeals, mealPlanData, formConfig, domElements, residentsData } from './variablen.js';
 import { WEEKDAYS, CATEGORIES, API_BASE_URL, API_CATEGORY_MAPPING, mergeExtraCategories } from './konstanten.js';
 import { formatDate, getWeekStartDate, createStorageKey, createNewSelection, extractMinimalMealData } from './hilfsfunktionen.js';
-import { checkExistingData, loadResidentSelections, saveResidentSelections, updateResidentArea, loadExtraCategories, saveExtraCategories } from './api.js';
+import { checkExistingData, loadResidentSelections, saveResidentSelections, updateResidentArea, loadExtraCategories, saveExtraCategories, extraCategories } from './api.js';
 import { closeFabMenus, closeAllDialogs, toggleMealSelection, selectResident, resetResidentSelection } from './event-handling.js';
 import { initializePanelHandling, togglePanel, keepPanelOpen, closeAllPanels } from './panel-handling.js';
 
@@ -955,7 +955,16 @@ async function loadCategoriesList() {
     try {
         // Lade Kategorien, falls noch nicht geladen
         if (extraCategories.length === 0) {
-            extraCategories = await loadExtraCategories();
+            // Verwende direktes Ergebnis ohne Neuzuweisung
+            const loadedCategories = await loadExtraCategories();
+            // Fülle das Array, anstatt es neu zuzuweisen (behält die Referenz)
+            if (loadedCategories && loadedCategories.length > 0) {
+                loadedCategories.forEach(cat => {
+                    if (!extraCategories.some(existing => existing.id === cat.id)) {
+                        extraCategories.push(cat);
+                    }
+                });
+            }
         }
         
         // Erstelle Einträge in der Liste

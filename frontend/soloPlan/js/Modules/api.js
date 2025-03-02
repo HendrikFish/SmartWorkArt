@@ -261,9 +261,17 @@ export async function loadExtraCategories() {
         }
         
         const data = await response.json();
-        extraCategories = data.extraCategories || [];
+        const loadedCategories = data.extraCategories || [];
+        
+        // Aktualisiere die globale Variable
+        // Leere zuerst das Array
+        extraCategories.length = 0;
+        
+        // Füge die neuen Elemente hinzu
+        loadedCategories.forEach(cat => extraCategories.push(cat));
+        
         console.log('Extra-Kategorien geladen:', extraCategories);
-        return extraCategories;
+        return loadedCategories;
     } catch (error) {
         console.error('Fehler beim Laden der Extra-Kategorien:', error);
         return [];
@@ -288,7 +296,10 @@ export async function saveExtraCategories(categories) {
             throw new Error('Fehler beim Speichern der Extra-Kategorien');
         }
         
-        extraCategories = categories;
+        // Aktualisiere das globale Array korrekt
+        extraCategories.length = 0; // Leere das Array
+        categories.forEach(cat => extraCategories.push(cat)); // Füge neue Elemente hinzu
+        
         console.log('Extra-Kategorien erfolgreich gespeichert');
         return true;
     } catch (error) {
