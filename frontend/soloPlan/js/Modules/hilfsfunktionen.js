@@ -46,9 +46,13 @@ export function createNewSelection(day, category, meals, portion = "100%") {
 }
 
 export function extractMinimalMealData(meal) {
+    if (!meal) {
+        return { name: "Keine Daten", rezeptId: null };
+    }
+    
     return {
-        rezeptId: meal.rezeptId,
-        name: meal.name
+        rezeptId: meal.rezeptId || null,
+        name: meal.name || "Unbekannt"
     };
 }
 
