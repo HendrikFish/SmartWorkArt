@@ -28,11 +28,19 @@ export function initializeEventListeners() {
     editAlternativesBtn.textContent = 'Alternativen bearbeiten';
     editAlternativesBtn.onclick = openAlternativesEditor;
     
+    // Button zum Verwalten der Abendessen-Kategorien
+    const manageCategoriesBtn = document.createElement('button');
+    manageCategoriesBtn.id = 'manageCategoriesBtn';
+    manageCategoriesBtn.className = 'manage-categories-btn';
+    manageCategoriesBtn.textContent = 'Abendessen-Kategorien verwalten';
+    manageCategoriesBtn.onclick = openCategoryManager;
+    
     // Buttons nach den Week-Controls einfügen
     const weekControls = document.querySelector('.week-controls');
     if (weekControls) {
         weekControls.appendChild(currentWeekBtn);
         weekControls.appendChild(editAlternativesBtn);
+        weekControls.appendChild(manageCategoriesBtn);
     }
 
     // Globaler Click-Handler
@@ -814,4 +822,183 @@ export async function showAlternatives(day, category, meals) {
             errorToast.remove();
         }, 3000);
     }
+}
+
+// Kategorie-Manager
+function openCategoryManager() {
+    const dialog = document.getElementById('categoryManagerDialog');
+    if (!dialog) {
+        createCategoryManagerDialog();
+    } else {
+        dialog.style.display = 'block';
+    }
+    
+    loadExtraCategories();
+}
+
+function createCategoryManagerDialog() {
+    const dialog = document.createElement('div');
+    dialog.id = 'categoryManagerDialog';
+    dialog.className = 'dialog category-manager-dialog';
+    
+    const header = document.createElement('div');
+    header.className = 'dialog-header';
+    
+    const title = document.createElement('h2');
+    title.textContent = 'Abendessen-Kategorien verwalten';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close-dialog-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.onclick = () => {
+        dialog.style.display = 'none';
+    };
+    
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    
+    const content = document.createElement('div');
+    content.className = 'dialog-content';
+    
+    const categoriesList = document.createElement('div');
+    categoriesList.id = 'extraCategoriesList';
+    categoriesList.className = 'extra-categories-list';
+    
+    const addSection = document.createElement('div');
+    addSection.className = 'add-category-section';
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'newCategoryInput';
+    input.placeholder = 'Neue Kategorie eingeben';
+    
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-btn';
+    addBtn.textContent = 'Hinzufügen';
+    addBtn.onclick = addExtraCategory;
+    
+    addSection.appendChild(input);
+    addSection.appendChild(addBtn);
+    
+    content.appendChild(categoriesList);
+    content.appendChild(addSection);
+    
+    const footer = document.createElement('div');
+    footer.className = 'dialog-footer';
+    
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'save-btn';
+    saveBtn.textContent = 'Speichern';
+    saveBtn.onclick = saveExtraCategories;
+    
+    footer.appendChild(saveBtn);
+    
+    dialog.appendChild(header);
+    dialog.appendChild(content);
+    dialog.appendChild(footer);
+    
+    document.body.appendChild(dialog);
+}
+
+// Mock-Daten für Extra-Kategorien (temporär bis Backend implementiert ist)
+let mockExtraCategories = [
+    { id: 1, name: 'Salat' },
+    { id: 2, name: 'Suppe' },
+    { id: 3, name: 'Dessert' }
+];
+
+async function loadExtraCategories() {
+    try {
+        // Temporärer Mock-Ansatz bis Backend implementiert ist
+        // const response = await fetch('/api/extra-categories');
+        // if (!response.ok) throw new Error('Fehler beim Laden der Kategorien');
+        // const categories = await response.json();
+        
+        const categories = mockExtraCategories;
+        
+        const list = document.getElementById('extraCategoriesList');
+        list.innerHTML = '';
+        
+        categories.forEach(category => {
+            const item = document.createElement('div');
+            item.className = 'category-item';
+            
+            const name = document.createElement('span');
+            name.className = 'category-name';
+            name.textContent = category.name;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '&times;';
+            deleteBtn.onclick = () => removeExtraCategory(category.id);
+            
+            item.appendChild(name);
+            item.appendChild(deleteBtn);
+            list.appendChild(item);
+        });
+    } catch (error) {
+        console.error('Fehler beim Laden der Extra-Kategorien:', error);
+        alert('Es gab ein Problem beim Laden der Kategorien. Bitte versuchen Sie es später erneut.');
+    }
+}
+
+async function addExtraCategory() {
+    const input = document.getElementById('newCategoryInput');
+    const categoryName = input.value.trim();
+    
+    if (!categoryName) {
+        alert('Bitte geben Sie einen Namen für die Kategorie ein.');
+        return;
+    }
+    
+    try {
+        // Temporärer Mock-Ansatz bis Backend implementiert ist
+        // const response = await fetch('/api/extra-categories', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ name: categoryName })
+        // });
+        // 
+        // if (!response.ok) throw new Error('Fehler beim Hinzufügen der Kategorie');
+        
+        // Mock-Implementierung
+        const newId = mockExtraCategories.length > 0 ? 
+                      Math.max(...mockExtraCategories.map(c => c.id)) + 1 : 1;
+        mockExtraCategories.push({ id: newId, name: categoryName });
+        
+        input.value = '';
+        loadExtraCategories();
+    } catch (error) {
+        console.error('Fehler beim Hinzufügen der Extra-Kategorie:', error);
+        alert('Es gab ein Problem beim Hinzufügen der Kategorie. Bitte versuchen Sie es später erneut.');
+    }
+}
+
+async function removeExtraCategory(id) {
+    if (!confirm('Möchten Sie diese Kategorie wirklich löschen?')) return;
+    
+    try {
+        // Temporärer Mock-Ansatz bis Backend implementiert ist
+        // const response = await fetch(`/api/extra-categories/${id}`, {
+        //     method: 'DELETE'
+        // });
+        // 
+        // if (!response.ok) throw new Error('Fehler beim Löschen der Kategorie');
+        
+        // Mock-Implementierung
+        mockExtraCategories = mockExtraCategories.filter(category => category.id !== id);
+        
+        loadExtraCategories();
+    } catch (error) {
+        console.error('Fehler beim Löschen der Extra-Kategorie:', error);
+        alert('Es gab ein Problem beim Löschen der Kategorie. Bitte versuchen Sie es später erneut.');
+    }
+}
+
+async function saveExtraCategories() {
+    document.getElementById('categoryManagerDialog').style.display = 'none';
+    // In einer echten Implementierung würde hier ein API-Aufruf stattfinden
+    alert('Kategorien wurden gespeichert!');
 }

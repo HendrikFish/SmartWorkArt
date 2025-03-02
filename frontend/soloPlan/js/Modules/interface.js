@@ -331,11 +331,16 @@ export async function updateMealTable() {
         
         const row = document.createElement('tr');
         
+        // Markiere die ganze Zeile für Extra-Kategorien, um die Höhe anpassen zu können
+        const isExtraCategory = !CATEGORIES[apiCategory];
+        if (isExtraCategory) {
+            row.classList.add('extra-category-row');
+        }
+        
         const categoryCell = document.createElement('td');
         categoryCell.textContent = displayName;
         
         // Markiere Extra-Kategorien visuell
-        const isExtraCategory = !CATEGORIES[apiCategory];
         if (isExtraCategory) {
             categoryCell.classList.add('extra-category');
         }
@@ -348,9 +353,15 @@ export async function updateMealTable() {
             const cell = document.createElement('td');
             const dayData = mealPlanData.days.find(d => d.day === weekday);
             
-            if (apiCategory === 'suppe' || apiCategory === 'dessert' || 
-                apiCategory === 'abendSuppe' || apiCategory === 'milchspeise') {
+            // Für Extra-Kategorien keine half-height-cell Klasse anwenden
+            if (!isExtraCategory && (apiCategory === 'suppe' || apiCategory === 'dessert' || 
+                apiCategory === 'abendSuppe' || apiCategory === 'milchspeise')) {
                 cell.classList.add('half-height-cell');
+            }
+            
+            // Für Extra-Kategorien markieren wir die Zelle zusätzlich
+            if (isExtraCategory) {
+                cell.classList.add('extra-category-cell');
             }
             
             // Für Extra-Kategorien müssen wir prüfen, ob es Daten gibt und wenn nicht,

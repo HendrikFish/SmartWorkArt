@@ -1112,6 +1112,24 @@ h1, h2 {
     transform: translateY(-1px);
 }
 
+/* Kategorie-Manager Styles */
+.manage-categories-btn {
+    background-color: #ff9800; /* Orange Farbe */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.manage-categories-btn:hover {
+    background-color: #e68a00; /* Dunkleres Orange beim Hover */
+    transform: translateY(-1px);
+}
+
 .alternatives-editor-container {
     position: fixed;
     z-index: 3;
@@ -1367,6 +1385,33 @@ h1, h2 {
     font-weight: bold;
 }
 
+/* Stile für Extra-Kategorie-Zeilen */
+.extra-category-row {
+    height: 45px; /* Feste Höhe für Extra-Kategorie-Zeilen */
+}
+
+.extra-category-row td {
+    height: 45px;
+    max-height: 45px;
+    overflow: hidden;
+}
+
+.extra-category-row .meal-cell-content {
+    height: 45px;
+    max-height: 45px;
+}
+
+.extra-category-row .content-wrapper {
+    height: 45px;
+    max-height: 45px;
+}
+
+.extra-category-row .meals-container {
+    height: 30px; /* Etwas kleiner, um Platz für Aktionsbuttons zu lassen */
+    display: flex;
+    align-items: center;
+}
+
 /* Button zum Hinzufügen einer neuen Kategorie */
 .add-category-btn {
     background-color: #4CAF50;
@@ -1532,3 +1577,107 @@ h1, h2 {
 .overlay.active {
     display: block;
 }
+
+/* Verbesserter Stil für Aktionsschaltflächen in Extra-Kategorie-Zeilen */
+.extra-category-row .fab-container {
+    height: 15px;
+    min-height: 15px;
+}
+
+.extra-category-row .fab-container button {
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    font-size: 12px;
+}
+
+.extra-category-row .sub-buttons {
+    bottom: 25px; /* Positionierung anpassen */
+}
+
+.extra-category-row .sub-button {
+    width: 25px;
+    height: 25px;
+    line-height: 22px;
+    font-size: 12px;
+}
+
+/* Stile für die Zellen in Extra-Kategorie-Zeilen */
+.extra-category-cell {
+    height: 45px;
+    max-height: 45px;
+    padding: 5px !important;
+    vertical-align: middle;
+}
+
+/* Verbesserter Stil für Aktionsschaltflächen in Extra-Kategorie-Zeilen */
+
+/* Kategorie Manager Dialog */
+.category-manager-dialog {
+    width: 500px;
+    max-width: 90%;
+}
+
+.extra-categories-list {
+    margin-bottom: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.category-name {
+    font-size: 16px;
+}
+
+.add-category-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.add-category-section input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.add-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.save-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+/* Ende der Kategorie Manager Styles */
