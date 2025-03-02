@@ -1387,29 +1387,37 @@ h1, h2 {
 
 /* Stile für Extra-Kategorie-Zeilen */
 .extra-category-row {
-    height: 45px; /* Feste Höhe für Extra-Kategorie-Zeilen */
+    height: 60px; /* Erhöhte Höhe für ausreichend Platz für die Buttons */
 }
 
 .extra-category-row td {
-    height: 45px;
-    max-height: 45px;
+    height: 60px;
+    max-height: 60px;
     overflow: hidden;
 }
 
 .extra-category-row .meal-cell-content {
-    height: 45px;
-    max-height: 45px;
+    height: 60px;
+    max-height: 60px;
 }
 
 .extra-category-row .content-wrapper {
-    height: 45px;
-    max-height: 45px;
+    height: 60px;
+    max-height: 60px;
 }
 
 .extra-category-row .meals-container {
-    height: 30px; /* Etwas kleiner, um Platz für Aktionsbuttons zu lassen */
+    height: 40px; /* Anpassung für mehr Platz für FAB-Container */
     display: flex;
     align-items: center;
+}
+
+/* Stile für die Zellen in Extra-Kategorie-Zeilen */
+.extra-category-cell {
+    height: 60px;
+    max-height: 60px;
+    padding: 5px !important;
+    vertical-align: middle;
 }
 
 /* Button zum Hinzufügen einer neuen Kategorie */
@@ -1580,37 +1588,50 @@ h1, h2 {
 
 /* Verbesserter Stil für Aktionsschaltflächen in Extra-Kategorie-Zeilen */
 .extra-category-row .fab-container {
-    height: 15px;
-    min-height: 15px;
+    /* Normale Größe beibehalten */
+    height: 40px;
+    min-height: 40px;
+    width: 40px;
+    min-width: 40px;
 }
 
 .extra-category-row .fab-container button {
-    width: 20px;
-    height: 20px;
-    line-height: 18px;
-    font-size: 12px;
+    /* Normale Größe beibehalten */
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 16px;
 }
 
 .extra-category-row .sub-buttons {
-    bottom: 25px; /* Positionierung anpassen */
+    bottom: 45px; /* Positionierung anpassen, damit die Sub-Buttons über dem Hauptbutton erscheinen */
 }
 
 .extra-category-row .sub-button {
-    width: 25px;
-    height: 25px;
-    line-height: 22px;
-    font-size: 12px;
+    /* Normale Größe beibehalten */
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 16px;
 }
 
-/* Stile für die Zellen in Extra-Kategorie-Zeilen */
-.extra-category-cell {
-    height: 45px;
-    max-height: 45px;
-    padding: 5px !important;
-    vertical-align: middle;
+/* Verbesserter Stil für aktiven FAB-Container in Extra-Kategorie-Zeilen */
+.extra-category-row .fab-container.active {
+    display: flex;
+    z-index: 100; /* Stelle sicher, dass der aktive Button über anderen Elementen erscheint */
+    background-color: #2196F3;
+    border-radius: 50%;
 }
 
-/* Verbesserter Stil für Aktionsschaltflächen in Extra-Kategorie-Zeilen */
+/* Stelle sicher, dass die Unterbuttons richtig positioniert sind */
+.extra-category-row .fab-container.active .sub-buttons {
+    display: flex;
+    position: absolute;
+    bottom: 45px;
+    left: 0;
+    flex-direction: column;
+    align-items: center;
+}
 
 /* Kategorie Manager Dialog */
 .category-manager-dialog {
