@@ -526,40 +526,38 @@ export async function updateMealTable() {
                 // Füge den Kommentar-Button für alle Kategorien hinzu
                 subButtonsRow.appendChild(commentBtn);
                 
-                // Für Extra-Kategorien keine weiteren Buttons (keine Komponenten/Alternativen)
-                if (!isExtraCategory) {
-                    const componentsBtn = document.createElement('button');
-                    componentsBtn.className = 'sub-button components';
-                    componentsBtn.innerHTML = '🍽️';
-                    componentsBtn.onclick = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        closeAllDialogs();
-                        const fabContainer = e.target.closest('.fab-container');
-                        if (fabContainer) {
-                            fabContainer.classList.add('active');
-                        }
-                        showComponentSelection(weekday, apiCategory, mealContent);
-                    };
-                    
-                    const alternativeBtn = document.createElement('button');
-                    alternativeBtn.className = 'sub-button alternative';
-                    alternativeBtn.innerHTML = '🔄';
-                    alternativeBtn.onclick = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        closeAllDialogs();
-                        const fabContainer = e.target.closest('.fab-container');
-                        if (fabContainer) {
-                            fabContainer.classList.add('active');
-                        }
-                        showAlternatives(weekday, apiCategory, mealContent);
-                    };
-                    
-                    // Füge die zusätzlichen Buttons nur für reguläre Kategorien hinzu
-                    subButtonsRow.appendChild(componentsBtn);
-                    subButtonsRow.appendChild(alternativeBtn);
-                }
+                // Komponenten und Alternativen-Buttons für alle Kategorien anzeigen
+                const componentsBtn = document.createElement('button');
+                componentsBtn.className = 'sub-button components';
+                componentsBtn.innerHTML = '🍽️';
+                componentsBtn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeAllDialogs();
+                    const fabContainer = e.target.closest('.fab-container');
+                    if (fabContainer) {
+                        fabContainer.classList.add('active');
+                    }
+                    showComponentSelection(weekday, apiCategory, mealContent);
+                };
+                
+                const alternativeBtn = document.createElement('button');
+                alternativeBtn.className = 'sub-button alternative';
+                alternativeBtn.innerHTML = '🔄';
+                alternativeBtn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeAllDialogs();
+                    const fabContainer = e.target.closest('.fab-container');
+                    if (fabContainer) {
+                        fabContainer.classList.add('active');
+                    }
+                    showAlternatives(weekday, apiCategory, mealContent);
+                };
+                
+                // Füge die zusätzlichen Buttons für alle Kategorien hinzu
+                subButtonsRow.appendChild(componentsBtn);
+                subButtonsRow.appendChild(alternativeBtn);
                 
                 // Füge die Unterbuttons-Zeile zum Sub-Buttons-Container hinzu
                 subButtons.appendChild(subButtonsRow);
