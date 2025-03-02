@@ -4,10 +4,7 @@ import { createResidentButtons } from './interface.js';
 
 console.log('API_BASE_URL in api.js:', API_BASE_URL);
 
-// Globale Variablen
-export let mealPlanData = null;
-export let selectedResident = null;
-export let selectedMeals = {};
+// Globale Variablen - nur die neue deklarieren, die anderen sind bereits importiert
 export let extraCategories = []; // Neue Variable für Extra-Kategorien
 
 // Bewohner laden
