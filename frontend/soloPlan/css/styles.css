@@ -1597,6 +1597,7 @@ h1, h2 {
     display: none;
     justify-self: center;
     align-self: center;
+    z-index: 100; /* Höherer z-index für bessere Überlagerung */
 }
 
 .extra-category-row .fab-container button {
@@ -1607,7 +1608,7 @@ h1, h2 {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #4CAF50;
+    background: #2196F3; /* Gleiche Farbe wie beim regulären comment-Button */
     color: white;
     border: none;
     cursor: pointer;
@@ -1619,8 +1620,8 @@ h1, h2 {
 
 .extra-category-row .sub-buttons {
     position: absolute;
-    top: -6px;
-    right: 20px;
+    top: -100px; /* Weit genug nach oben verschieben, um über der Zelle zu schweben */
+    right: 0;
     display: none;
     flex-direction: column;
     gap: 12px;
@@ -1628,14 +1629,24 @@ h1, h2 {
     padding: 12px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    min-width: 100px;
-    transform-origin: top right;
+    min-width: 200px;
+    transform-origin: bottom right;
     transition: all 0.3s ease;
     opacity: 0;
     transform: scale(0.95);
-    z-index: 110;
+    z-index: 1000; /* Sehr hoher z-index, um über allem zu schweben */
+    pointer-events: all;
 }
 
+/* Verbesserter Stil für aktiven FAB-Container in Extra-Kategorie-Zeilen */
+.extra-category-row .fab-container.active {
+    display: flex;
+    z-index: 999; /* Stelle sicher, dass der aktive Button über anderen Elementen erscheint */
+    background-color: #2196F3;
+    border-radius: 50%;
+}
+
+/* Sub-Button Stile für Extra-Kategorien */
 .extra-category-row .sub-button {
     /* Die gleichen Eigenschaften wie die regulären Sub-Buttons */
     width: 65px;
@@ -1652,13 +1663,24 @@ h1, h2 {
     pointer-events: all;
 }
 
-/* Verbesserter Stil für aktiven FAB-Container in Extra-Kategorie-Zeilen */
-.extra-category-row .fab-container.active {
-    display: flex;
-    z-index: 100; /* Stelle sicher, dass der aktive Button über anderen Elementen erscheint */
-    background-color: #2196F3;
-    border-radius: 50%;
+.extra-category-row .sub-button.comment {
+    background: #2196F3; /* Gleiche Farbe wie beim regulären comment-Button */
+    color: white;
 }
+
+.extra-category-row .sub-button.components {
+    background: #FF9800; /* Gleiche Farbe wie beim regulären components-Button */
+    color: white;
+}
+
+.extra-category-row .sub-button.alternative {
+    background: #9C27B0; /* Gleiche Farbe wie beim regulären alternative-Button */
+    color: white;
+}
+
+.extra-category-row .sub-button.comment:hover { background: #1976D2; }
+.extra-category-row .sub-button.components:hover { background: #F57C00; }
+.extra-category-row .sub-button.alternative:hover { background: #7B1FA2; }
 
 /* Aktiver FAB-Container für Extra-Kategorien */
 .extra-category-row .fab-container.active .sub-buttons {
@@ -1666,7 +1688,7 @@ h1, h2 {
     opacity: 1;
     transform: scale(1);
     pointer-events: all;
-    z-index: 110;
+    z-index: 1000;
 }
 
 /* Kategorie Manager Dialog */
