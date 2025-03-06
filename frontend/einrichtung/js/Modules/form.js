@@ -6,6 +6,9 @@ import { loadEinrichtungen } from "./einrichtungen.js";
 import { closeModal } from "./modal.js";
 import { showStep } from "./stepsNavigation.js";
 import { openModal } from "./modal.js";
+import config from '../../../js/config.js';
+
+const API_BASE_URL = config.API_ENDPOINT;
 
 export async function handleFormSubmit(event) {
     event.preventDefault();
@@ -54,8 +57,8 @@ export async function handleFormSubmit(event) {
     const fileId = form.dataset.fileId;
     
     const url = isEdit 
-    ? `https://smartworkart.onrender.com/api/einrichtungen/${fileId}`
-    : `https://smartworkart.onrender.com/api/einrichtungen`;
+    ? `${API_BASE_URL}/einrichtungen/${fileId}`
+    : `${API_BASE_URL}/einrichtungen`;
 
     const method = isEdit ? 'PUT' : 'POST';
 

@@ -11,6 +11,8 @@ const connectDB = require('./config/database');
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
 
+// Importiere Konfiguration
+const config = require('./config/config');
 
 // Statische Module
 const staticModules = [
@@ -74,8 +76,7 @@ app.use(session({
 // CORS Middleware
 app.use(cors({
     origin: [
-        'https://smartworkart.onrender.com', // Render Backend
-        'http://localhost:8086',            // Lokale Entwicklung
+        config.API_BASE_URL, // Produktions-URL oder lokale Entwicklung, je nach Umgebung
         process.env.FRONTEND_URL || '*'     // Dynamische Frontend-URL
     ],
     credentials: true,
@@ -90,7 +91,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            connectSrc: ["'self'", "https://smartworkart.onrender.com", "http://localhost:8086", process.env.FRONTEND_URL || '*'],
+            connectSrc: ["'self'", config.API_BASE_URL, process.env.FRONTEND_URL || '*'],
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
             fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:"],

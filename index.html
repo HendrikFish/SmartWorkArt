@@ -11,7 +11,7 @@
         <main class="landing-content">
             <h1>Willkommen im Seniorenheim-Portal</h1>
             <p>Ihr digitaler Zugang zu unserem Seniorenheim-Verwaltungssystem</p>
-            <a href="https://smartworkart.onrender.com/login" class="login-button">
+            <a href="#" id="login-button" class="login-button">
                 Zum Login
             </a>
         </main>
@@ -19,6 +19,10 @@
             <p>&copy; 2024 Seniorenheim-Portal. Alle Rechte vorbehalten.</p>
         </footer>
     </div>
+    <script type="module">
+        import config from '/frontend/js/config.js';
+        document.getElementById('login-button').href = config.LOGIN_URL;
+    </script>
     <script src="/frontpage-static/app.js" type="text/javascript"></script>
 </body>
 </html>

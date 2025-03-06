@@ -1,5 +1,9 @@
-document.addEventListener("DOMContentLoaded", () => { 
-  const BASE_URL = "https://smartworkart.onrender.com"; // Einheitliche Basis-URL für alle APIs
+document.addEventListener("DOMContentLoaded", async () => { 
+  // Importiere die Konfiguration dynamisch
+  const configModule = await import('../../js/config.js');
+  const config = configModule.default;
+  
+  const BASE_URL = config.API_BASE_URL; // Verwende die konfigurierte Basis-URL
 
   const zutatenForm = document.getElementById("zutaten-form");
   const zutatenTabelleBody = document.querySelector("#zutaten-tabelle tbody");

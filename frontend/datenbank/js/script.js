@@ -1,4 +1,7 @@
-const BASE_URL = "https://smartworkart.onrender.com"; // Einheitliche Basis-URL für alle APIs
+// Importiere die Konfiguration
+import config from '../../js/config.js';
+
+const BASE_URL = config.API_BASE_URL; // Verwende die konfigurierte Basis-URL
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchKategorien();

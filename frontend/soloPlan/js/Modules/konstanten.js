@@ -1,4 +1,7 @@
-export const API_BASE_URL = "https://smartworkart.onrender.com/api";
+// Importiere die Konfiguration
+import config from '../../../js/config.js';
+
+export const API_BASE_URL = config.API_ENDPOINT;
 console.log('API_BASE_URL wird geladen:', API_BASE_URL);
 
 // Feste Kategorien

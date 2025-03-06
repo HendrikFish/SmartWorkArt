@@ -1,4 +1,7 @@
-const API_BASE_URL = "https://smartworkart.onrender.com/api/numbers";
+// Importiere die Konfiguration
+import config from '../../js/config.js';
+
+const API_BASE_URL = `${config.API_ENDPOINT}/numbers`;
 let currentYear;
 let currentWeek;
 

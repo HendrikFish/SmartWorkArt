@@ -1,5 +1,9 @@
 // script.js
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // Importiere die Konfiguration dynamisch
+  const configModule = await import('../../js/config.js');
+  const config = configModule.default;
+
   class MenuPlanner {
     constructor() {
       // Moment.js Verfügbarkeit prüfen
@@ -18,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       this.weekData = {};
 
-      this.baseUrl = "https://smartworkart.onrender.com";
+      this.baseUrl = config.API_BASE_URL;
 
       this.initEventListeners();
       this.updateWeekInfo();

@@ -1,11 +1,13 @@
 import { editEinrichtung } from "./einrichtungEdit.js";
 import { showToast } from "./toast.js";
+import config from '../../../js/config.js';
+
+const API_BASE_URL = config.API_ENDPOINT;
 
 // Export der Hauptfunktionen
 export async function loadEinrichtungen() {
     try {
-        const response = await fetch('https://smartworkart.onrender.com/api/einrichtungen');
-
+        const response = await fetch(`${API_BASE_URL}/einrichtungen`);
 
         if (!response.ok) {
             throw new Error(`HTTP-Fehler! Status: ${response.status}`);
@@ -72,7 +74,7 @@ function createEinrichtungCard(einrichtung) {
     div.querySelector('.delete-btn').addEventListener('click', async () => {
         if (confirm(`Möchten Sie die Einrichtung "${einrichtung.name}" wirklich löschen?`)) {
             try {
-                const response = await fetch(`https://smartworkart.onrender.com/api/einrichtungen/${fileId}`, {
+                const response = await fetch(`${API_BASE_URL}/einrichtungen/${fileId}`, {
                     method: 'DELETE'
                 });
 

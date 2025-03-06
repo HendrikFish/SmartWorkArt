@@ -1,6 +1,7 @@
 // /backend/swagger.js
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const config = require('./config/config');
 
 const options = {
   definition: {
@@ -12,7 +13,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://smartworkart.onrender.com/login',
+        url: config.LOGIN_URL,
       },
     ],
   },

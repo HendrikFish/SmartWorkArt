@@ -3,9 +3,10 @@ import * as Interface from './Modules/Interface.js';
 import * as Person from './Modules/person.js';
 import * as Plan from './Modules/plan.js';
 import * as Print from './Modules/print.js';
+import config from '../../js/config.js';
 
 // Constants
-const API_BASE_URL = "https://smartworkart.onrender.com/api";
+const API_BASE_URL = config.API_ENDPOINT;
 const ENDPOINTS = {
     SOLO_SELECT: 'soloselect',
     PLAN: 'plan'

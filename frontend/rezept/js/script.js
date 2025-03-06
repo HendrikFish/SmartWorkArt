@@ -1,5 +1,8 @@
+// Importiere die Konfiguration
+import config from '../../js/config.js';
+
 // Globale Variablen
-const BASE_URL = "https://smartworkart.onrender.com"; // Einheitliche Basis-URL für alle APIs
+const BASE_URL = config.API_BASE_URL; // Verwende die konfigurierte Basis-URL
 let zutatenListe = []; // Wird durch ladeZutaten befüllt
 
 const rezeptForm = document.getElementById("rezept-form");

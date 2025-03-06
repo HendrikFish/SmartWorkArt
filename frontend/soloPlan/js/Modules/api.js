@@ -1,7 +1,8 @@
-const API_BASE_URL = "https://smartworkart.onrender.com/api";
+import config from '../../../js/config.js';
 import { getCurrentWeek, getCurrentYear, selectedMeals, mealPlanData, formConfig, residentsData, selectedResident } from './variablen.js';
 import { createResidentButtons } from './interface.js';
 
+const API_BASE_URL = config.API_ENDPOINT;
 console.log('API_BASE_URL in api.js:', API_BASE_URL);
 
 // Globale Variablen - nur die neue deklarieren, die anderen sind bereits importiert

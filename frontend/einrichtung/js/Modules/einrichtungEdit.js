@@ -2,6 +2,9 @@ import { openModal } from "./modal.js";
 import { showToast } from "./toast.js";
 import { setupSpeiseangebot } from "./speiseangebot.js";
 import { updateGesamtPersonenanzahl, setupGruppeSlider } from "./gruppen.js";
+import config from '../../../js/config.js';
+
+const API_BASE_URL = config.API_ENDPOINT;
 
 // Funktion zur Navigation zwischen den Schritten
 function navigateStep(direction) {
@@ -109,7 +112,7 @@ export async function editEinrichtung(fileId, displayName) {
         }
 
         // Dann die Daten laden
-        const response = await fetch(`https://smartworkart.onrender.com/api/einrichtungen/${fileId}`);
+        const response = await fetch(`${API_BASE_URL}/einrichtungen/${fileId}`);
 
         
         if (!response.ok) {
@@ -304,9 +307,9 @@ async function handleFormSubmit(event) {
 
     const isEdit = form.dataset.mode === 'edit';
     const fileId = form.dataset.fileId;
-    const url = isEdit 
-    ? `https://smartworkart.onrender.com/api/einrichtungen/${fileId}`
-    : `https://smartworkart.onrender.com/api/einrichtungen`;
+    const url = fileId 
+        ? `${API_BASE_URL}/einrichtungen/${fileId}`
+        : `${API_BASE_URL}/einrichtungen`;
 
     const method = isEdit ? 'PUT' : 'POST';
 
