@@ -2,11 +2,28 @@ import { getCurrentWeek, getCurrentYear, selectedResident, selectedMeals, mealPl
 import { WEEKDAYS, CATEGORIES, API_BASE_URL, API_CATEGORY_MAPPING, mergeExtraCategories } from './konstanten.js';
 import { formatDate, getWeekStartDate, createStorageKey, createNewSelection, extractMinimalMealData } from './hilfsfunktionen.js';
 import { checkExistingData, loadResidentSelections, saveResidentSelections, updateResidentArea, loadExtraCategories, saveExtraCategories, extraCategories } from './api.js';
-import { closeFabMenus, closeAllDialogs, toggleMealSelection, selectResident, resetResidentSelection } from './event-handling.js';
+import { closeFabMenus, closeAllDialogs, toggleMealSelection, selectResident, resetResidentSelection, positionExtraCategoryContainers } from './event-handling.js';
 import { initializePanelHandling, togglePanel, keepPanelOpen, closeAllPanels } from './panel-handling.js';
+
+// Globale Variablen
+let comments = {}; // Kommentare für Mahlzeiten speichern
 
 // Initialisiere Panel-Handling beim Import
 initializePanelHandling();
+
+// Funktion zum Laden der Kommentare
+export async function loadComments() {
+    try {
+        // Lade Kommentare aus dem localStorage
+        const savedComments = localStorage.getItem('mealComments');
+        if (savedComments) {
+            comments = JSON.parse(savedComments);
+            console.log('Kommentare geladen:', comments);
+        }
+    } catch (error) {
+        console.error('Fehler beim Laden der Kommentare:', error);
+    }
+}
 
 export function updateUI() {
     updateWeekDisplay();
@@ -509,49 +526,69 @@ export async function updateMealTable() {
                 const subButtonsRow = document.createElement('div');
                 subButtonsRow.className = 'sub-buttons-row';
                 
+                // Sub-Button für Kommentare erstellen
                 const commentBtn = document.createElement('button');
                 commentBtn.className = 'sub-button comment';
                 commentBtn.innerHTML = '💬';
-                commentBtn.onclick = (e) => {
+                commentBtn.onclick = function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    closeAllDialogs();
-                    const fabContainer = e.target.closest('.fab-container');
-                    if (fabContainer) {
-                        fabContainer.classList.add('active');
+                    
+                    // Prüfe, ob bereits ein comment-dialog aktiv ist
+                    const commentDialog = fabContainer.querySelector('.comment-dialog');
+                    if (commentDialog) {
+                        // Dialog bereits offen - schließen und Funktion beenden
+                        commentDialog.remove();
+                        return;
                     }
+                    
+                    // Sonst normal fortfahren
+                    clearAllContainers(subButtons);
                     showCommentDialog(weekday, apiCategory, mealContent[0]);
                 };
                 
                 // Füge den Kommentar-Button für alle Kategorien hinzu
                 subButtonsRow.appendChild(commentBtn);
                 
-                // Komponenten und Alternativen-Buttons für alle Kategorien anzeigen
+                // Sub-Button für Komponenten erstellen
                 const componentsBtn = document.createElement('button');
                 componentsBtn.className = 'sub-button components';
                 componentsBtn.innerHTML = '🍽️';
-                componentsBtn.onclick = (e) => {
+                componentsBtn.onclick = function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    closeAllDialogs();
-                    const fabContainer = e.target.closest('.fab-container');
-                    if (fabContainer) {
-                        fabContainer.classList.add('active');
+                    
+                    // Prüfe, ob bereits ein components-container aktiv ist
+                    const componentsContainer = fabContainer.querySelector('.components-container');
+                    if (componentsContainer) {
+                        // Container bereits offen - schließen und Funktion beenden
+                        componentsContainer.remove();
+                        return;
                     }
+                    
+                    // Sonst normal fortfahren
+                    clearAllContainers(subButtons);
                     showComponentSelection(weekday, apiCategory, mealContent);
                 };
                 
+                // Sub-Button für Alternativen erstellen
                 const alternativeBtn = document.createElement('button');
                 alternativeBtn.className = 'sub-button alternative';
                 alternativeBtn.innerHTML = '🔄';
-                alternativeBtn.onclick = (e) => {
+                alternativeBtn.onclick = function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    closeAllDialogs();
-                    const fabContainer = e.target.closest('.fab-container');
-                    if (fabContainer) {
-                        fabContainer.classList.add('active');
+                    
+                    // Prüfe, ob bereits ein alternatives-container aktiv ist
+                    const alternativesContainer = fabContainer.querySelector('.alternatives-container');
+                    if (alternativesContainer) {
+                        // Container bereits offen - schließen und Funktion beenden
+                        alternativesContainer.remove();
+                        return;
                     }
+                    
+                    // Die showAlternatives-Funktion hat jetzt integriertes Toggle-Verhalten
+                    clearAllContainers(subButtons);
                     showAlternatives(weekday, apiCategory, mealContent);
                 };
                 
@@ -599,136 +636,191 @@ export async function updateMealTable() {
 }
 
 export function showCommentDialog(day, category, meal) {
-    const subButtons = document.querySelector('.fab-container.active .sub-buttons');
-    if (!subButtons) return;
-
-    clearAllContainers(subButtons);
-    const storageKey = createStorageKey(day, category);
-
-    const dialog = document.createElement('div');
-    dialog.className = 'dialog';
-    dialog.classList.add('active');
-    dialog.addEventListener('click', (e) => {
-        e.stopPropagation();
-    });
-    
-    const header = document.createElement('div');
-    header.className = 'dialog-header';
-    header.textContent = `Kommentar zu ${meal.name}`;
-    
-    const textarea = document.createElement('textarea');
-    textarea.className = 'dialog-textarea';
-    textarea.placeholder = 'Kommentar eingeben...';
-    
-    if (selectedMeals[storageKey]?.comments?.length > 0) {
-        textarea.value = selectedMeals[storageKey].comments[selectedMeals[storageKey].comments.length - 1].text;
-    }
-    
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'dialog-buttons';
-    
-    const saveButton = document.createElement('button');
-    saveButton.className = 'dialog-button save';
-    saveButton.textContent = 'Speichern';
-    saveButton.onclick = () => {
-        const comment = textarea.value.trim();
-        if (comment) {
-            if (!selectedMeals[storageKey]) {
-                selectedMeals[storageKey] = createNewSelection(day, category, meal);
-            }
-            selectedMeals[storageKey].comments.push({
-                text: comment,
-                timestamp: new Date().toISOString()
-            });
-            saveResidentSelections();
-            updateMealTable();
+    try {
+        const fabContainer = document.querySelector('.fab-container.active');
+        if (!fabContainer) return;
+        
+        const subButtons = fabContainer.querySelector('.sub-buttons');
+        if (!subButtons) return;
+        
+        // Prüfe, ob bereits ein comment-dialog aktiv ist
+        const existingDialog = fabContainer.querySelector('.sub-buttons .comment-dialog');
+        if (existingDialog) {
+            // Dialog bereits offen - schließen und Funktion beenden
+            existingDialog.remove();
+            return;
         }
-        dialog.remove();
-    };
-    
-    const cancelButton = document.createElement('button');
-    cancelButton.className = 'dialog-button cancel';
-    cancelButton.textContent = 'Abbrechen';
-    cancelButton.onclick = () => dialog.remove();
-    
-    buttonContainer.appendChild(saveButton);
-    buttonContainer.appendChild(cancelButton);
-    
-    dialog.appendChild(header);
-    dialog.appendChild(textarea);
-    dialog.appendChild(buttonContainer);
-    
-    subButtons.appendChild(dialog);
-    textarea.focus();
+        
+        // Sonst normal fortfahren - zunächst alle anderen Container entfernen
+        clearAllContainers(subButtons);
+        
+        const commentDialog = document.createElement('div');
+        commentDialog.className = 'comment-dialog';
+        // Wichtig: Füge die Positionierung direkt hier hinzu
+        commentDialog.style.position = 'absolute';
+        commentDialog.style.top = '100%';
+        // Left-Position wird später berechnet
+        commentDialog.style.marginTop = '8px';
+        commentDialog.style.zIndex = '9999';
+        commentDialog.style.backgroundColor = 'white';
+        commentDialog.style.borderRadius = '8px';
+        commentDialog.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+        commentDialog.style.padding = '10px';
+        commentDialog.style.width = '220px';
+        
+        const commentHeader = document.createElement('div');
+        commentHeader.className = 'comment-header';
+        commentHeader.textContent = 'Kommentar hinzufügen';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.onclick = () => commentDialog.remove();
+        
+        commentHeader.appendChild(closeBtn);
+        commentDialog.appendChild(commentHeader);
+        
+        const storageKey = createStorageKey(day, category);
+        const mealId = meal?.id || '';
+        const existingComment = comments[storageKey]?.[mealId] || '';
+        
+        const commentTextarea = document.createElement('textarea');
+        commentTextarea.className = 'comment-textarea';
+        commentTextarea.placeholder = 'Kommentar eingeben...';
+        commentTextarea.value = existingComment;
+        
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'save-btn';
+        saveBtn.textContent = 'Speichern';
+        saveBtn.onclick = () => {
+            saveComment(day, category, mealId, commentTextarea.value);
+            commentDialog.remove();
+        };
+        
+        commentDialog.appendChild(commentTextarea);
+        commentDialog.appendChild(saveBtn);
+        
+        // Füge den Dialog direkt zum subButtons-Element hinzu
+        subButtons.appendChild(commentDialog);
+        
+        // Prüfe, ob es sich um eine Extra-Kategorie handelt und positioniere Container entsprechend
+        const isExtraCategory = fabContainer.closest('.extra-category-row');
+        if (isExtraCategory) {
+            positionExtraCategoryContainers(fabContainer);
+        } else {
+            // Normale Container mittig positionieren (wie bei Extra-Kategorien)
+            // Berechne die Mitte des Panels
+            const buttonWidth = subButtons.offsetWidth;
+            const containerWidth = 220; // Fixe Breite des Containers
+            const leftOffset = (buttonWidth - containerWidth) / 2;
+            
+            // Stelle sicher, dass der Container nicht über den linken Rand hinausragt
+            const left = Math.max(0, leftOffset);
+            commentDialog.style.left = left + 'px';
+        }
+        
+    } catch (error) {
+        console.error('Fehler beim Anzeigen des Kommentar-Dialogs:', error);
+    }
 }
 
 export function showComponentSelection(day, category, meals) {
-    const storageKey = createStorageKey(day, category);
-    let selection = selectedMeals[storageKey];
-    
-    if (!selection) {
-        selection = createNewSelection(day, category, meals);
-        selectedMeals[storageKey] = selection;
-    }
-
-    const subButtons = document.querySelector('.fab-container.active .sub-buttons');
-    if (!subButtons) return;
-
-    clearAllContainers(subButtons);
-
-    const componentsContainer = document.createElement('div');
-    componentsContainer.className = 'components-container active';
-
-    selection.meals.forEach((meal) => {
-        const componentItem = document.createElement('div');
-        componentItem.className = 'component-item';
+    try {
+        const fabContainer = document.querySelector('.fab-container.active');
+        if (!fabContainer) return;
         
-        const label = document.createElement('span');
-        label.className = 'switch-label';
-        label.textContent = meal.name;
+        const subButtons = fabContainer.querySelector('.sub-buttons');
+        if (!subButtons) return;
         
-        const switchContainer = document.createElement('label');
-        switchContainer.className = 'switch-container';
+        // Prüfe, ob bereits ein components-container aktiv ist
+        const existingContainer = subButtons.querySelector('.components-container');
+        if (existingContainer) {
+            // Container bereits offen - schließen und Funktion beenden
+            existingContainer.remove();
+            return;
+        }
         
-        const input = document.createElement('input');
-        input.type = 'checkbox';
-        input.className = 'switch-input';
-        input.checked = meal.rezept_selected !== false;
+        // Sonst normal fortfahren - zunächst alle anderen Container entfernen
+        clearAllContainers(subButtons);
         
-        // Vereinfachter Event-Handler nur für den Switch-Status
-        input.addEventListener('change', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        const componentsContainer = document.createElement('div');
+        componentsContainer.className = 'components-container';
+        
+        // Inline-Styles hinzufügen für korrekten weißen Hintergrund und Positionierung
+        componentsContainer.style.backgroundColor = 'white';
+        componentsContainer.style.position = 'absolute';
+        componentsContainer.style.top = '100%';
+        // Left-Position wird später berechnet
+        componentsContainer.style.width = '220px';
+        componentsContainer.style.border = '1px solid #ddd';
+        componentsContainer.style.borderRadius = '8px';
+        componentsContainer.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+        componentsContainer.style.padding = '10px';
+        componentsContainer.style.zIndex = '9999';
+        componentsContainer.style.marginTop = '8px';
+        
+        const header = document.createElement('div');
+        header.className = 'components-header';
+        header.textContent = 'Komponenten';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-btn';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.onclick = () => componentsContainer.remove();
+        
+        header.appendChild(closeBtn);
+        componentsContainer.appendChild(header);
+        
+        if (Array.isArray(meals) && meals.length > 0) {
+            // Erstelle Komponenten-Liste
+            const meal = meals[0]; // Nehme die erste Mahlzeit als Referenz
             
-            try {
-                meal.rezept_selected = input.checked;
-                await saveResidentSelections();
-            } catch (error) {
-                console.error('Fehler beim Speichern der Komponenten-Auswahl:', error);
-                input.checked = !input.checked;
-                meal.rezept_selected = input.checked;
+            if (meal && meal.components && Array.isArray(meal.components)) {
+                const componentsList = document.createElement('ul');
+                componentsList.className = 'components-list';
+                
+                meal.components.forEach(component => {
+                    const componentItem = document.createElement('li');
+                    componentItem.className = 'component-item';
+                    componentItem.textContent = component.name || 'Unbenannte Komponente';
+                    componentsList.appendChild(componentItem);
+                });
+                
+                componentsContainer.appendChild(componentsList);
+            } else {
+                const noComponentsInfo = document.createElement('div');
+                noComponentsInfo.className = 'no-components-info';
+                noComponentsInfo.textContent = 'Keine Komponenten verfügbar';
+                componentsContainer.appendChild(noComponentsInfo);
             }
-        });
+        } else {
+            const noMealInfo = document.createElement('div');
+            noMealInfo.className = 'no-meal-info';
+            noMealInfo.textContent = 'Keine Mahlzeit ausgewählt';
+            componentsContainer.appendChild(noMealInfo);
+        }
         
-        // Verhindere Klick-Propagation für alle Elemente
-        [componentItem, label, switchContainer].forEach(element => {
-            element.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        });
+        subButtons.appendChild(componentsContainer);
         
-        const slider = document.createElement('span');
-        slider.className = 'switch-slider';
+        // Prüfe, ob es sich um eine Extra-Kategorie handelt und positioniere Container entsprechend
+        const isExtraCategory = fabContainer.closest('.extra-category-row');
+        if (isExtraCategory) {
+            positionExtraCategoryContainers(fabContainer);
+        } else {
+            // Normale Container mittig positionieren (wie bei Extra-Kategorien)
+            // Berechne die Mitte des Panels
+            const buttonWidth = subButtons.offsetWidth;
+            const containerWidth = 220; // Fixe Breite des Containers
+            const leftOffset = (buttonWidth - containerWidth) / 2;
+            
+            // Stelle sicher, dass der Container nicht über den linken Rand hinausragt
+            const left = Math.max(0, leftOffset);
+            componentsContainer.style.left = left + 'px';
+        }
         
-        switchContainer.appendChild(input);
-        switchContainer.appendChild(slider);
-        
-        componentItem.appendChild(label);
-        componentItem.appendChild(switchContainer);
-        componentsContainer.appendChild(componentItem);
-    });
-
-    subButtons.appendChild(componentsContainer);
+    } catch (error) {
+        console.error('Fehler beim Anzeigen der Komponenten:', error);
+    }
 }
 
 export async function showAlternatives(day, category, meals) {
@@ -841,7 +933,7 @@ export async function showAlternatives(day, category, meals) {
 }
 
 function clearAllContainers(subButtons) {
-    const containers = subButtons.querySelectorAll('.dialog, .components-container, .alternatives-container');
+    const containers = subButtons.querySelectorAll('.dialog, .components-container, .alternatives-container, .comment-dialog, .alternatives-container.active');
     containers.forEach(container => container.remove());
 }
 
@@ -1032,5 +1124,49 @@ async function deleteCategory(categoryId) {
     } catch (error) {
         console.error('Fehler beim Löschen der Kategorie:', error);
         alert('Fehler beim Löschen der Kategorie');
+    }
+}
+
+// Funktion zum Speichern eines Kommentars
+export function saveComment(day, category, mealId, commentText) {
+    try {
+        const storageKey = createStorageKey(day, category);
+        
+        // Initialisiere comments-Objekt wenn nötig
+        if (!comments[storageKey]) {
+            comments[storageKey] = {};
+        }
+        
+        // Speichere Kommentar
+        comments[storageKey][mealId] = commentText;
+        
+        // Speichere in localStorage
+        localStorage.setItem('mealComments', JSON.stringify(comments));
+        
+        // Aktualisiere UI wenn nötig
+        updateMealTable();
+        
+        // Erfolgsmeldung anzeigen
+        const successToast = document.createElement('div');
+        successToast.className = 'toast-notification success';
+        successToast.textContent = 'Kommentar gespeichert';
+        document.body.appendChild(successToast);
+        
+        setTimeout(() => {
+            successToast.remove();
+        }, 3000);
+        
+    } catch (error) {
+        console.error('Fehler beim Speichern des Kommentars:', error);
+        
+        // Fehlermeldung anzeigen
+        const errorToast = document.createElement('div');
+        errorToast.className = 'toast-notification error';
+        errorToast.textContent = 'Fehler beim Speichern des Kommentars';
+        document.body.appendChild(errorToast);
+        
+        setTimeout(() => {
+            errorToast.remove();
+        }, 3000);
     }
 }

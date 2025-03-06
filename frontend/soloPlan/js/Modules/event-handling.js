@@ -557,6 +557,26 @@ async function openAlternativesEditor() {
             categoriesContainer.appendChild(categorySection);
         });
         
+        // Zusätzlich die benutzerdefinierten Kategorien hinzufügen
+        try {
+            // Lade Extra-Kategorien
+            const extraCategoriesResponse = await fetch(`${API_BASE_URL}/soloplan/extras`);
+            if (extraCategoriesResponse.ok) {
+                const data = await extraCategoriesResponse.json();
+                const extraCats = data.extraCategories || [];
+                
+                // Füge jede Extra-Kategorie hinzu
+                extraCats.forEach(cat => {
+                    const categorySection = createCategorySection(cat.displayName, cat.id);
+                    categoriesContainer.appendChild(categorySection);
+                });
+                
+                console.log('Extra-Kategorien zum Alternativen-Editor hinzugefügt:', extraCats);
+            }
+        } catch (err) {
+            console.error('Fehler beim Laden der Extra-Kategorien für den Alternativen-Editor:', err);
+        }
+        
         // Container zusammenbauen
         editorContainer.appendChild(header);
         editorContainer.appendChild(categoriesContainer);
@@ -604,6 +624,32 @@ async function saveAlternatives() {
                 }
             }
         });
+        
+        // Sammle auch Alternativen für benutzerdefinierte Kategorien
+        try {
+            const extraCategoriesResponse = await fetch(`${API_BASE_URL}/soloplan/extras`);
+            if (extraCategoriesResponse.ok) {
+                const extraData = await extraCategoriesResponse.json();
+                const extraCats = extraData.extraCategories || [];
+                
+                extraCats.forEach(cat => {
+                    const container = document.querySelector(`#${cat.id}-alternatives`);
+                    if (container) {
+                        const alternatives = Array.from(container.querySelectorAll('.alternative-input'))
+                            .map(input => input.value.trim())
+                            .filter(value => value !== '');
+                        
+                        if (alternatives.length > 0) {
+                            data[cat.id] = {
+                                alternatives: alternatives
+                            };
+                        }
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Fehler beim Speichern der Alternativen für Extra-Kategorien:', err);
+        }
         
         console.log('Sende Daten:', data);
         
@@ -698,6 +744,34 @@ async function loadExistingAlternatives() {
             }
         });
         
+        // Versuche, die Extra-Kategorien zu laden
+        try {
+            const extraCategoriesResponse = await fetch(`${API_BASE_URL}/soloplan/extras`);
+            if (extraCategoriesResponse.ok) {
+                const extraData = await extraCategoriesResponse.json();
+                const extraCats = extraData.extraCategories || [];
+                
+                extraCats.forEach(cat => {
+                    const container = document.querySelector(`#${cat.id}-alternatives`);
+                    if (container) {
+                        container.innerHTML = ''; // Container leeren
+                        const categoryData = data[cat.id];
+                        if (categoryData && categoryData.alternatives) {
+                            categoryData.alternatives.forEach(alt => {
+                                addNewAlternativeField(cat.id, alt);
+                            });
+                        }
+                        // Stelle sicher, dass mindestens ein leeres Alternativfeld vorhanden ist
+                        if (!categoryData || !categoryData.alternatives || categoryData.alternatives.length === 0) {
+                            addNewAlternativeField(cat.id);
+                        }
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Fehler beim Laden der Alternativen für Extra-Kategorien:', err);
+        }
+        
         console.log('Alternativen erfolgreich geladen:', data);
         return data;
     } catch (error) {
@@ -717,13 +791,39 @@ async function loadExistingAlternatives() {
 export async function showAlternatives(day, category, meals) {
     try {
         const storageKey = createStorageKey(day, category);
-        const subButtons = document.querySelector('.fab-container.active .sub-buttons');
+        const fabContainer = document.querySelector('.fab-container.active');
+        if (!fabContainer) return;
+        
+        const subButtons = fabContainer.querySelector('.sub-buttons');
         if (!subButtons) return;
 
+        // Prüfe, ob bereits ein alternatives-container aktiv ist
+        const isAlreadyOpen = fabContainer.querySelector('.sub-buttons .alternatives-container.active');
+        if (isAlreadyOpen) {
+            // Container bereits offen - schließen und Funktion beenden
+            isAlreadyOpen.remove();
+            return;
+        }
+
+        // Sonst normal fortfahren - zunächst alle anderen Container entfernen
         clearAllContainers(subButtons);
 
         const alternativesContainer = document.createElement('div');
         alternativesContainer.className = 'alternatives-container active';
+        
+        // Inline-Styles hinzufügen für korrekten weißen Hintergrund und Positionierung
+        alternativesContainer.style.backgroundColor = 'white';
+        alternativesContainer.style.position = 'absolute';
+        alternativesContainer.style.top = '100%';
+        
+        // Statt fixer Left-Position hier noch nichts setzen - wird später berechnet
+        alternativesContainer.style.width = '220px';
+        alternativesContainer.style.border = '1px solid #ddd';
+        alternativesContainer.style.borderRadius = '8px';
+        alternativesContainer.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
+        alternativesContainer.style.padding = '10px';
+        alternativesContainer.style.zIndex = '9999';
+        alternativesContainer.style.marginTop = '8px';
         
         // Lade Alternativen
         const response = await fetch(`${API_BASE_URL}/soloplan/shorts`);
@@ -744,72 +844,39 @@ export async function showAlternatives(day, category, meals) {
             // Verarbeite jede Alternative einzeln
             alternatives.forEach(alternative => {
                 console.log('Verarbeite Alternative:', alternative);
-
-                const altDiv = document.createElement('div');
-                altDiv.className = 'alternative-item';
-
-                // Label für die Alternative
-                const label = document.createElement('span');
-                label.className = 'switch-label';
-                label.textContent = alternative; // Einzelne Alternative wird hier gesetzt
-
-                // Switch-Container erstellen
-                const switchContainer = document.createElement('label');
-                switchContainer.className = 'switch-container';
-
-                // Input-Element für den Switch
-                const switchInput = document.createElement('input');
-                switchInput.type = 'checkbox';
-                switchInput.className = 'switch-input';
-                switchInput.id = `alt-${category}-${alternative.replace(/\s+/g, '-')}`;
                 
-                // Prüfe ob diese Alternative ausgewählt ist
-                switchInput.checked = selection.meal?.isAlternative && selection.meal?.name === alternative;
-                
-                switchInput.addEventListener('change', async () => {
-                    if (!selectedMeals[storageKey]) {
-                        selectedMeals[storageKey] = createNewSelection(day, category, meals);
-                    }
-                    
-                    if (switchInput.checked) {
-                        // Diese Alternative als ausgewählte Mahlzeit setzen
-                        selectedMeals[storageKey].meal = {
-                            name: alternative,
-                            isAlternative: true
-                        };
-                        // Andere Switches deaktivieren
-                        alternativesContainer.querySelectorAll('.switch-input').forEach(input => {
-                            if (input !== switchInput) {
-                                input.checked = false;
-                            }
-                        });
-                    } else {
-                        // Zurück zur ursprünglichen Mahlzeit
-                        selectedMeals[storageKey].meal = meals;
-                    }
-                    
-                    await saveResidentSelections();
-                    updateMealTable();
-                });
-
-                // Slider für den Switch
-                const slider = document.createElement('span');
-                slider.className = 'switch-slider';
-
-                // Elemente zusammensetzen
-                switchContainer.appendChild(switchInput);
-                switchContainer.appendChild(slider);
-                altDiv.appendChild(label);
-                altDiv.appendChild(switchContainer);
-
-                // Alternative zum Container hinzufügen
+                const altDiv = createAlternativeItem(alternative, category, selection, alternativesContainer, day, meals, storageKey);
                 alternativesContainer.appendChild(altDiv);
             });
         } else {
             console.log('Keine Alternativen für Kategorie:', category);
+            
+            // Hinweistext anzeigen, falls keine Alternativen vorhanden sind
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'alternative-info';
+            infoDiv.textContent = 'Keine Alternativen vorhanden. Sie können Alternativen im Alternativen-Editor hinzufügen.';
+            alternativesContainer.appendChild(infoDiv);
         }
         
+        // Füge den Container zum subButtons-Element hinzu
         subButtons.appendChild(alternativesContainer);
+        
+        // Prüfe, ob es sich um eine Extra-Kategorie handelt
+        const isExtraCategory = fabContainer.closest('.extra-category-row');
+        if (isExtraCategory) {
+            // Extra-Kategorie-Container positionieren
+            positionExtraCategoryContainers(fabContainer);
+        } else {
+            // Normale Container mittig positionieren (wie bei Extra-Kategorien)
+            // Berechne die Mitte des Panels
+            const buttonWidth = subButtons.offsetWidth;
+            const containerWidth = 220; // Fixe Breite des Containers
+            const leftOffset = (buttonWidth - containerWidth) / 2;
+            
+            // Stelle sicher, dass der Container nicht über den linken Rand hinausragt
+            const left = Math.max(0, leftOffset);
+            alternativesContainer.style.left = left + 'px';
+        }
         
     } catch (error) {
         console.error('Fehler beim Laden der Alternativen:', error);
@@ -822,6 +889,68 @@ export async function showAlternatives(day, category, meals) {
             errorToast.remove();
         }, 3000);
     }
+}
+
+// Hilfsfunktion zur Erstellung eines Alternativen-Elements
+function createAlternativeItem(alternative, category, selection, alternativesContainer, day, meals, storageKey) {
+    const altDiv = document.createElement('div');
+    altDiv.className = 'alternative-item';
+
+    // Label für die Alternative
+    const label = document.createElement('span');
+    label.className = 'switch-label';
+    label.textContent = alternative; // Einzelne Alternative wird hier gesetzt
+
+    // Switch-Container erstellen
+    const switchContainer = document.createElement('label');
+    switchContainer.className = 'switch-container';
+
+    // Input-Element für den Switch
+    const switchInput = document.createElement('input');
+    switchInput.type = 'checkbox';
+    switchInput.className = 'switch-input';
+    switchInput.id = `alt-${category}-${alternative.replace(/\s+/g, '-')}`;
+    
+    // Prüfe ob diese Alternative ausgewählt ist
+    switchInput.checked = selection.meal?.isAlternative && selection.meal?.name === alternative;
+    
+    switchInput.addEventListener('change', async () => {
+        if (!selectedMeals[storageKey]) {
+            selectedMeals[storageKey] = createNewSelection(day, category, meals);
+        }
+        
+        if (switchInput.checked) {
+            // Diese Alternative als ausgewählte Mahlzeit setzen
+            selectedMeals[storageKey].meal = {
+                name: alternative,
+                isAlternative: true
+            };
+            // Andere Switches deaktivieren
+            alternativesContainer.querySelectorAll('.switch-input').forEach(input => {
+                if (input !== switchInput) {
+                    input.checked = false;
+                }
+            });
+        } else {
+            // Zurück zur ursprünglichen Mahlzeit
+            selectedMeals[storageKey].meal = meals;
+        }
+        
+        await saveResidentSelections();
+        updateMealTable();
+    });
+
+    // Slider für den Switch
+    const slider = document.createElement('span');
+    slider.className = 'switch-slider';
+
+    // Elemente zusammensetzen
+    switchContainer.appendChild(switchInput);
+    switchContainer.appendChild(slider);
+    altDiv.appendChild(label);
+    altDiv.appendChild(switchContainer);
+    
+    return altDiv;
 }
 
 // Kategorie-Manager
@@ -1001,4 +1130,58 @@ async function saveExtraCategories() {
     document.getElementById('categoryManagerDialog').style.display = 'none';
     // In einer echten Implementierung würde hier ein API-Aufruf stattfinden
     alert('Kategorien wurden gespeichert!');
+}
+
+// Neue Hilfsfunktion zum Umschalten des Button-Status
+function toggleButtonState(button, containerSelector) {
+    const fabContainer = button.closest('.fab-container');
+    if (!fabContainer) return false;
+    
+    // Prüfe, ob ein Container dieses Typs bereits geöffnet ist
+    const existingContainer = fabContainer.querySelector(`.sub-buttons ${containerSelector}.active`);
+    
+    if (existingContainer) {
+        // Container ist bereits geöffnet - schließe ihn
+        existingContainer.remove();
+        return true; // Toggle wurde ausgeführt (Container geschlossen)
+    }
+    
+    // Kein Container geöffnet - kehre zurück, um einen zu öffnen
+    return false; // Toggle wurde nicht ausgeführt (kein Container geschlossen)
+}
+
+// Funktion zum Aufrufen der positionContainers-Funktion aus dem panel-handling.js
+export function positionExtraCategoryContainers(fabContainer) {
+    // Simuliere einen Klick auf die Buttons, um die Positionierung zu triggern
+    setTimeout(() => {
+        const subButtons = fabContainer.querySelector('.sub-buttons');
+        if (!subButtons) return;
+        
+        const containers = [
+            subButtons.querySelector('.components-container'),
+            subButtons.querySelector('.alternatives-container'),
+            subButtons.querySelector('.comment-dialog')
+        ];
+        
+        containers.forEach(container => {
+            if (container) {
+                // Mittige Positionierung unter dem Panel
+                container.style.position = 'absolute';
+                container.style.top = '100%';
+                
+                // Berechne die Mitte des Panels
+                const buttonWidth = subButtons.offsetWidth;
+                const containerWidth = 220; // Fixe Breite des Containers
+                const leftOffset = (buttonWidth - containerWidth) / 2;
+                
+                // Stelle sicher, dass der Container nicht über den linken Rand hinausragt
+                const left = Math.max(0, leftOffset);
+                container.style.left = left + 'px';
+                
+                container.style.marginTop = '8px';
+                container.style.zIndex = '9999';
+                container.style.width = '220px';
+            }
+        });
+    }, 100);
 }

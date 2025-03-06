@@ -1,0 +1,51 @@
+{
+  "resident": "Hendrik_Walter",
+  "2_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_kalteplatte": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  }
+}

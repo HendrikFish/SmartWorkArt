@@ -1,7 +1,8 @@
 import { getCurrentWeek, getCurrentYear, initializeDOMElements } from './Modules/variablen.js';
 import { loadResidents, loadMealPlan, loadExtraCategories } from './Modules/api.js';
 import { initializeEventListeners } from './Modules/event-handling.js';
-import { updateUI, initCategoryManager } from './Modules/interface.js';
+import { updateUI, initCategoryManager, loadComments } from './Modules/interface.js';
+import { initializePanelHandling } from './Modules/panel-handling.js';
 
 // Initialisierungsfunktion
 async function init() {
@@ -21,6 +22,10 @@ async function init() {
         console.log('Initialisiere Event-Listener...');
         initializeEventListeners();
         
+        // Initialisiere Panel-Handling
+        console.log('Initialisiere Panel-Handling...');
+        initializePanelHandling();
+        
         // Lade Daten
         console.log('Lade Bewohner...');
         await loadResidents();
@@ -30,6 +35,10 @@ async function init() {
         
         console.log('Lade Speiseplan...');
         await loadMealPlan();
+        
+        // Lade Kommentare
+        console.log('Lade Kommentare...');
+        await loadComments();
         
         // Initialisiere Kategorie-Manager
         console.log('Initialisiere Kategorie-Manager...');

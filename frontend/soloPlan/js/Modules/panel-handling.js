@@ -145,6 +145,102 @@ export function togglePanel(panel) {
     if (!wasActive) {
         panel.classList.add('active');
         showOverlay();
+        
+        // Neue Funktion: Prüfe, ob es sich um eine Extra-Kategorie handelt
+        const isExtraCategory = panel.closest('.extra-category-row');
+        if (isExtraCategory) {
+            positionExtraCategorySubButtons(panel);
+        }
+    }
+}
+
+// Neue Funktion für die Positionierung der Sub-Buttons in Extra-Kategorie-Zeilen
+function positionExtraCategorySubButtons(fabContainer) {
+    const subButtons = fabContainer.querySelector('.sub-buttons');
+    if (!subButtons) return;
+    
+    console.log('Positioniere Sub-Buttons für Extra-Kategorie');
+    
+    // Ursprüngliche Positionierung, aber mit besserer Sichtbarkeit
+    subButtons.style.position = 'absolute';
+    subButtons.style.top = '-6px';
+    subButtons.style.right = '20px';
+    subButtons.style.backgroundColor = 'white';
+    subButtons.style.padding = '12px';
+    subButtons.style.borderRadius = '12px';
+    subButtons.style.boxShadow = '0 4px 15px rgba(0,0,0,0.15)';
+    subButtons.style.minWidth = '100px';
+    subButtons.style.zIndex = '9999';
+    subButtons.style.overflow = 'visible';
+    
+    // Die Sub-Buttons-Row Dimensionen und Ausrichtung anpassen
+    const subButtonsRow = subButtons.querySelector('.sub-buttons-row');
+    if (subButtonsRow) {
+        subButtonsRow.style.display = 'flex';
+        subButtonsRow.style.flexDirection = 'row';
+        subButtonsRow.style.justifyContent = 'space-around';
+        subButtonsRow.style.gap = '8px';
+        subButtonsRow.style.width = 'auto';
+        subButtonsRow.style.padding = '0';
+    }
+    
+    // Styles für die Buttons setzen
+    const buttons = subButtons.querySelectorAll('.sub-button');
+    buttons.forEach(button => {
+        button.style.zIndex = '9999';
+        button.style.pointerEvents = 'auto';
+    });
+    
+    // Event-Listener zum Positionieren der Container beim Klick
+    buttons.forEach(button => {
+        // Entferne alten Event-Listener
+        button.removeEventListener('click', positionContainers);
+        // Füge neuen hinzu
+        button.addEventListener('click', positionContainers);
+    });
+    
+    // Funktion zum Positionieren der Container unterhalb des Panels
+    function positionContainers() {
+        setTimeout(() => {
+            // Neue Positionen berechnen
+            const subButtonsRect = subButtons.getBoundingClientRect();
+            
+            // Finde alle Container
+            const containers = [
+                subButtons.querySelector('.components-container'),
+                subButtons.querySelector('.alternatives-container'),
+                subButtons.querySelector('.comment-dialog')
+            ];
+            
+            // Für jeden gefundenen Container die Position setzen
+            containers.forEach(container => {
+                if (container) {
+                    // Sicherstellen, dass der Container Teil des DOM ist
+                    if (!subButtons.contains(container)) {
+                        subButtons.appendChild(container);
+                    }
+                    
+                    // Mittige Positionierung unter dem Panel
+                    container.style.position = 'absolute';
+                    container.style.top = '100%';
+                    
+                    // Berechne die Mitte des Panels
+                    const buttonWidth = subButtons.offsetWidth;
+                    const containerWidth = 220; // Fixe Breite des Containers
+                    const leftOffset = (buttonWidth - containerWidth) / 2;
+                    
+                    // Stelle sicher, dass der Container nicht über den linken Rand hinausragt
+                    const left = Math.max(0, leftOffset);
+                    container.style.left = left + 'px';
+                    
+                    container.style.marginTop = '8px';
+                    container.style.zIndex = '9999';
+                    container.style.width = '220px';
+                    
+                    console.log('Container positioniert:', container.className, 'left:', left);
+                }
+            });
+        }, 50);
     }
 }
 
@@ -152,5 +248,11 @@ export function keepPanelOpen(panel) {
     if (panel) {
         panel.classList.add('active');
         showOverlay();
+        
+        // Prüfe auch hier, ob es sich um eine Extra-Kategorie handelt
+        const isExtraCategory = panel.closest('.extra-category-row');
+        if (isExtraCategory) {
+            positionExtraCategorySubButtons(panel);
+        }
     }
 } 

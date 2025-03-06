@@ -1,0 +1,25 @@
+{
+  "resident": "Peter_Peret",
+  "2_wurstbrotschwarzbrot": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": [],
+    "alternatives": [
+      "Püree"
+    ]
+  },
+  "1_wurstbrottoast": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": [],
+    "alternatives": []
+  }
+}

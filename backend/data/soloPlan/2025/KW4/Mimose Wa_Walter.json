@@ -105,5 +105,17 @@
     ],
     "comments": [],
     "alternatives": []
+  },
+  "2_wurstbrotschwarzbrot": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_normalkost": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
   }
 }

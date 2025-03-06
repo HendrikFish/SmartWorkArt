@@ -181,8 +181,22 @@ app.get('/login-static/js/script.js', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/login/js/script.js'));
 });
 
-// Auth-Check Middleware für geschützte Routen
-app.use('/dashboard*', auth, (req, res, next) => {
+// Geschützte API-Routen mit konditioneller Authentifizierung im Entwicklungsmodus
+const conditionalAuth = (req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        // Im Entwicklungsmodus Authentifizierung überspringen
+        return next();
+    }
+    // In Produktion normale Authentifizierung verwenden
+    return auth(req, res, next);
+};
+
+// Auth-Check Middleware für geschützte Routen (mit Entwicklungsmodus-Ausnahme)
+app.use('/dashboard*', conditionalAuth, (req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return next(); // Im Entwicklungsmodus weitermachen ohne Authentifizierungsprüfung
+    }
+    
     if (!req.user) {
         return res.redirect('/login');
     }
@@ -190,7 +204,12 @@ app.use('/dashboard*', auth, (req, res, next) => {
 });
 
 // Dashboard-Routen
-app.get('/dashboard', auth, (req, res) => {
+app.get('/dashboard', conditionalAuth, (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        // Im Entwicklungsmodus direkt zum Dashboard ohne Authentifizierungsprüfung
+        return res.redirect('/dashboard-static/index.html');
+    }
+    
     console.log('Dashboard-Route aufgerufen, User:', req.user);
     if (!req.user) {
         console.log('Kein Benutzer gefunden, Weiterleitung zum Login');
@@ -200,8 +219,12 @@ app.get('/dashboard', auth, (req, res) => {
     res.redirect('/dashboard-static/index.html');
 });
 
-// Statische Dashboard-Dateien (mit Auth)
-app.use('/dashboard-static', auth, (req, res, next) => {
+// Statische Dashboard-Dateien (mit konditioneller Auth)
+app.use('/dashboard-static', conditionalAuth, (req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return next(); // Im Entwicklungsmodus weitermachen ohne Authentifizierungsprüfung
+    }
+    
     console.log('Dashboard-Static-Route aufgerufen, User:', req.user);
     if (!req.user) {
         console.log('Kein Benutzer gefunden, Weiterleitung zum Login');
@@ -211,7 +234,12 @@ app.use('/dashboard-static', auth, (req, res, next) => {
 }, express.static(path.join(__dirname, '../frontend/dashboard')));
 
 // Profil-Route (nach der Dashboard-Route)
-app.get('/profile', auth, (req, res) => {
+app.get('/profile', conditionalAuth, (req, res) => {
+    if (process.env.NODE_ENV !== 'production') {
+        // Im Entwicklungsmodus direkt zum Profil ohne Authentifizierungsprüfung
+        return res.sendFile(path.join(__dirname, '../frontend/profile/index.html'));
+    }
+    
     if (!req.user) {
         return res.redirect('/login');
     }
@@ -219,45 +247,62 @@ app.get('/profile', auth, (req, res) => {
 });
 
 // Statische Profil-Dateien
-app.use('/profile-static', auth, (req, res, next) => {
+app.use('/profile-static', conditionalAuth, (req, res, next) => {
+    if (process.env.NODE_ENV !== 'production') {
+        return next(); // Im Entwicklungsmodus weitermachen ohne Authentifizierungsprüfung
+    }
+    
     if (!req.user) {
         return res.redirect('/login');
     }
     next();
 }, express.static(path.join(__dirname, '../frontend/profile')));
 
-// Geschützte API-Routen
-app.use('/api/einrichtungen', auth, einrichtungRoutes);
-app.use('/api/datenbank', auth, datenbankRoutes);
-app.use('/api/rezepte', auth, rezepteRoutes);
-app.use('/api/zutaten', auth, zutatenRoutes);
-app.use('/api/plan', auth, planRoutes);
-app.use('/api/calc', auth, calcRoutes);
-app.use('/api/orders', auth, orderRoutes);
-app.use('/api/numbers', auth, numberRoutes);
-app.use('/api/menue', auth, menueRoutes);
-app.use('/api/solo', auth, soloRoutes);
-app.use('/api/soloplan', auth, soloPlanRoutes);
-app.use('/api/soloselect', auth, soloSelectRoutes);
-app.use('/api', auth, customRoutes);
+// API-Routen mit konditioneller Authentifizierung
+app.use('/api/einrichtungen', conditionalAuth, einrichtungRoutes);
+app.use('/api/datenbank', conditionalAuth, datenbankRoutes);
+app.use('/api/rezepte', conditionalAuth, rezepteRoutes);
+app.use('/api/zutaten', conditionalAuth, zutatenRoutes);
+app.use('/api/plan', conditionalAuth, planRoutes);
+app.use('/api/calc', conditionalAuth, calcRoutes);
+app.use('/api/orders', conditionalAuth, orderRoutes);
+app.use('/api/numbers', conditionalAuth, numberRoutes);
+app.use('/api/menue', conditionalAuth, menueRoutes);
+app.use('/api/solo', conditionalAuth, soloRoutes);
+app.use('/api/soloplan', conditionalAuth, soloPlanRoutes);
+app.use('/api/soloselect', conditionalAuth, soloSelectRoutes);
+app.use('/api', conditionalAuth, customRoutes);
 app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/config')));
 
 // Für jede statische Route
 staticModules.forEach(module => {
     // Login-Ressourcen sollten öffentlich zugänglich sein
-    if (module.route === '/login-static') {
+    if (module.route === '/login-static' || process.env.NODE_ENV !== 'production') {
+        // Im Entwicklungsmodus (NODE_ENV !== 'production') oder für Login keine Authentifizierung erforderlich
         app.use(module.route, express.static(path.join(__dirname, module.dir), {
             setHeaders: (res, path, stat) => {
                 if (path.endsWith('.css')) {
                     res.set('Content-Type', 'text/css');
+                    // Im Entwicklungsmodus Cache-Kontrolle deaktivieren
+                    if (process.env.NODE_ENV !== 'production') {
+                        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+                        res.set('Pragma', 'no-cache');
+                        res.set('Expires', '0');
+                    }
                 } else if (path.endsWith('.js')) {
                     res.set('Content-Type', 'application/javascript');
+                    // Im Entwicklungsmodus Cache-Kontrolle deaktivieren
+                    if (process.env.NODE_ENV !== 'production') {
+                        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+                        res.set('Pragma', 'no-cache');
+                        res.set('Expires', '0');
+                    }
                 }
             }
         }));
     } else {
-        // Alle anderen statischen Ressourcen erfordern Authentifizierung
-        app.use(module.route, auth, (req, res, next) => {
+        // Alle anderen statischen Ressourcen erfordern Authentifizierung im Produktionsmodus
+        app.use(module.route, conditionalAuth, (req, res, next) => {
             if (!req.user) {
                 return res.redirect('/login');
             }
@@ -266,8 +311,20 @@ staticModules.forEach(module => {
             setHeaders: (res, path, stat) => {
                 if (path.endsWith('.css')) {
                     res.set('Content-Type', 'text/css');
+                    // Im Entwicklungsmodus Cache-Kontrolle deaktivieren
+                    if (process.env.NODE_ENV !== 'production') {
+                        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+                        res.set('Pragma', 'no-cache');
+                        res.set('Expires', '0');
+                    }
                 } else if (path.endsWith('.js')) {
                     res.set('Content-Type', 'application/javascript');
+                    // Im Entwicklungsmodus Cache-Kontrolle deaktivieren
+                    if (process.env.NODE_ENV !== 'production') {
+                        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+                        res.set('Pragma', 'no-cache');
+                        res.set('Expires', '0');
+                    }
                 }
             }
         }));
@@ -275,7 +332,7 @@ staticModules.forEach(module => {
 });
 
 // Benutzerverwaltungs-Route (nur für Admins)
-app.get('/customer', auth, checkRole(['admin']), (req, res) => {
+app.get('/customer', conditionalAuth, checkRole(['admin']), (req, res) => {
     const customerPath = path.join(__dirname, '../frontend/customer/index.html');
     res.sendFile(customerPath);
 });
