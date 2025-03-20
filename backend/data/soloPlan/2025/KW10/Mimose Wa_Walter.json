@@ -1,14 +1,5 @@
 {
   "resident": "Mimose Wa_Walter",
-  "2_suppe": {
-    "portion": "100%",
-    "alternative": null,
-    "comment": null,
-    "components": [],
-    "alternatives": [
-      "Happy"
-    ]
-  },
   "3_suppe": {
     "portion": "100%",
     "alternative": null,
@@ -21,21 +12,8 @@
     "comment": null,
     "components": []
   },
-  "1_menue1": {
-    "portion": "100%",
-    "alternative": null,
-    "comment": null,
-    "components": []
-  },
-  "2_menue1": {
-    "portion": "25%",
-    "alternative": null,
-    "comment": null,
-    "components": [],
-    "alternatives": []
-  },
   "3_menue1": {
-    "portion": "100%",
+    "portion": "50%",
     "alternative": null,
     "comment": null,
     "components": []
@@ -46,33 +24,148 @@
     "comment": null,
     "components": []
   },
-  "0_menue1": {
+  "2_wurstbrotschwarzbrot": {
     "portion": "100%",
     "alternative": null,
     "comment": null,
     "components": []
   },
-  "3_menue2": {
+  "3_wurstbrottoast": {
     "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_wurstbrotschwarzbrot": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_wurstbrottoast": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "6_kalteplatte": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_menue1": {
+    "portion": "25%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_menue1": {
+    "portion": "25%",
     "alternative": null,
     "comment": null,
     "components": []
   },
   "2_menue2": {
-    "portion": "25%",
-    "alternative": null,
-    "comment": null,
-    "components": [],
-    "alternatives": []
-  },
-  "2_wurstbrottoast": {
     "portion": "100%",
     "alternative": null,
     "comment": null,
-    "components": [],
-    "alternatives": [
-      "Wurstbrot Glutenfrei",
-      "Wurstbrot Sexy"
-    ]
+    "components": []
+  },
+  "1_menue1": {
+    "portion": "50%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_suppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_suppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_abendsuppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_kalteplatte": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_wurstbrottoast": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_wurstbrottoast": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_normalkost": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_abendsuppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_abendsuppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
   }
 }

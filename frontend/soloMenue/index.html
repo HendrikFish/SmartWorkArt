@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solo Menü</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/panel.css">
+    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/smartphone.css">
+    <link rel="stylesheet" href="../navbar/navbar.css">
+    <!-- Google Fonts wird durch lokales Icon ersetzt -->
+    <script src="../navbar/navbar.js"></script>
+</head>
+<body>
+    <main>
+        <div class="top-container">
+            <section id="kalenderwochen-container">
+                <div class="kw-navigation">
+                    <button id="prev-week-btn" class="nav-button">Vorherige Woche</button>
+                    <div id="current-week-display">Aktuelle Kalenderwoche</div>
+                    <button id="next-week-btn" class="nav-button">Nächste Woche</button>
+                    <button id="current-week-btn" class="nav-button">Aktuelle Woche</button>
+                </div>
+            </section>
+            
+            <section id="filter-container">
+                <div class="filter-wrapper">
+                    <div id="etagen-filter" class="filter-group">
+                        <!-- Etagen-Buttons werden hier dynamisch hinzugefügt -->
+                    </div>
+                    <div id="funktionenFeld" class="funktionen-container">
+                        <button id="add-kategorie-btn" class="icon-button" title="Kategorien verwalten">
+                            <span class="custom-icon">+</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <section id="bewohner-container">
+            <!-- Bewohner werden hier dynamisch hinzugefügt -->
+        </section>
+        
+        <!-- Container für die Menüplantabelle -->
+        <section id="menueplan-container" class="menueplan-container">
+            <!-- Menüplantabelle wird hier dynamisch hinzugefügt -->
+        </section>
+        
+        <!-- Nach oben Button (nur in Smartphone-Ansicht sichtbar) -->
+        <button id="nach-oben-button" class="nach-oben-button" title="Zurück zur Personenauswahl"></button>
+    </main>
+
+    <!-- Formular für Kategorien-Verwaltung -->
+    <div class="form-overlay" id="kategorie-form-overlay">
+        <div class="form-container">
+            <div class="form-header">
+                <h3 class="form-title">Kategorien verwalten</h3>
+                <button class="close-form" id="close-kategorie-form">&times;</button>
+            </div>
+            
+            <!-- Tabs für die Navigation -->
+            <div class="form-tabs">
+                <button class="form-tab active" data-tab="kategorien">Kategorien</button>
+                <button class="form-tab" data-tab="extra-optionen">Extra-Optionen</button>
+                <button class="form-tab" data-tab="sonderwuensche">Sonderwünsche</button>
+            </div>
+            
+            <!-- Tab-Inhalte -->
+            <div class="tab-content">
+                <!-- Tab: Kategorien (ersetzt "Neue Kategorie" und "Vorhandene Kategorien") -->
+                <div class="tab-pane active" id="kategorien">
+                    <div class="form-content">
+                        <button id="toggle-kategorie-form" class="toggle-form-btn">
+                            <span id="toggle-kategorie-btn-text">+ Neue Kategorie hinzufügen</span>
+                        </button>
+                        
+                        <form id="kategorie-form" style="display: none;">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Neue Kategorie hinzufügen</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group">
+                                        <label for="display-kategorie">Anzeigename der Kategorie</label>
+                                        <input type="text" id="display-kategorie" name="displayKategorie" placeholder="z.B. Salat, Suppe, Beilage">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="kategorie-text">Text für alle Tage (Montag - Sonntag)</label>
+                                        <textarea id="kategorie-text" name="text" placeholder="Text, der für alle Wochentage angezeigt werden soll"></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-primary" id="save-kategorie-form">Speichern</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-kategorie-form">Abbrechen</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="kategorien-liste-container">
+                            <h4>Vorhandene Kategorien</h4>
+                            <div class="kategorien-liste" id="kategorien-liste">
+                                <!-- Hier werden bestehende Kategorien dynamisch eingefügt -->
+                                <div class="loading-message">Kategorien werden geladen...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: Extra-Optionen -->
+                <div class="tab-pane" id="extra-optionen">
+                    <div class="form-content">
+                        <button id="toggle-extraoption-form" class="toggle-form-btn">
+                            <span id="toggle-extraoption-btn-text">+ Neue Extra-Option hinzufügen</span>
+                        </button>
+                        
+                        <form id="extra-option-form" style="display: none;">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Neue Extra-Option hinzufügen</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group">
+                                        <label for="extra-optionen-kategorie">Kategorie</label>
+                                        <select id="extra-optionen-kategorie" name="kategorieNamen">
+                                            <option value="MENÜ 1">MENÜ 1</option>
+                                            <option value="MENÜ 2">MENÜ 2</option>
+                                            <option value="KALTE PLATTE">KALTE PLATTE</option>
+                                            <option value="neue-kategorie">Neue Kategorie...</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group neue-kategorie-container" style="display: none;">
+                                        <label for="neue-extra-kategorie">Name der neuen Kategorie</label>
+                                        <input type="text" id="neue-extra-kategorie" name="neueKategorie" placeholder="z.B. DESSERT, BEILAGE, etc.">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="extra-option-name">Name der Option</label>
+                                        <input type="text" id="extra-option-name" name="name" placeholder="z.B. mit Püree, Salat dazu, etc.">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="extra-option-description">Beschreibung</label>
+                                        <textarea id="extra-option-description" name="description" placeholder="Beschreibung der Extra-Option"></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-primary" id="save-extra-option-form">Speichern</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-extra-option-form">Abbrechen</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="extra-optionen-liste-container">
+                            <h4>Vorhandene Extra-Optionen</h4>
+                            <div class="extra-optionen-liste" id="extra-optionen-liste">
+                                <!-- Hier werden bestehende Extra-Optionen dynamisch eingefügt -->
+                                <div class="loading-message">Extra-Optionen werden geladen...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab: Sonderwünsche -->
+                <div class="tab-pane" id="sonderwuensche">
+                    <div class="form-content">
+                        <button id="toggle-sonderwunsch-form" class="toggle-form-btn">
+                            <span id="toggle-btn-text">+ Neuen Sonderwunsch hinzufügen</span>
+                        </button>
+                        
+                        <form id="sonderwunsch-form" style="display: none;">
+                            <div class="card" id="sonderwunsch-formular-container">
+                                <div class="card-header">
+                                    <h4 class="card-title">Neuen Sonderwunsch hinzufügen</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-group">
+                                        <label for="sonderwunsch-name">Name des Sonderwunsches</label>
+                                        <input type="text" id="sonderwunsch-name" name="name" placeholder="z.B. Diabetiker, Schonkost, Vegetarisch">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="sonderwunsch-description">Beschreibung</label>
+                                        <textarea id="sonderwunsch-description" name="description" placeholder="Beschreibung des Sonderwunsches"></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-primary" id="save-sonderwunsch-form">Speichern</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-sonderwunsch-form">Abbrechen</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="sonderwunsch-liste-container" id="sonderwunsch-liste-container">
+                            <h4>Vorhandene Sonderwünsche</h4>
+                            <div class="sonderwunsch-liste" id="sonderwunsch-liste">
+                                <!-- Hier werden bestehende Sonderwünsche dynamisch eingefügt -->
+                                <div class="loading-message">Sonderwünsche werden geladen...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bearbeitungs-Panel für einen bestehenden Sonderwunsch -->
+            <div class="edit-panel" id="edit-sonderwunsch-panel" style="display: none;">
+                <div class="edit-header">
+                    <h4>Sonderwunsch bearbeiten</h4>
+                    <button class="back-button" id="back-to-sonderwunsche-btn">&larr; Zurück</button>
+                </div>
+                <div class="form-content">
+                    <input type="hidden" id="edit-sonderwunsch-id" value="">
+                    <div class="input-group">
+                        <label for="edit-sonderwunsch-name">Name des Sonderwunsches</label>
+                        <input type="text" id="edit-sonderwunsch-name" name="name">
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-sonderwunsch-description">Beschreibung</label>
+                        <textarea id="edit-sonderwunsch-description" name="description"></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button class="form-btn form-btn-danger" id="delete-sonderwunsch-btn">Löschen</button>
+                        <button class="form-btn form-btn-primary" id="update-sonderwunsch-btn">Aktualisieren</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bearbeitungs-Panel für eine bestehende Kategorie -->
+            <div class="edit-panel" id="edit-kategorie-panel">
+                <div class="edit-header">
+                    <h4>Kategorie bearbeiten</h4>
+                    <button class="back-button" id="back-to-list-btn">&larr; Zurück</button>
+                </div>
+                <div class="form-content">
+                    <input type="hidden" id="edit-kategorie-id">
+                    <div class="input-group">
+                        <label for="edit-display-kategorie">Anzeigename der Kategorie</label>
+                        <input type="text" id="edit-display-kategorie" name="displayKategorie">
+                    </div>
+                    <div class="input-group">
+                        <label for="edit-kategorie-text">Text für alle Tage</label>
+                        <textarea id="edit-kategorie-text" name="text"></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button class="form-btn form-btn-danger" id="delete-kategorie-btn">Löschen</button>
+                        <button class="form-btn form-btn-primary" id="update-kategorie-btn">Aktualisieren</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Module -->
+    <script type="module" src="js/script.js"></script>
+</body>
+</html>

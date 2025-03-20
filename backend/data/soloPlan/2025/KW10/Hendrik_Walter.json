@@ -47,5 +47,17 @@
     "alternative": null,
     "comment": null,
     "components": []
+  },
+  "2_wurstbrottoast": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_wurstbrotschwarzbrot": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
   }
 }

@@ -1,0 +1,19 @@
+{
+  "name": "Rene__Jahn",
+  "Montag": {},
+  "Dienstag": {},
+  "Mittwoch": {},
+  "Donnerstag": {},
+  "Freitag": {
+    "normalkost": {
+      "category": "normalkost",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Samstag": {},
+  "Sonntag": {}
+}

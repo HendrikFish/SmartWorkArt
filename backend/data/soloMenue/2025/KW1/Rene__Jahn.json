@@ -1,0 +1,36 @@
+{
+  "name": "Rene__Jahn",
+  "Montag": {},
+  "Dienstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "name": "Kartoffeln mit Butter"
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Mittwoch": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

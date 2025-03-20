@@ -1,0 +1,56 @@
+/* Zusätzliche Anpassungen für optimierte Zellenausfüllung */
+.content-wrapper {
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.extra-category-row .content-wrapper {
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.content-wrapper:has(.meals-container .meal-item + .meal-item) {
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.content-wrapper:not(:has(.meals-container .meal-item + .meal-item)) {
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.half-height-cell .content-wrapper {
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Verbesserte Anzeige der Hintergrundfarben */
+.meal-cell-content.selected-100,
+.meal-cell-content.selected-50,
+.meal-cell-content.selected-25 {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.meal-cell-content.selected-100 .content-wrapper,
+.meal-cell-content.selected-50 .content-wrapper,
+.meal-cell-content.selected-25 .content-wrapper {
+    background-color: transparent !important;
+}
+
+/* Zusätzliche Anpassungen für Zellen mit und ohne Inhalt */
+.meal-plan td .meal-cell-content {
+    height: 100% !important;
+    width: 100% !important;
+    min-height: 100% !important;
+}
+
+.meal-cell-content {
+    height: 100% !important;
+    width: 100% !important;
+} 

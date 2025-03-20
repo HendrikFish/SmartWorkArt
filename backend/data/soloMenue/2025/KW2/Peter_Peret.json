@@ -1,0 +1,122 @@
+{
+  "name": "Peter_Peret",
+  "Montag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Dienstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Mittwoch": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Faschierte Laibchen"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Donnerstag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Faschierte Laibchen"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Freitag": {},
+  "Samstag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Faschierte Laibchen"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Sonntag": {}
+}

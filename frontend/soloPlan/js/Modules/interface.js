@@ -413,10 +413,13 @@ export async function updateMealTable() {
                 }
                 
                 cellContent.addEventListener('click', async (e) => {
-                    // Verhindere Klick-Event wenn FAB-Menü aktiv ist
-                    const activeFab = e.target.closest('.fab-container.active');
-                    if (activeFab || e.target.closest('.sub-buttons') || e.target.closest('.switch-container')) {
-                        e.preventDefault();
+                    // Verhindere Klick-Event wenn FAB-Menü aktiv ist oder wenn auf bestimmte interaktive Elemente geklickt wird
+                    const clickedOnInteractiveElement = e.target.closest('.fab-container') || 
+                                                        e.target.closest('.sub-buttons') || 
+                                                        e.target.closest('.switch-container') ||
+                                                        e.target.closest('.meal-options-btn');
+                                        
+                    if (clickedOnInteractiveElement) {
                         e.stopPropagation();
                         return;
                     }

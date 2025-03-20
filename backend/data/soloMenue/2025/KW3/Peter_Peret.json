@@ -1,0 +1,238 @@
+{
+  "name": "Peter_Peret",
+  "Montag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Dienstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree",
+          "ohne": true
+        },
+        {
+          "rezeptId": 0,
+          "name": "Nudelkuchen"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree",
+          "ohne": true
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kartoffelpüree",
+        "Kartoffelpüree"
+      ],
+      "extraMenueAuswahl": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Mittwoch": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kartoffeln"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Donnerstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Freitag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Samstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Sonntag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  }
+}

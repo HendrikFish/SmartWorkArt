@@ -1,0 +1,28 @@
+{
+  "name": "Hugo _Walz",
+  "Montag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": false,
+      "portion": "none",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Dienstag": {},
+  "Mittwoch": {},
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

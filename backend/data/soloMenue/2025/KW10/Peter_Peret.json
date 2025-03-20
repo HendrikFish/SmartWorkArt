@@ -1,0 +1,196 @@
+{
+  "name": "Peter_Peret",
+  "Montag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Dienstag": {
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": ""
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Mittwoch": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Donnerstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Freitag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Samstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Sonntag": {}
+}

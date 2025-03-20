@@ -1,0 +1,81 @@
+{
+  "name": "Oma_Trude",
+  "Montag": {
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "25%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "extra_1742413252845": {
+      "category": "extra_1742413252845",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Schleim",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": ""
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Dienstag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Mittwoch": {
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": ""
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Donnerstag": {
+    "extra_1742413252845": {
+      "category": "extra_1742413252845",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Schleim",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": ""
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

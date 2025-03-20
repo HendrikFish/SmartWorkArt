@@ -1,0 +1,185 @@
+{
+  "name": "Rene__Jahn",
+  "Montag": {
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kalte Platte Deluxe"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kartoffelpüree",
+          "ohne": true
+        },
+        {
+          "name": "Kartoffelpüree",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kartoffelpüree",
+        "Kartoffelpüree"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Dienstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [
+        "wunsch1"
+      ],
+      "isExtraKategorie": false
+    },
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kalte Platte Deluxe"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Mittwoch": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Nudelkuchen",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Nudelkuchen"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe (ohne)✎",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kalte Platte Deluxe (ohne)✎"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Donnerstag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kartoffeln mit Butter",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kartoffeln mit Butter"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Freitag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Samstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Sonntag": {}
+}

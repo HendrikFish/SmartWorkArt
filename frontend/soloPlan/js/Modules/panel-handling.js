@@ -140,17 +140,62 @@ export function closeAllPanels() {
 
 // Diese Funktionen werden für die Kompatibilität beibehalten
 export function togglePanel(panel) {
-    const wasActive = panel.classList.contains('active');
-    closeAllPanels();
-    if (!wasActive) {
+    if (!panel) return;
+    
+    // Alle anderen offenen Panels schließen
+    const allActivePanels = document.querySelectorAll('.fab-container.active');
+    allActivePanels.forEach(activePanel => {
+        if (activePanel !== panel) {
+            activePanel.classList.remove('active');
+        }
+    });
+    
+    // Überprüfen, ob das Panel bereits aktiv ist
+    const isActive = panel.classList.contains('active');
+    
+    // Wenn es nicht aktiv ist, alle schließen und dieses öffnen
+    if (!isActive) {
+        closeAllPanels();
         panel.classList.add('active');
         showOverlay();
         
-        // Neue Funktion: Prüfe, ob es sich um eine Extra-Kategorie handelt
+        // Positionierung des Panels für normale Kategorien und Extra-Kategorien
+        const subButtons = panel.querySelector('.sub-buttons');
+        if (subButtons) {
+            const rect = panel.getBoundingClientRect();
+            // Positioniere das Panel rechts vom Button
+            subButtons.style.top = `${rect.top}px`;
+            subButtons.style.left = `${rect.right + 5}px`;
+            
+            // Stellen wir sicher, dass das Panel im sichtbaren Bereich bleibt
+            const subButtonsRect = subButtons.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Prüfen, ob das Panel zu weit nach rechts geht
+            if (subButtonsRect.right > viewportWidth) {
+                subButtons.style.left = `${rect.left - subButtonsRect.width - 5}px`;
+            }
+            
+            // Prüfen, ob das Panel zu weit nach unten geht
+            if (subButtonsRect.bottom > viewportHeight) {
+                subButtons.style.top = `${rect.top - (subButtonsRect.bottom - viewportHeight)}px`;
+            }
+            
+            // Zusätzlich sicherstellen, dass das Panel nicht zu weit nach oben geht
+            if (subButtonsRect.top < 0) {
+                subButtons.style.top = '5px';
+            }
+        }
+        
         const isExtraCategory = panel.closest('.extra-category-row');
         if (isExtraCategory) {
             positionExtraCategorySubButtons(panel);
         }
+    } else {
+        // Wenn es bereits aktiv ist, schließe es
+        panel.classList.remove('active');
+        hideOverlay();
     }
 }
 
@@ -161,33 +206,34 @@ function positionExtraCategorySubButtons(fabContainer) {
     
     console.log('Positioniere Sub-Buttons für Extra-Kategorie');
     
-    // Ursprüngliche Positionierung, aber mit besserer Sichtbarkeit
-    subButtons.style.position = 'absolute';
-    subButtons.style.top = '-6px';
-    subButtons.style.right = '20px';
-    subButtons.style.backgroundColor = 'white';
-    subButtons.style.padding = '12px';
-    subButtons.style.borderRadius = '12px';
-    subButtons.style.boxShadow = '0 4px 15px rgba(0,0,0,0.15)';
-    subButtons.style.minWidth = '100px';
-    subButtons.style.zIndex = '9999';
-    subButtons.style.overflow = 'visible';
+    // Positionierung mit fixiertem Panel
+    const rect = fabContainer.getBoundingClientRect();
+    subButtons.style.top = `${rect.top}px`;
+    subButtons.style.left = `${rect.right + 5}px`;
     
-    // Die Sub-Buttons-Row Dimensionen und Ausrichtung anpassen
-    const subButtonsRow = subButtons.querySelector('.sub-buttons-row');
-    if (subButtonsRow) {
-        subButtonsRow.style.display = 'flex';
-        subButtonsRow.style.flexDirection = 'row';
-        subButtonsRow.style.justifyContent = 'space-around';
-        subButtonsRow.style.gap = '8px';
-        subButtonsRow.style.width = 'auto';
-        subButtonsRow.style.padding = '0';
+    // Prüfen der Bildschirmgrenzen
+    const subButtonsRect = subButtons.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Prüfen, ob das Panel zu weit nach rechts geht
+    if (subButtonsRect.right > viewportWidth) {
+        subButtons.style.left = `${rect.left - subButtonsRect.width - 5}px`;
+    }
+    
+    // Prüfen, ob das Panel zu weit nach unten geht
+    if (subButtonsRect.bottom > viewportHeight) {
+        subButtons.style.top = `${rect.top - (subButtonsRect.bottom - viewportHeight)}px`;
+    }
+    
+    // Zusätzlich sicherstellen, dass das Panel nicht zu weit nach oben geht
+    if (subButtonsRect.top < 0) {
+        subButtons.style.top = '5px';
     }
     
     // Styles für die Buttons setzen
     const buttons = subButtons.querySelectorAll('.sub-button');
     buttons.forEach(button => {
-        button.style.zIndex = '9999';
         button.style.pointerEvents = 'auto';
     });
     

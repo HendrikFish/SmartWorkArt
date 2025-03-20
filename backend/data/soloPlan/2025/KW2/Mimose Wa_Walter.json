@@ -1,19 +1,5 @@
 {
   "resident": "Mimose Wa_Walter",
-  "1_menue2": {
-    "day": "Dienstag",
-    "category": "menue2",
-    "selected": true,
-    "portion": "100%",
-    "meals": [
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln mit Butter"
-      }
-    ],
-    "comments": [],
-    "alternatives": []
-  },
   "2_menue2": {
     "day": "Mittwoch",
     "category": "menue2",
@@ -102,32 +88,6 @@
     "comments": [],
     "alternatives": []
   },
-  "0_menue2": {
-    "day": "Montag",
-    "category": "menue2",
-    "selected": true,
-    "portion": "100%",
-    "meals": [
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln"
-      },
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln"
-      },
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln"
-      },
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln"
-      }
-    ],
-    "comments": [],
-    "alternatives": []
-  },
   "2_milchspeise": {
     "day": "Mittwoch",
     "category": "milchspeise",
@@ -211,5 +171,50 @@
     ],
     "comments": [],
     "alternatives": []
+  },
+  "3_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_kalteplatte": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_wurstbrottoast": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": [],
+    "alternatives": [
+      "Wurstbrot Glutenfrei"
+    ]
+  },
+  "2_suppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue2": {
+    "portion": "50%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
   }
 }

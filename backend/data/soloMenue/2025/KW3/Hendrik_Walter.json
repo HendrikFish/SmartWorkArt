@@ -1,0 +1,70 @@
+{
+  "name": "Hendrik_Walter",
+  "Montag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Dienstag": {},
+  "Mittwoch": {
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Rindersuppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln mit Butter"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln",
+          "ohne": true
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Donnerstag": {},
+  "Freitag": {
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Galgant Suppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Samstag": {},
+  "Sonntag": {}
+}

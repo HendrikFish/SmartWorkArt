@@ -1,0 +1,21 @@
+{
+  "name": "Peter_Peret",
+  "Montag": {},
+  "Dienstag": {},
+  "Mittwoch": {},
+  "Donnerstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

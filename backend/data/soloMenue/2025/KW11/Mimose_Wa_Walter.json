@@ -1,0 +1,53 @@
+{
+  "name": "Mimose_Wa_Walter",
+  "Montag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Dienstag": {},
+  "Mittwoch": {},
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

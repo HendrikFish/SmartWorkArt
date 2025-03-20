@@ -1,0 +1,40 @@
+{
+  "name": "Rene__Jahn",
+  "Montag": {},
+  "Dienstag": {},
+  "Mittwoch": {
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kalte Platte Deluxe"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

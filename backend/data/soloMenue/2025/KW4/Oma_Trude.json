@@ -1,0 +1,106 @@
+{
+  "name": "Oma_Trude",
+  "Montag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "25%",
+      "meals": [
+        {
+          "name": "Nudelkuchen",
+          "ohne": false
+        },
+        {
+          "name": "Kartoffelpüree",
+          "ohne": false
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Dienstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kartoffelpüree",
+          "ohne": false
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Mittwoch": {
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "",
+          "ohne": true
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [
+        "Kalte Platte Deluxe"
+      ],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "25%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

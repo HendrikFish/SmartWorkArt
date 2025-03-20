@@ -1,0 +1,509 @@
+/* 
+ * Smartphone-Ansicht für die Solo-Menü-Anwendung
+ * Diese Datei enthält spezifische Styles für kleine Bildschirme (Smartphones)
+ */
+
+/* Grundlegende mobile Anpassungen */
+@media screen and (max-width: 767px) {
+    /* Allgemeine Container-Anpassungen */
+    .top-container {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+    
+    #kalenderwochen-container,
+    #filter-container {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Navigation und Filtergröße anpassen */
+    .kw-navigation {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0.25rem;
+    }
+    
+    .nav-button {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    #current-week-display {
+        font-size: 0.9rem;
+        margin: 0 0.25rem;
+    }
+    
+    /* Filter und Funktionen nebeneinander statt untereinander */
+    .filter-wrapper {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    
+    #etagen-filter {
+        width: 70%; /* Exakt 70% des verfügbaren Platzes */
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: 0.5rem;
+    }
+    
+    .funktionen-container {
+        width: 30%; /* Exakt 30% des verfügbaren Platzes */
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Buttons am rechten Rand ausrichten */
+    }
+    
+    /* -----------------------------------------------
+     * Optimierte Bewohner-Karten für die mobile Ansicht
+     * -----------------------------------------------
+     */
+    #bewohner-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 0.25rem;
+        padding: 0.5rem;
+        justify-content: center;
+    }
+    
+    /* Kompakte Bewohnerkarten */
+    .bewohner-card {
+        width: 100% !important; /* JS-gesetzte Breite überschreiben */
+        max-width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 0.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        height: auto;
+        font-size: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    .bewohner-card:hover,
+    .bewohner-card:active {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Auf kleinen Geräten nur den Nachnamen anzeigen */
+    .bewohner-card .bewohner-name {
+        width: 100%;
+        font-size: 0.7rem;
+        line-height: 1.1;
+        margin: 0.2rem 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: bold;
+    }
+    
+    /* Verstecke den Vornamen in der mobilen Ansicht */
+    .bewohner-card .vorname {
+        display: none;
+    }
+    
+    /* Kompakter Details-Button */
+    .bewohner-card .details-button {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+        margin: 0.1rem 0 0 0;
+        padding: 0;
+        background: transparent;
+        border: none;
+        color: #1976D2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+    }
+    
+    .bewohner-card .details-button::after {
+        content: "⋯";
+        font-size: 1rem;
+    }
+    
+    .bewohner-card .details-button span {
+        display: none;
+    }
+    
+    /* Bewohner-Info innerhalb der Karte sehr kompakt halten */
+    .bewohner-card .bewohner-info {
+        font-size: 0.6rem;
+        padding: 0.2rem;
+        margin: 0.1rem 0;
+        max-width: 100%;
+        display: none;
+    }
+    
+    /* Aktive Bewohnerkarte deutlich markieren */
+    .bewohner-card.active {
+        background-color: #e3f2fd !important;
+        border: 2px solid #2196F3 !important;
+        transform: scale(1.05);
+        z-index: 10;
+    }
+    
+    /* Aktiver Bewohner Indikator anpassen und Reset-Button ausblenden */
+    .aktiver-bewohner-indikator {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0.5rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.85rem;
+    }
+    
+    .aktiver-bewohner-indikator .action-button {
+        display: block; /* Buttons in der mobilen Ansicht anzeigen */
+        width: 100%;
+        margin-top: 5px;
+        padding: 10px;
+        font-size: 1rem; /* Größerer Text für bessere Touch-Bedienung */
+    }
+    
+    .aktiver-bewohner-indikator .action-buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    /* ------------------------------------
+     * Menüplan-Tabelle für mobile Ansicht - NEUE STRUKTUR
+     * ------------------------------------
+     * Komplette Neustrukturierung für Mobilgeräte:
+     * Jeder Tag wird als eigener Abschnitt dargestellt mit allen Kategorien darunter
+     */
+    
+    /* Menüplan-Container */
+    .menueplan-container {
+        padding: 0.5rem;
+    }
+    
+    /* Grundlegende Tabellenstruktur komplett umgestalten */
+    .menueplan-tabelle {
+        display: block;
+        width: 100%;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+    }
+    
+    /* Tabellenkopf ausblenden */
+    .menueplan-tabelle thead {
+        display: none;
+    }
+    
+    /* Tabellenkörper in Tages-Sektionen aufteilen */
+    .menueplan-tabelle tbody {
+        display: block;
+    }
+    
+    /* Zeilen ausblenden, wir verwenden stattdessen eine eigene Struktur */
+    .menueplan-tabelle tr {
+        display: none;
+    }
+    
+    /* Tagesabschnitte erstellen */
+    .tag-sektion {
+        margin-bottom: 2rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Tagesüberschriften */
+    .tag-header {
+        background-color: #2196F3;
+        color: white;
+        font-weight: bold;
+        padding: 0.8rem;
+        text-align: center;
+        border-bottom: 1px solid #1976D2;
+    }
+    
+    /* Container für die Kategorien eines Tages */
+    .tag-kategorien {
+        background-color: #fff;
+    }
+    
+    /* Einzelne Kategorie-Zeile */
+    .kategorie-zeile {
+        display: flex;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .kategorie-zeile:last-child {
+        border-bottom: none;
+    }
+    
+    /* Kategorie-Bezeichnung */
+    .kategorie-name {
+        width: 35%;
+        min-width: 90px;
+        max-width: 120px;
+        background-color: #f5f5f5;
+        font-weight: bold;
+        padding: 0.7rem 0.5rem;
+        display: flex;
+        align-items: center;
+        border-right: 1px solid #eee;
+        font-size: 0.85rem;
+        line-height: 1.2;
+        word-break: break-word;
+        hyphens: auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Menü-Inhalt für die Kategorie */
+    .kategorie-inhalt {
+        width: 65%;
+        flex-grow: 1;
+        padding: 0.8rem;
+        position: relative;
+        user-select: none; /* Verhindert Textmarkierung */
+        -webkit-user-select: none; /* Für Safari */
+        -moz-user-select: none; /* Für Firefox */
+        -ms-user-select: none; /* Für IE/Edge */
+    }
+    
+    /* Klickbare Kategorie-Inhalte */
+    .kategorie-inhalt.klickbar {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    
+    .kategorie-inhalt.klickbar:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .kategorie-inhalt.klickbar:active {
+        background-color: #e0e0e0;
+    }
+    
+    /* Menü-Komponenten */
+    .menue-komponente {
+        margin: 0.3rem 0;
+        padding: 0.3rem;
+        border-radius: 3px;
+        font-size: 0.9rem;
+        line-height: 1.3;
+        user-select: none; /* Verhindert Textmarkierung */
+        -webkit-user-select: none; /* Für Safari */
+        -moz-user-select: none; /* Für Firefox */
+        -ms-user-select: none; /* Für IE/Edge */
+    }
+    
+    /* Ausgewählte Zellen */
+    .kategorie-inhalt.auswahl-100,
+    .kategorie-inhalt.auswahl-50,
+    .kategorie-inhalt.auswahl-25 {
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    /* "Nach oben"-Button für mobilen Zugriff auf die Bewohnerauswahl */
+    .nach-oben-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.4rem;
+        z-index: 100;
+        cursor: pointer;
+        transform: scale(1);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    .nach-oben-button:hover,
+    .nach-oben-button:active {
+        background-color: #1976D2;
+        transform: scale(1.05);
+    }
+    
+    .nach-oben-button::before {
+        content: "↑";
+        font-weight: bold;
+    }
+    
+    /* JavaScript-Hilfsfunktion zum Umstrukturieren der Tabelle für Mobilgeräte */
+    @media screen and (max-width: 767px) {
+        /* Diese CSS-Klasse wird durch JavaScript hinzugefügt, um die Umstrukturierung anzuzeigen */
+        .menueplan-tabelle.mobile-formatiert {
+            /* Grundstruktur ausblenden */
+            display: none;
+        }
+    }
+    
+    /* Formular-Anpassungen */
+    .form-container {
+        width: 95%;
+        max-width: 100%;
+        margin: 3% auto;
+        padding: 1rem;
+    }
+    
+    .form-tabs {
+        flex-direction: column;
+    }
+    
+    .form-tab {
+        width: 100%;
+        border-radius: 0;
+        padding: 0.7rem;
+    }
+    
+    .form-tab:first-child {
+        border-radius: 4px 4px 0 0;
+    }
+    
+    .form-tab:last-child {
+        border-radius: 0 0 4px 4px;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .form-btn {
+        width: 100%;
+        margin: 0.3rem 0;
+        padding: 0.8rem;
+    }
+    
+    /* Bessere Touch-Bereiche für Buttons */
+    button {
+        min-height: 44px; /* Mindestgröße für Touch-Ziele */
+    }
+    
+    /* Bearbeiten-Button optimiert für Touch-Geräte */
+    .komponenten-bearbeiten-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        top: 50%;
+        right: 8px;
+        transform: translateY(-50%);
+        background-color: rgba(255, 255, 255, 0.95);
+        border: 2px solid #1976D2;
+        opacity: 1;
+        font-size: 20px;
+        color: #1976D2;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000 !important;
+        /* Größere Touch-Fläche für bessere mobile Interaktion */
+        position: absolute;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto !important;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    
+    .komponenten-bearbeiten-btn:hover,
+    .komponenten-bearbeiten-btn:active {
+        background-color: #1976D2;
+        border-color: white;
+        color: white;
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    /* Position innerhalb der mobilen Zellenstruktur anpassen */
+    .kategorie-inhalt .komponenten-bearbeiten-btn {
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        position: absolute !important;
+        z-index: 1000 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Sicherstellen, dass der Button über andere Elemente gelegt wird und genügend Platz hat */
+    .kategorie-inhalt {
+        position: relative !important;
+        padding-right: 60px !important;
+        /* Wichtig: Sicherstellung, dass die Zellen user-select deaktiviert haben */
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+    
+    /* Spezifische Anpassungen für Buttons in ausgewählten Zellen */
+    .auswahl-100 .komponenten-bearbeiten-btn,
+    .auswahl-50 .komponenten-bearbeiten-btn,
+    .auswahl-25 .komponenten-bearbeiten-btn {
+        z-index: 1000 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Verbesserte Anzeige der Extra-Hinweise in der mobilen Ansicht */
+    .extra-hinweise {
+        margin-top: 8px;
+        padding: 6px 8px;
+        background-color: rgba(25, 118, 210, 0.05);
+        border-radius: 4px;
+        border-left: 3px solid #1976D2;
+    }
+    
+    .extra-hinweis-titel {
+        font-size: 0.9rem;
+        color: #1976D2;
+        margin-bottom: 3px;
+    }
+    
+    .extra-hinweis-liste {
+        font-size: 0.85rem;
+        color: #333;
+    }
+    
+    .extra-hinweis-notiz {
+        font-size: 14px;
+        line-height: 1.4;
+        color: #555;
+        font-style: italic;
+        margin-top: 5px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+        padding: 4px;
+    }
+    
+    /* Styling für Portion-Feedback in Mobilansicht */
+    .portion-feedback {
+        font-size: 1.2rem !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        border-radius: 18px !important;
+        padding: 0 !important;
+    }
+    
+    /* Ausgeschlossene Komponenten deutlicher darstellen */
+    .ausgeschlossen {
+        text-decoration: line-through;
+        color: #999;
+        font-style: italic;
+    }
+}

@@ -48,6 +48,10 @@ const customerSchema = new mongoose.Schema({
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending'
     },
+    allowedModules: {
+        type: [String],
+        default: []
+    },
     registrationDate: {
         type: Date,
         default: Date.now

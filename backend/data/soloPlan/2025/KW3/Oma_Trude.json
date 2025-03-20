@@ -14,24 +14,6 @@
     "comments": [],
     "alternatives": []
   },
-  "2_menue2": {
-    "day": "Mittwoch",
-    "category": "menue2",
-    "selected": true,
-    "portion": "100%",
-    "meals": [
-      {
-        "rezeptId": 2,
-        "name": "Haferschleim"
-      },
-      {
-        "rezeptId": 4,
-        "name": "Faschierte Laibchen"
-      }
-    ],
-    "comments": [],
-    "alternatives": []
-  },
   "2_menue1": {
     "day": "Mittwoch",
     "category": "menue1",
@@ -161,5 +143,101 @@
     ],
     "comments": [],
     "alternatives": []
+  },
+  "1_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_abendsuppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_normalkost": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_abendsuppe": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_dessert": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "6_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "5_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "4_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
   }
 }

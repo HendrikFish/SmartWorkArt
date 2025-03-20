@@ -1,0 +1,753 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 70px;
+}
+
+header {
+    background-color: #4a89dc;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Flex-Container für die obere Hälfte der Seite */
+.top-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Kalenderwochen Navigation */
+#kalenderwochen-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    width: 50%;
+}
+
+.kw-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-button {
+    padding: 0.5rem 1rem;
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: #3a70c0;
+}
+
+/* Grüne Styling für den "Aktuelle Woche"-Button */
+#current-week-btn {
+    background-color: #28a745;
+}
+
+#current-week-btn:hover {
+    background-color: #218838;
+}
+
+#current-week-display {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    flex: 1;
+}
+
+/* Filter Container */
+#filter-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.filter-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.funktionen-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+}
+
+.filter-button {
+    padding: 0.5rem 1rem;
+    background-color: #eaeaea;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-button:hover {
+    background-color: #d8d8d8;
+}
+
+.filter-button.active {
+    background-color: #4a89dc;
+    color: white;
+    border-color: #3a70c0;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.custom-icon {
+    font-size: 24px;
+    color: #4a89dc;
+    font-weight: bold;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Bewohner Container */
+#bewohner-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 200px;
+}
+
+.bewohner-card {
+    padding: 0.5rem 1rem;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.bewohner-card:hover {
+    background-color: #efefef;
+    transform: translateY(-2px);
+}
+
+.bewohner-name {
+    flex: 1;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.details-button {
+    display: block;
+    width: 100%;
+    padding: 0.3rem 0;
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    border-radius: 0 0 3px 3px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.details-button:hover {
+    background-color: #3a70c0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .top-container {
+        flex-direction: column;
+    }
+    
+    #kalenderwochen-container {
+        width: 100%;
+    }
+    
+    .kw-navigation {
+        flex-direction: column;
+    }
+    
+    #current-week-display {
+        margin: 0.5rem 0;
+    }
+    
+    .filter-wrapper {
+        flex-direction: column;
+    }
+    
+    .funktionen-container {
+        justify-content: flex-start;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Menüplan-Tabelle */
+.menueplan-container {
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+.menueplan-tabelle {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
+.menueplan-tabelle th,
+.menueplan-tabelle td {
+    padding: 0.75rem;
+    text-align: left;
+    border: 1px solid #eaeaea;
+}
+
+.menueplan-tabelle th {
+    background-color: #4a89dc;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.menueplan-tabelle tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.menueplan-tabelle .kategorie-zelle {
+    font-weight: bold;
+    background-color: #f0f4fa;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.menueplan-tabelle .menue-zelle {
+    vertical-align: top;
+    text-align: center;
+}
+
+.menueplan-tabelle .menue-komponente {
+    padding: 2px 0;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.menueplan-tabelle .menue-komponente:not(:last-child) {
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+}
+
+.menueplan-tabelle .fehlermeldung {
+    text-align: center;
+    color: #e74c3c;
+    padding: 1rem;
+}
+
+.lade-anzeige {
+    text-align: center;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.lade-anzeige.fehler {
+    color: #e74c3c;
+}
+
+/* Responsive Anpassung für die Tabelle */
+@media (max-width: 768px) {
+    .menueplan-tabelle {
+        font-size: 0.9rem;
+    }
+    
+    .menueplan-tabelle th,
+    .menueplan-tabelle td {
+        padding: 0.5rem;
+    }
+    
+    .menueplan-tabelle .kategorie-zelle {
+        width: 100px;
+    }
+    
+    .menueplan-tabelle .menue-zelle {
+        min-width: 80px;
+    }
+}
+
+/* Bewohnerinformationsanzeige */
+.bewohner-info {
+    background-color: #f5f5f5;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.bewohner-info .auswahl-status {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+.bewohner-info.highlight {
+    background-color: #e3f2fd;
+    animation: pulse 1.5s;
+}
+
+@keyframes pulse {
+    0% { background-color: #e3f2fd; }
+    50% { background-color: #bbdefb; }
+    100% { background-color: #e3f2fd; }
+}
+
+.bewohner-info .auswahl-status.error {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Klickbare Tabellenzellen */
+.klickbar {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.klickbar:hover {
+    background-color: #f0f0f0;
+}
+
+/* Portionsgrößen-Markierungen */
+.auswahl-100, 
+td.auswahl-100,
+.menueplan-tabelle td.auswahl-100 {
+    background-color: #4CAF50 !important; /* Grün */
+    color: white !important;
+    border-radius: 10px;
+}
+
+.auswahl-50, 
+td.auswahl-50,
+.menueplan-tabelle td.auswahl-50 {
+    background-color: #FF9800 !important; /* Orange */
+    color: white !important;
+    border-radius: 10px;
+}
+
+.auswahl-25, 
+td.auswahl-25,
+.menueplan-tabelle td.auswahl-25 {
+    background-color: #90CAF9 !important; /* Hellblau */
+    color: black !important;
+    margin: 6px;
+    border-radius: 10px;
+}
+
+/* Hervorgehobene/Aktive Bewohnerkarte */
+.bewohner-card.active {
+    background-color: #e3f2fd !important;
+    border: 2px solid #2196F3 !important;
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3) !important;
+    position: relative;
+    max-width: 160px;
+    z-index: 10;
+}
+
+/* Anzeige der Auswahlinfo innerhalb der Bewohnerkarte */
+.bewohner-card .bewohner-info {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    display: none;
+}
+
+/* Aktiver Bewohner Indikator */
+.aktiver-bewohner-indikator {
+    background-color: #e3f2fd;
+    border-left: 4px solid #1976D2;
+    margin: 0.5rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+}
+
+.aktiver-bewohner-indikator .name {
+    font-size: 1.1rem;
+}
+
+.aktiver-bewohner-indikator .status {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+.aktiver-bewohner-indikator .station {
+    background-color: #bbdefb;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.aktiver-bewohner-indikator .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.aktiver-bewohner-indikator .action-button {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.aktiver-bewohner-indikator .action-button:hover {
+    background-color: #e0e0e0;
+}
+
+.aktiver-bewohner-indikator .action-button.danger {
+    background-color: #ffebee;
+    border-color: #ffcdd2;
+    color: #c62828;
+}
+
+.aktiver-bewohner-indikator .action-button.danger:hover {
+    background-color: #ffcdd2;
+}
+
+/* Komponenten-Editor Button und Panel Styles */
+.komponenten-bearbeiten-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #1976D2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: #1976D2;
+    z-index: 200;
+    opacity: 0.9;
+    transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: all;
+    touch-action: manipulation;
+}
+
+.komponenten-bearbeiten-btn:hover {
+    opacity: 1;
+    background-color: white;
+    color: #1976D2;
+    border-color: #1976D2;
+    transform: scale(1.1);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+}
+
+.menue-zelle, .kategorie-inhalt {
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.ausgeschlossen {
+    text-decoration: line-through;
+    color: #a11414;
+}
+
+/* Extra-Hinweise in Zellen */
+.extra-hinweise {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.85em;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.extra-hinweis-titel {
+    font-weight: bold;
+    color: #1976D2;
+    margin-bottom: 2px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.extra-hinweis-liste {
+    color: #555;
+    font-style: italic;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.extra-hinweis-notiz {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dotted #eee;
+    color: #666;
+    font-size: 0.9em;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Durchgestrichene Komponenten im Komponenten-Editor */
+.durchgestrichen {
+    text-decoration: line-through;
+    color: #999;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* Animation für die Portionsgrößenanzeige */
+@keyframes portionFeedback {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    80% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+.portion-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    animation: portionFeedback 0.6s ease-in-out;
+}
+
+/* Komponenten-Editor Panel */
+#komponenten-editor-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+#komponenten-editor-panel.active {
+    right: 0;
+}
+
+.komponenten-editor-info {
+    background-color: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.tag-kategorie-info {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.kategorie-name {
+    color: #1976D2;
+}
+
+.komponenten-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+.komponente-checkbox-wrapper,
+.extra-option-wrapper,
+.extra-wunsch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+}
+
+.komponente-checkbox-wrapper:hover,
+.extra-option-wrapper:hover,
+.extra-wunsch-wrapper:hover {
+    background-color: #f9f9f9;
+}
+
+.extra-optionen-container,
+.extra-wuensche-container {
+    margin-top: 0.5rem;
+    border: 1px solid #eee;
+    padding: 0.5rem;
+    border-radius: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: #bfcff6;
+}
+
+.extra-kategorie {
+    margin-bottom: 0.75rem;
+}
+
+.extra-kategorie:last-child {
+    margin-bottom: 0;
+}
+
+.extra-kategorie-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.3rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #eee;
+}
+
+.extra-optionen-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 0.5rem;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 600px) {
+    #komponenten-editor-panel {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .komponenten-liste,
+    .extra-optionen-container,
+    .extra-wuensche-container {
+        max-height: 150px;
+    }
+}

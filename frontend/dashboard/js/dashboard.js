@@ -53,6 +53,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 description: 'Auswahl für Einzelplanung'
             },
             {
+                id: 'soloMenue-static',
+                icon: 'fa-utensils',
+                title: 'Solo Menü',
+                description: 'Individuelle Menüplanung für Bewohner'
+            },
+            {
                 id: 'rezepte-static',
                 icon: 'fa-book',
                 title: 'Rezepte',

@@ -1,0 +1,190 @@
+{
+  "name": "Hendrik_Walter",
+  "Montag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "normalkost": {
+      "category": "normalkost",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": false
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    },
+    "extra_1741282372305": {
+      "category": "extra_1741282372305",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Obst",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Obst"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Dienstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "extra_1741282372305": {
+      "category": "extra_1741282372305",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Obst",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Obst"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Mittwoch": {
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "25%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Donnerstag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "extra_1741282372305": {
+      "category": "extra_1741282372305",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Obst",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Obst"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Freitag": {
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": "Kalte Platte"
+        }
+      ],
+      "comments": [],
+      "alternatives": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Samstag": {},
+  "Sonntag": {}
+}

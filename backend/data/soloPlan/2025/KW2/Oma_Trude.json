@@ -1,73 +1,5 @@
 {
   "resident": "Oma_Trude",
-  "0_menue2": {
-    "day": "Montag",
-    "category": "menue2",
-    "selected": true,
-    "portion": "100%",
-    "meals": [
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln",
-        "rezept_selected": false
-      },
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln",
-        "rezept_selected": false
-      },
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln"
-      },
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln"
-      }
-    ],
-    "comments": [],
-    "alternatives": []
-  },
-  "1_menue2": {
-    "day": "Dienstag",
-    "category": "menue2",
-    "selected": true,
-    "portion": "100%",
-    "meals": [
-      {
-        "rezeptId": 1,
-        "name": "Kartoffeln mit Butter"
-      }
-    ],
-    "comments": [],
-    "alternatives": [
-      "Bruno",
-      "Banana"
-    ]
-  },
-  "2_menue2": {
-    "day": "Mittwoch",
-    "category": "menue2",
-    "selected": true,
-    "portion": "100%",
-    "meals": [
-      {
-        "rezeptId": 4,
-        "name": "Faschierte Laibchen"
-      },
-      {
-        "rezeptId": 2,
-        "name": "Kartoffelpüree"
-      }
-    ],
-    "comments": [
-      {
-        "text": "Hallo du Sack",
-        "timestamp": "2025-01-22T15:58:55.257Z"
-      }
-    ],
-    "alternatives": []
-  },
   "3_menue2": {
     "day": "Donnerstag",
     "category": "menue2",
@@ -118,7 +50,7 @@
     "day": "Montag",
     "category": "menue1",
     "selected": true,
-    "portion": "100%",
+    "portion": "50%",
     "meals": [
       {
         "rezeptId": 2,
@@ -356,5 +288,23 @@
       }
     ],
     "alternatives": []
+  },
+  "2_milchspeise": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "0_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
   }
 }

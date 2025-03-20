@@ -1,0 +1,27 @@
+{
+  "resident": "Oma_Trude",
+  "1_kalteplatte": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "2_menue1": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "1_menue2": {
+    "portion": "50%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  },
+  "3_menue2": {
+    "portion": "100%",
+    "alternative": null,
+    "comment": null,
+    "components": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "extrawuensche": [
+    {
+      "id": "wunsch1",
+      "name": "Schonkost",
+      "description": "Leicht verdauliche Ernährung"
+    },
+    {
+      "id": "wunsch2",
+      "name": "Vegetarisch",
+      "description": "Ohne Fleisch und Fisch"
+    },
+    {
+      "id": "wunsch3",
+      "name": "Püriert",
+      "description": "Für Bewohner mit Schluckbeschwerden"
+    },
+    {
+      "id": "wunsch4",
+      "name": "Diabetiker",
+      "description": "Zuckerreduzierte Kost"
+    },
+    {
+      "id": "1742472955503",
+      "name": "Toaster",
+      "description": "Scheibe brot ins bett"
+    }
+  ]
+}

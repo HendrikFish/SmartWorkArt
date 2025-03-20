@@ -28,6 +28,7 @@ const staticModules = [
     { route: '/solo-static', dir: '../frontend/solo' },
     { route: '/soloPlan-static', dir: '../frontend/soloPlan' },
     { route: '/soloSelect-static', dir: '../frontend/soloSelect' },
+    { route: '/soloMenue-static', dir: '../frontend/soloMenue' },
     { route: '/login-static', dir: '../frontend/login' },
     { route: '/dashboard-static', dir: '../frontend/dashboard' },
     { route: '/customer-static', dir: '../frontend/customer' },
@@ -147,6 +148,7 @@ const menueRoutes = require('./routes/menueRoutes');
 const soloRoutes = require('./routes/soloRoutes');
 const soloPlanRoutes = require('./routes/soloPlanRoutes');
 const soloSelectRoutes = require('./routes/soloSelectRoutes');
+const soloMenueRoutes = require('./routes/soloMenueRoutes');
 const loginRoutes = require('./routes/loginRoutes');
 const customRoutes = require('./routes/customRoutes');
 const { auth, checkRole } = require('./middleware/auth');
@@ -271,6 +273,7 @@ app.use('/api/menue', conditionalAuth, menueRoutes);
 app.use('/api/solo', conditionalAuth, soloRoutes);
 app.use('/api/soloplan', conditionalAuth, soloPlanRoutes);
 app.use('/api/soloselect', conditionalAuth, soloSelectRoutes);
+app.use('/api/solomenue', conditionalAuth, soloMenueRoutes);
 app.use('/api', conditionalAuth, customRoutes);
 app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/config')));
 
@@ -374,13 +377,15 @@ async function startServer() {
             console.log(`Server läuft auf Port ${PORT}`);
             console.log(`API-Endpunkte verfügbar unter:`);
             console.log(`- /api/einrichtungen`);
+            console.log(`- /api/solomenue`);
             console.log(`Statische Dateien:`);
             staticModules.forEach(({ route }) => {
                 console.log(`- ${route}`);
             });
+            console.log(`=================================`);
         });
     } catch (error) {
-        console.error('Fehler beim Serverstart:', error);
+        console.error(`Server-Fehler: ${error.message}`);
         process.exit(1);
     }
 }

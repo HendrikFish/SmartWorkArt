@@ -1,0 +1,506 @@
+/* Formular-Styling für SoloMenü */
+
+/* Einheitlicher Stil für Listenelemente (Kategorien, Extra-Optionen, Sonderwünsche) */
+.kategorie-item,
+.extra-option-item,
+.sonderwunsch-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+}
+
+.kategorie-item:hover,
+.extra-option-item:hover,
+.sonderwunsch-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kategorie-info,
+.extra-option-info,
+.sonderwunsch-info {
+    flex: 1;
+}
+
+.kategorie-name,
+.extra-option-info h5,
+.sonderwunsch-info h5 {
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.kategorie-text,
+.extra-option-info p,
+.sonderwunsch-info p {
+    font-size: 0.9rem;
+    margin: 0;
+    color: #666;
+    line-height: 1.4;
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.kategorie-actions,
+.extra-option-actions,
+.sonderwunsch-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Einheitliche Button-Stile */
+.kategorie-actions button,
+.extra-option-actions button,
+.sonderwunsch-actions button,
+.edit-btn, 
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+/* Bearbeiten-Button Hover */
+.kategorie-actions .edit-btn:hover,
+.extra-option-actions .edit-btn:hover,
+.sonderwunsch-actions .edit-btn:hover,
+.edit-btn:hover {
+    color: #4a89dc;
+    background-color: rgba(74, 137, 220, 0.1);
+}
+
+/* Löschen-Button Hover */
+.kategorie-actions .delete-btn:hover,
+.extra-option-actions .delete-btn:hover,
+.sonderwunsch-actions .delete-btn:hover,
+.delete-btn:hover {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.form-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh; /* Maximale Höhe relativ zur Viewport-Höhe */
+    overflow-y: auto; /* Scroll-Funktion hinzufügen */
+    padding: 1.5rem;
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s;
+}
+
+.form-overlay.active .form-container {
+    transform: translateY(0);
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.form-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.close-form {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Tabs Navigation */
+.form-tabs {
+    display: flex;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.form-tab {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.form-tab:hover {
+    color: #4a89dc;
+}
+
+.form-tab.active {
+    color: #4a89dc;
+    border-bottom-color: #4a89dc;
+}
+
+/* Tab Content */
+.tab-content {
+    position: relative;
+    min-height: 200px;
+    max-height: 60vh; /* Maximale Höhe für Tab-Inhalte */
+    overflow-y: auto; /* Scroll-Funktion für Tab-Inhalte */
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    font-weight: 500;
+    color: #444;
+}
+
+.input-group input, 
+.input-group textarea {
+    padding: 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.input-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.form-btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.form-btn-primary {
+    background-color: #4a89dc;
+    color: white;
+}
+
+.form-btn-primary:hover {
+    background-color: #3a70c0;
+}
+
+.form-btn-secondary {
+    background-color: #eaeaea;
+    color: #333;
+}
+
+.form-btn-secondary:hover {
+    background-color: #d8d8d8;
+}
+
+.form-btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.form-btn-danger:hover {
+    background-color: #c0392b;
+}
+
+/* Kategorien Liste */
+.kategorien-liste {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+}
+
+.kategorie-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Bearbeitungspanel */
+.edit-panel {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 2;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.edit-panel.active {
+    display: block;
+}
+
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #4a89dc;
+    font-weight: 500;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 1rem;
+    color: #666;
+}
+
+.no-kategorien {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+/* Fehlermeldungen */
+.form-error {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 600px) {
+    .form-container {
+        max-width: 90%;
+        padding: 1rem;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .form-btn {
+        width: 100%;
+    }
+    
+    .kategorie-text {
+        max-width: 150px;
+    }
+}
+
+/* Stile für das Extra-Optionen Formular */
+.card {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f8f8;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.form-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-primary {
+    background-color: #33bce2;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #269bc0;
+}
+
+.btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #c0c0c0;
+}
+
+.btn-danger, .delete-btn {
+    background-color: #ff5252;
+    color: white;
+}
+
+.btn-danger:hover, .delete-btn:hover {
+    background-color: #d43838;
+}
+
+/* Extra-Optionen Liste */
+.extra-optionen-liste-container {
+    margin-top: 30px;
+}
+
+.extra-optionen-liste-container h4 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #333;
+}
+
+.extra-optionen-liste {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.extra-optionen-kategorie {
+    margin-bottom: 20px;
+}
+
+.extra-optionen-kategorie h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #333;
+}
+
+/* Sonderwünsche Styling */
+.sonderwunsch-liste-container {
+    margin-top: 2rem;
+}
+
+.sonderwunsch-liste-container h4 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+.sonderwunsch-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Loading-Anzeige und Fehlermeldungen */
+.loading-message {
+    padding: 15px;
+    text-align: center;
+    color: #666;
+}
+
+.error-message {
+    padding: 15px;
+    text-align: center;
+    color: #ff5252;
+    background-color: #ffe5e5;
+    border-radius: 5px;
+}
+
+.toggle-form-btn {
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-weight: 500;
+    text-align: left;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+.toggle-form-btn:hover {
+    background-color: #3a70c0;
+}

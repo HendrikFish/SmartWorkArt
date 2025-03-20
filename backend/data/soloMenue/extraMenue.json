@@ -1,0 +1,16 @@
+{
+  "extramenues": [
+    {
+      "kategorie-name": "SUPPE",
+      "id": "extra1742406601024",
+      "name": "Rotz",
+      "description": "Schleimiger auswurf"
+    },
+    {
+      "kategorie-name": "DESSERT",
+      "id": "extra1742406910359",
+      "name": "Scheiße",
+      "description": "Stinkt"
+    }
+  ]
+}

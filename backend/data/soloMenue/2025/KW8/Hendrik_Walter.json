@@ -1,0 +1,88 @@
+{
+  "name": "Hendrik_Walter",
+  "Montag": {},
+  "Dienstag": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Nudelkuchen"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Wurst"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Mittwoch": {
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Faschiertes Laibchen mit Soße, Gemüse und Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Rindersuppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "normalkost": {
+      "category": "normalkost",
+      "selected": true,
+      "portion": "25%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "25%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    },
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {
+    "normalkost": {
+      "category": "normalkost",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Sonntag": {}
+}

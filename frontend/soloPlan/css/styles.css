@@ -237,12 +237,14 @@ h1, h2 {
 .meal-plan td {
     border: 1px solid var(--border-color);
     text-align: center;
-    padding: 6px;
+    padding: 5px;
     vertical-align: top;
     width: 200px;
     min-width: 200px;
     max-width: 200px;
-    height: 140px;
+    height: auto;
+    min-height: 40px;
+    position: relative;
 }
 
 .meal-plan td:first-child {
@@ -256,10 +258,20 @@ h1, h2 {
 
 .meal-plan td.half-height-cell {
     height: 70px;
+    padding: 3px 5px;
 }
 
 .meal-plan td.half-height-cell:first-child {
     height: auto;
+}
+
+.meal-plan td.half-height-cell .meal-cell-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 3px 5px;
 }
 
 .meal-plan thead {
@@ -269,86 +281,129 @@ h1, h2 {
 
 /* Card-Style Layout */
 .meal-cell-content {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     transition: background-color 0.3s ease;
+    overflow: visible;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
+/* 
+ * WICHTIG: Die selected-Klassen bewirken die Hintergrundfarbe der Zellen
+ * meal-cell-content füllt die gesamte Tabellenzelle aus (Position: absolute)
+ * Mit einem einheitlichen Padding von 5px
+ */
+
 .meal-cell-content.selected-100 {
-    background-color: #a5d6a7;
-    
-   
+    background-color: #a5d6a7; /* Grün für 100% Auswahl */
+    padding: 5px;
 }
 
 .meal-cell-content.selected-50 {
-    background-color: #ffcc80;
-  
-   
+    background-color: #ffcc80; /* Orange für 50% Auswahl */
+    padding: 5px;
 }
 
 .meal-cell-content.selected-25 {
-    background-color: #90caf9;
-
+    background-color: #90caf9; /* Blau für 25% Auswahl */
+    padding: 5px;
 }
 
+/* Die FAB Container (für die Plus-Buttons) werden nur angezeigt, wenn die Zelle selektiert ist */
 .meal-cell-content.selected-100 .fab-container,
-.meal-cell-content.selected-50 .fab-container,
+.meal-cell-content.selected-50 .fab-container, 
 .meal-cell-content.selected-25 .fab-container {
     display: flex;
-    
-
 }
 
-/* Content Wrapper */
+/* Stelle sicher, dass der Inhalt weiterhin transparent ist und die Farbe der Zelle durchscheint */
+.meal-cell-content.selected-100 .content-wrapper,
+.meal-cell-content.selected-50 .content-wrapper,
+.meal-cell-content.selected-25 .content-wrapper {
+    background-color: transparent !important;
+}
+
+/* Content Wrapper - transparent damit Farbe der Zelle durchscheint */
 .content-wrapper {
     position: relative;
-    display: grid;
-    grid-template-columns: 1fr 45px;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    padding: 8px;
+    justify-content: flex-start;
     transition: background-color 0.3s ease;
     height: 100%;
+    background-color: transparent;
+    width: 100%;
+    flex: 1;
 }
 
 /* FAB Container */
 .fab-container {
     position: relative;
-    grid-column: 2;
-    width: 40px;
-    height: 40px;
-    justify-self: center;
-    align-self: center;
-    display: none;
-}
-
-
-
-
-
-.fab-container.active {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
 }
 
+.meal-options-btn {
+    font-weight: bold;
+    padding: 0;
+    line-height: 1;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
 
+/* Styles für ausgewählte Zellen und ihre Buttons */
+.meal-cell-content.selected-100 .fab-container,
+.meal-cell-content.selected-50 .fab-container,
+.meal-cell-content.selected-25 .fab-container {
+    display: flex;
+    z-index: 2;
+}
 
-
+/* Transparenten Hintergrund für .content-wrapper in selektierten Zellen sicherstellen */
+.meal-cell-content.selected-100 .content-wrapper,
+.meal-cell-content.selected-50 .content-wrapper,
+.meal-cell-content.selected-25 .content-wrapper {
+    background-color: transparent;
+}
 
 /* Status-Varianten */
 .meal-options-btn.selected-100 { 
     background-color: #2196F3; 
- 
 }
 
 .meal-options-btn.selected-50 { 
     background-color: #64B5F6; 
-   
 }
 
 .meal-options-btn.selected-25 { 
     background-color: #BBDEFB; 
     color: black;
-   
 }
 
 /* Anpassungen für halbe Zellenhöhe */
@@ -356,9 +411,9 @@ h1, h2 {
 
 /* Sub-Buttons Container */
 .sub-buttons {
-    position: absolute;
-    top: -6px;
-    right: 20px;
+    position: fixed;
+    top: auto;
+    left: auto;
     display: none;
     flex-direction: column;
     gap: 12px;
@@ -371,8 +426,9 @@ h1, h2 {
     transition: all 0.3s ease;
     opacity: 0;
     transform: scale(0.95);
-    z-index: 9999;
-    overflow: visible !important; /* Wichtig: Container müssen überragen können */
+    z-index: 10000 !important;
+    overflow: visible !important;
+    pointer-events: auto !important;
 }
 
 .fab-container.active .sub-buttons {
@@ -399,20 +455,19 @@ h1, h2 {
 
 /* Sub-Button Styles */
 .sub-button {
-    width: 45px;
-    height: 45px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: none;
-    font-size: 22px;
+    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
     position: relative;
-    pointer-events: all;
-    margin: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    pointer-events: auto !important;
+    z-index: 10001 !important;
 }
 
 /* Button-Farben */
@@ -464,16 +519,19 @@ h1, h2 {
 
 /* Meals Container */
 .meals-container {
-    grid-column: 1;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 6px;
-    padding: 3px 0;
+    padding: 0;
     flex: 1;
     position: relative;
     padding-right: 5px;
     overflow: hidden;
-   
+    height: auto;
+    min-height: 30px;
+    width: 100%;
 }
 
 /* Meal Item */
@@ -491,6 +549,79 @@ h1, h2 {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+}
+
+/* Spezialfall für zwei Zellenhälften */
+.meal-plan td.half-height-cell {
+    height: 70px;
+    padding: 3px 5px;
+}
+
+.meal-plan td.half-height-cell .meal-cell-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 3px 5px;
+}
+
+/* Layout für mehrere Mahlzeiten in einer Zelle */
+.content-wrapper:has(.meals-container .meal-item + .meal-item) {
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    padding-right: 35px; /* Platz für den Button */
+}
+
+.content-wrapper:has(.meals-container .meal-item + .meal-item) .fab-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    margin-left: 0;
+}
+
+.content-wrapper:has(.meals-container .meal-item + .meal-item) .meals-container {
+    width: 100%;
+    padding-right: 5px;
+}
+
+.content-wrapper:has(.meals-container .meal-item + .meal-item) .meal-item {
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Content Wrapper für eine einzelne Mahlzeit */
+.content-wrapper:not(:has(.meals-container .meal-item + .meal-item)) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content-wrapper:not(:has(.meals-container .meal-item + .meal-item)) .meals-container {
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    max-width: calc(100% - 35px);
+    min-width: 0;
+}
+
+.content-wrapper:not(:has(.meals-container .meal-item + .meal-item)) .meal-item {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    padding-right: 5px;
+}
+
+.content-wrapper:not(:has(.meals-container .meal-item + .meal-item)) .fab-container {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 30px;
 }
 
 .meal-image {
@@ -553,21 +684,21 @@ h1, h2 {
     }
     .button-container, .filter-buttons, .residents-list {
         flex-direction: column;
-        align-items: stretch;
+        width: 100%;
     }
     .meal-plan {
-        padding: 8px;
+        overflow-x: auto;
     }
     .meal-plan table th, .meal-plan table td {
         font-size: 0.9em;
-        padding: 4px;
+        padding: 5px; /* Konsistentes Padding */
         min-width: 100px;
     }
     .selected-resident {
         padding: 15px;
     }
     .meal-cell-content {
-        padding: 6px 4px 30px 4px;
+        padding: 5px; /* Konsistentes Padding */
     }
     .meals-container {
         gap: 4px;
@@ -643,19 +774,19 @@ h1, h2 {
     font-weight: bold;
     padding: 0;
     line-height: 1;
-    margin-left: auto;
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     background: #4CAF50;
     color: white;
     border: none;
-    font-size: 24px;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    flex-shrink: 0;
+    z-index: 1;
 }
 
 /* Anpassungen für halbe Zellen */
@@ -677,7 +808,7 @@ h1, h2 {
 .fab-container.active {
    
     position: relative;
-    background-color: #2196F3;
+   
     border-radius: 50%;
 }
 
@@ -714,7 +845,7 @@ h1, h2 {
     border-radius: 8px !important;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     padding: 10px !important;
-    z-index: 9999 !important;
+    z-index: 10001 !important;
     margin-top: 8px !important;
 }
 
@@ -1211,37 +1342,90 @@ h1, h2 {
 
 /* Stile für Extra-Kategorie-Zeilen */
 .extra-category-row {
-    height: 100px; /* Höhere Zeilen für die größeren Buttons */
+    height: auto;
+    min-height: 40px;
+    max-height: none;
 }
 
 .extra-category-row td {
-    height: 100px;
-    max-height: 100px;
-    overflow: hidden;
+    height: auto;
+    min-height: 40px;
+    max-height: none;
+    overflow: visible;
 }
 
 .extra-category-row .meal-cell-content {
-    height: 100px;
-    max-height: 100px;
+    height: auto;
+    min-height: 40px;
+    max-height: none;
 }
 
 .extra-category-row .content-wrapper {
-    height: 100px;
-    max-height: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 35px;
+    height: auto;
 }
 
 .extra-category-row .meals-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 30px;
+    height: auto;
+}
+
+.extra-category-row .meal-item {
+    display: inline;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 35px);
+}
+
+.extra-category-row .fab-container {
+    margin-left: 5px;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.extra-category-row .meal-options-btn {
+    width: 25px;
+    height: 25px;
+    font-size: 18px;
+    margin-left: 2px;
+}
+
+/* Für leere Zellen in Extra-Kategorien: 40px Höhe */
+.extra-category-row .meals-container:empty {
     height: 40px;
+}
+
+/* Wenn Inhalte vorhanden, dann dynamische Höhe */
+.extra-category-row .meals-container {
+    height: auto;
+    min-height: 40px;
     display: flex;
     align-items: center;
 }
 
 /* Stile für die Zellen in Extra-Kategorie-Zeilen */
 .extra-category-cell {
-    height: 100px;
-    max-height: 100px;
+    height: auto;
+    min-height: 40px;
+    max-height: none;
     padding: 5px !important;
     vertical-align: middle;
+}
+
+/* Spezielle Regel für Zeilen ohne Inhalt */
+.meal-plan tr:empty,
+.meal-plan tr:not(:has(.meal-item)) {
+    height: 40px;
+    max-height: 40px;
 }
 
 /* Button zum Hinzufügen einer neuen Kategorie */
@@ -1428,9 +1612,9 @@ h1, h2 {
 
 /* Stile für die Untermenüs (sub-buttons) in Extra-Kategorien */
 .extra-category-row .sub-buttons {
-    position: absolute;
-    top: -6px;
-    right: 20px;
+    position: fixed;
+    top: auto;
+    left: auto;
     display: none;
     flex-direction: column;
     gap: 12px;
@@ -1440,8 +1624,9 @@ h1, h2 {
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     min-width: 100px;
     transform-origin: top right;
-    z-index: 9999 !important;
+    z-index: 10000 !important;
     overflow: visible !important;
+    pointer-events: auto !important;
 }
 
 /* Stile für aktive Untermenüs in Extra-Kategorien */
@@ -1476,8 +1661,8 @@ h1, h2 {
     justify-content: center;
     transition: all 0.2s ease;
     position: relative;
-    pointer-events: all !important;
-    z-index: 2502 !important;
+    pointer-events: auto !important;
+    z-index: 10001 !important;
 }
 
 /* Entferne alle !important-Tags bei spezifischen Größenangaben, 
@@ -1827,26 +2012,43 @@ h1, h2 {
     margin-top: 8px !important;
 }
 
-/* Vergewissern, dass die Container vor den Buttons angezeigt werden */
+/* Container für Komponenten, Alternativen und Kommentare mit erhöhtem z-index */
 .components-container.active,
 .alternatives-container.active,
-.comment-dialog {
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    width: 220px !important;
-    background-color: white !important;
-    border: 1px solid #ddd !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-    padding: 10px !important;
-    z-index: 9999 !important;
-    margin-top: 8px !important;
+.comment-dialog.active {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 80px;
+    right: 0;
+    z-index: 10001 !important;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-/* Container dürfen den subButtons-Container nicht überlappen */
-.sub-buttons {
-    overflow: visible !important;
+.extra-category-row .components-container.active,
+.extra-category-row .alternatives-container.active,
+.extra-category-row .comment-dialog.active {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 80px;
+    right: 0;
+    z-index: 10001 !important;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 /* Extra-Kategorien-Spezifische Stile */
@@ -1857,32 +2059,5 @@ h1, h2 {
     top: 100% !important;
     left: 0 !important;
     width: 220px !important;
-}
-
-/* Extra-Kategorien Alternativ-Items konsistent gestalten */
-.extra-category-row .alternative-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    margin-bottom: 5px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    width: 100%;
-}
-
-.extra-category-row .switch-label {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 10px;
-    max-width: calc(100% - 50px);
-}
-
-.extra-category-row .switch-container {
-    flex: 0 0 46px;
-    margin-left: auto;
-    position: relative;
-    height: 22px;
+    z-index: 10001 !important;
 }

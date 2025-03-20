@@ -1,0 +1,342 @@
+{
+  "name": "Hendrik_Walter",
+  "Montag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": false,
+      "portion": "none",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": false,
+      "portion": "none",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        },
+        {
+          "rezeptId": 0,
+          "name": "Kartoffeln"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Haferschleim"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "abendSuppe": {
+      "category": "abendSuppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln mit Butter"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Rindersuppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Dienstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": false,
+      "portion": "none",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "normalkost": {
+      "category": "normalkost",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Mittwoch": {
+    "menue1": {
+      "category": "menue1",
+      "selected": false,
+      "portion": "none",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "rezeptId": 4,
+          "name": "Faschierte Laibchen"
+        },
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kohl"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Rindersuppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "normalkost": {
+      "category": "normalkost",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Donnerstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": false,
+      "portion": "none",
+      "meals": [
+        {
+          "rezeptId": 0,
+          "name": "Nudelkuchen"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kartoffelpüree"
+        },
+        {
+          "rezeptId": 4,
+          "name": "Faschierte Laibchen"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kohl"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 1,
+          "name": "Galgant Suppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Freitag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Kohl"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "suppe": {
+      "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 2,
+          "name": "Rindersuppe"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Samstag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "50%",
+      "meals": [
+        {
+          "rezeptId": 1,
+          "name": "Kartoffeln"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "rezeptId": 4,
+          "name": "Faschierte Laibchen"
+        }
+      ],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Sonntag": {}
+}

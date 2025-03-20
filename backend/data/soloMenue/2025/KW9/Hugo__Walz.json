@@ -1,0 +1,19 @@
+{
+  "name": "Hugo__Walz",
+  "Montag": {},
+  "Dienstag": {},
+  "Mittwoch": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "comments": [],
+      "alternatives": []
+    }
+  },
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}
