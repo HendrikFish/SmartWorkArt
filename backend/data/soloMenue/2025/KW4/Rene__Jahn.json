@@ -20,6 +20,26 @@
       "extraMenueAuswahl": [],
       "isExtraKategorie": true
     },
+    "menue2": {
+      "category": "menue2",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
     "menue1": {
       "category": "menue1",
       "selected": true,
@@ -27,18 +47,15 @@
       "meals": [
         {
           "name": "Kartoffelpüree",
-          "ohne": true
+          "ohne": false
         },
         {
           "name": "Kartoffelpüree",
-          "ohne": true
+          "ohne": false
         }
       ],
       "notizen": "",
-      "ausgeschlosseneKomponenten": [
-        "Kartoffelpüree",
-        "Kartoffelpüree"
-      ],
+      "ausgeschlosseneKomponenten": [],
       "extraMenueAuswahl": [],
       "isExtraKategorie": false
     }
@@ -50,13 +67,16 @@
       "portion": "50%",
       "meals": [
         {
-          "name": "Kartoffelpüree"
+          "name": "Kartoffelpüree",
+          "ohne": true
         }
       ],
       "notizen": "",
-      "ausgeschlosseneKomponenten": [],
+      "ausgeschlosseneKomponenten": [
+        "Kartoffelpüree"
+      ],
       "extraMenueAuswahl": [
-        "wunsch1"
+        "extra1742406910359"
       ],
       "isExtraKategorie": false
     },

@@ -1,27 +1,6 @@
 {
   "name": "Rene__Jahn",
   "Montag": {
-    "menue2": {
-      "category": "menue2",
-      "selected": true,
-      "portion": "50%",
-      "meals": [
-        {
-          "name": "Nudelkuchen",
-          "ohne": false
-        },
-        {
-          "name": "Rahmsoße",
-          "ohne": true
-        }
-      ],
-      "notizen": "",
-      "ausgeschlosseneKomponenten": [
-        "Rahmsoße"
-      ],
-      "extraMenueAuswahl": [],
-      "isExtraKategorie": false
-    },
     "suppe": {
       "category": "suppe",
       "selected": true,
@@ -31,21 +10,19 @@
       "ausgeschlosseneKomponenten": [],
       "extraMenueAuswahl": [],
       "isExtraKategorie": false
-    }
-  },
-  "Dienstag": {
+    },
     "menue2": {
       "category": "menue2",
       "selected": true,
-      "portion": "25%",
+      "portion": "50%",
       "meals": [],
       "notizen": "",
-      "ausgeschlosseneKomponenten": [
-        "Wurst"
-      ],
+      "ausgeschlosseneKomponenten": [],
       "extraMenueAuswahl": [],
       "isExtraKategorie": false
-    },
+    }
+  },
+  "Dienstag": {
     "menue1": {
       "category": "menue1",
       "selected": true,
@@ -56,6 +33,16 @@
     },
     "suppe": {
       "category": "suppe",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "menue2": {
+      "category": "menue2",
       "selected": true,
       "portion": "100%",
       "meals": [],
@@ -171,10 +158,12 @@
     "menue1": {
       "category": "menue1",
       "selected": true,
-      "portion": "100%",
+      "portion": "50%",
       "meals": [],
-      "comments": [],
-      "alternatives": []
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
     },
     "menue2": {
       "category": "menue2",
@@ -187,8 +176,13 @@
     "suppe": {
       "category": "suppe",
       "selected": true,
-      "portion": "100%",
-      "meals": [],
+      "portion": "50%",
+      "meals": [
+        {
+          "name": "Rindersuppe",
+          "ohne": false
+        }
+      ],
       "notizen": "",
       "ausgeschlosseneKomponenten": [],
       "extraMenueAuswahl": [],
@@ -196,6 +190,16 @@
     },
     "milchspeise": {
       "category": "milchspeise",
+      "selected": true,
+      "portion": "50%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    },
+    "dessert": {
+      "category": "dessert",
       "selected": true,
       "portion": "100%",
       "meals": [],

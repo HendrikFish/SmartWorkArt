@@ -194,3 +194,40 @@
 .btn-danger:hover {
     background-color: #c0392b;
 }
+
+/* Stelle sicher, dass der Bearbeiten-Button immer klickbar ist */
+.komponenten-bearbeiten-btn {
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+    padding: 6px;
+    margin: 2px;
+    min-width: 30px;
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.komponenten-bearbeiten-btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Stelle sicher, dass Zellen mit veränderter Größe den Button nicht überlagern */
+.zelle-25, .zelle-50 {
+    position: relative;
+    overflow: visible;
+}
+
+/* Verbesserung für die Klickbarkeit auf Mobilgeräten */
+@media (max-width: 1000px) {
+    .komponenten-bearbeiten-btn {
+        padding: 8px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+}

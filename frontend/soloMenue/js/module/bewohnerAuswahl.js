@@ -273,11 +273,42 @@ async function aktualisiereMenueAuswahl(tag, kategorie, portion, mahlzeiten) {
         aktuelleBewohnerAuswahl[tag] = {};
     }
     
-    // Wenn Portion "none" ist, die Kategorie aus der Auswahl entfernen
+    // Wenn Portion "none" ist, die Kategorie vollständig aus der Auswahl entfernen
     if (portion === 'none') {
         if (aktuelleBewohnerAuswahl[tag][kategorie]) {
+            console.log(`Lösche Kategorie ${kategorie} für ${tag} vollständig (inkl. aller Zusatzinformationen)`);
+            
+            // Vollständiges Löschen aller Daten für diese Kategorie
             delete aktuelleBewohnerAuswahl[tag][kategorie];
-            console.log(`Kategorie ${kategorie} für ${tag} entfernt`);
+            
+            // Zusätzlich: Entferne alle visuellen Elemente aus der Zelle
+            try {
+                const tabelle = document.querySelector('.menueplan-tabelle');
+                if (tabelle) {
+                    const zelle = findeTabellenZelle(tabelle, tag, kategorie);
+                    if (zelle) {
+                        // Bearbeiten-Button entfernen
+                        const bearbeitenButton = zelle.querySelector('.komponenten-bearbeiten-btn');
+                        if (bearbeitenButton) bearbeitenButton.remove();
+                        
+                        // Extra-Hinweise entfernen
+                        const extraHinweise = zelle.querySelector('.extra-hinweise');
+                        if (extraHinweise) extraHinweise.remove();
+                        
+                        // Ausgeschlossene Komponenten zurücksetzen
+                        const komponentenElemente = zelle.querySelectorAll('.menue-komponente');
+                        komponentenElemente.forEach(element => {
+                            element.classList.remove('ausgeschlossen');
+                            element.textContent = element.textContent.replace(' (ohne)', '');
+                        });
+                        
+                        // Ausgeschlossen-Klasse entfernen
+                        zelle.classList.remove('ausgeschlossen');
+                    }
+                }
+            } catch (error) {
+                console.warn('Fehler beim Bereinigen visueller Elemente:', error);
+            }
         }
     } else {
         // Vorhandene Auswahl für diese Kategorie abrufen, falls vorhanden
@@ -644,7 +675,7 @@ function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
  */
 function aktualisiereZellInMobileAnsicht(originaleZelle) {
     // Prüfen, ob wir auf einem mobilen Gerät sind
-    const isMobile = window.innerWidth <= 767;
+    const isMobile = window.innerWidth <= 1000;
     if (!isMobile) return;
 
     // Daten der Original-Zelle abrufen
@@ -781,7 +812,7 @@ function aktualisiereZellInMobileAnsicht(originaleZelle) {
  */
 function aktualisiereZellenInMobileAnsicht() {
     // Prüfen, ob wir auf einem mobilen Gerät sind
-    const isMobile = window.innerWidth <= 767;
+    const isMobile = window.innerWidth <= 1000;
     if (!isMobile) return;
     
     // Mobile-Container suchen
@@ -1076,8 +1107,44 @@ async function rotierePortionsGroesse(zelle, tag, kategorie) {
                 existingButton.remove();
             }
             
+            // Entferne alle Extra-Hinweise
+            const extraHinweise = zelle.querySelector('.extra-hinweise');
+            if (extraHinweise) {
+                extraHinweise.remove();
+            }
+            
+            // Entferne alle (ohne) Kennzeichnungen
+            const komponentenElemente = zelle.querySelectorAll('.menue-komponente');
+            komponentenElemente.forEach(element => {
+                element.classList.remove('ausgeschlossen');
+                element.textContent = element.textContent.replace(' (ohne)', '');
+            });
+            
             // Mobile Ansicht aktualisieren
             aktualisiereZellInMobileAnsicht(zelle);
+            
+            // Zusätzlich auch die mobile Zelle direkt bereinigen
+            const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
+            if (mobilAnsicht) {
+                const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
+                if (mobilZelle) {
+                    // CSS-Klassen zurücksetzen
+                    mobilZelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
+                    mobilZelle.style.backgroundColor = '';
+                    mobilZelle.style.color = '';
+                    mobilZelle.style.border = '';
+                    
+                    // Extra-Hinweise entfernen
+                    const mobilExtraHinweise = mobilZelle.querySelector('.extra-hinweise');
+                    if (mobilExtraHinweise) {
+                        mobilExtraHinweise.remove();
+                    }
+                    
+                    // (ohne) Kennzeichnungen entfernen
+                    const mobilText = mobilZelle.textContent.replace('✎', '').replace(' (ohne)', '').trim();
+                    mobilZelle.textContent = mobilText;
+                }
+            }
         }
         
         return true;
@@ -1099,11 +1166,19 @@ async function handleZellenKlick(zelle, tag, kategorie, eventObj) {
     // Prüfen, ob der Klick vom Bearbeiten-Button kam
     if (eventObj && eventObj.target) {
         // Prüfen, ob das geklickte Element oder eines seiner Elternelemente der Bearbeiten-Button ist
-        const isEditButtonClick = eventObj.target.classList.contains('komponenten-bearbeiten-btn') || 
-                                eventObj.target.closest('.komponenten-bearbeiten-btn');
+        const target = eventObj.target;
+        const isEditButtonClick = target.classList.contains('komponenten-bearbeiten-btn') || 
+                               target.closest('.komponenten-bearbeiten-btn');
         
         if (isEditButtonClick) {
-            console.log('Klick kam vom Bearbeiten-Button, wird ignoriert');
+            console.log('Klick kam vom Bearbeiten-Button, wird an KomponentenEditor weitergeleitet');
+            
+            // Event wird hier nicht mehr ignoriert, sondern direkt den KomponentenEditor öffnen
+            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                setTimeout(() => {
+                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                }, 10);
+            }
             return;
         }
     }
@@ -1112,7 +1187,14 @@ async function handleZellenKlick(zelle, tag, kategorie, eventObj) {
     if (eventObj && eventObj.target) {
         const bearbeitenButton = zelle.querySelector('.komponenten-bearbeiten-btn');
         if (bearbeitenButton && (bearbeitenButton.contains(eventObj.target) || eventObj.target === bearbeitenButton)) {
-            console.log('Klick auf Element innerhalb des Bearbeiten-Buttons, wird ignoriert');
+            console.log('Klick auf Element innerhalb des Bearbeiten-Buttons, wird an KomponentenEditor weitergeleitet');
+            
+            // Event wird hier nicht mehr ignoriert, sondern direkt den KomponentenEditor öffnen
+            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                setTimeout(() => {
+                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                }, 10);
+            }
             return;
         }
     }

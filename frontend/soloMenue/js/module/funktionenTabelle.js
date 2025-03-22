@@ -214,7 +214,7 @@ async function erstelleMenueplanTabelle(kw, jahr) {
  */
 function strukturiereTabelleFuerMobile(tabelle) {
     // Nur auf kleinen Bildschirmen umstrukturieren
-    if (window.innerWidth > 767) return;
+    if (window.innerWidth > 1000) return;
     
     console.log('[Mobile] Strukturiere Tabelle für Mobilgeräte um');
     

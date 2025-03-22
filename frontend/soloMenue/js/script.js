@@ -25,9 +25,11 @@ window.BewohnerDate = BewohnerDate;
 window.TabeleAdd = TabeleAdd;
 window.KomponentenEditor = KomponentenEditor;
 
-// BewohnerDate global verfügbar machen für Modulkommunikation
-window.BewohnerDate = BewohnerDate;
-window.TabeleAdd = TabeleAdd;
+// Globales Datenobjekt für den KomponentenEditor erstellen
+window.KomponentenEditorData = {
+    extraMenues: [],
+    extraWuensche: []
+};
 
 // Initialisiert den "Nach oben"-Button für die mobile Ansicht
 function initialisiereNachObenButton() {
@@ -38,7 +40,7 @@ function initialisiereNachObenButton() {
     // Button nur anzeigen, wenn wir unter den Bewohner-Container scrollen
     window.addEventListener('scroll', () => {
         // Prüfen, ob wir auf einem mobilen Gerät sind
-        if (window.innerWidth <= 767) {
+        if (window.innerWidth <= 1000) {
             // Position des Bewohner-Containers
             const bewohnerPosition = bewohnerContainer.getBoundingClientRect().bottom;
             
@@ -510,5 +512,35 @@ document.addEventListener('menuplanTabelleErstellt', (event) => {
     // Wenn ein Bewohner ausgewählt ist, die Tabelle mit dessen Auswahl aktualisieren
     if (aktuellerBewohner) {
         BewohnerAuswahl.aktualisiereTabelle(tabelle);
+    }
+});
+
+// Event-Delegation für die Komponenten-Bearbeiten-Buttons
+document.getElementById('menueplan-container').addEventListener('click', function(event) {
+    // Prüfen, ob ein Bearbeiten-Button oder dessen Kind angeklickt wurde
+    let target = event.target;
+    
+    // Nach oben durch die DOM-Hierarchie navigieren, bis wir den Button finden
+    while (target !== this && !target.classList.contains('komponenten-bearbeiten-btn')) {
+        target = target.parentNode;
+        if (!target) return; // Wenn wir aus dem DOM herausfallen
+    }
+    
+    // Wenn ein Button gefunden wurde
+    if (target.classList.contains('komponenten-bearbeiten-btn')) {
+        event.stopPropagation();
+        const tag = target.getAttribute('data-tag');
+        const kategorie = target.getAttribute('data-kategorie');
+        
+        // Finde die zugehörige Zelle
+        const zellenId = target.getAttribute('data-zellen-id') || `zelle-${tag}-${kategorie}`;
+        const zelle = document.getElementById(zellenId) || target.closest('td[data-tag]');
+        
+        // Die Bearbeitungsfunktion aufrufen (mit korrektem Namen und Parametern)
+        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+        } else {
+            console.error('KomponentenEditor.oeffneKomponentenEditor ist nicht verfügbar');
+        }
     }
 });

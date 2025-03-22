@@ -4,7 +4,7 @@
  */
 
 /* Grundlegende mobile Anpassungen */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1000px) {
     /* Allgemeine Container-Anpassungen */
     .top-container {
         flex-direction: column;
@@ -348,7 +348,7 @@
     }
     
     /* JavaScript-Hilfsfunktion zum Umstrukturieren der Tabelle für Mobilgeräte */
-    @media screen and (max-width: 767px) {
+    @media screen and (max-width: 1000px) {
         /* Diese CSS-Klasse wird durch JavaScript hinzugefügt, um die Umstrukturierung anzuzeigen */
         .menueplan-tabelle.mobile-formatiert {
             /* Grundstruktur ausblenden */
