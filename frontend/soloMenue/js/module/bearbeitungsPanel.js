@@ -327,42 +327,29 @@ async function speichereBewohnerAenderungen() {
         }
         
         // Aktualisierte Bereiche (Areas) aus dem Formular auslesen
-        const bereichsForms = document.querySelectorAll('.bereich-form');
+        const bereichsForms = document.querySelectorAll('select[id^="bereich-"]');
         const aktualisierteAreas = {};
         
-        bereichsForms.forEach(form => {
-            const bereichsName = form.dataset.bereich;
-            const radios = form.querySelectorAll('input[type="radio"]');
-            let ausgewaehlterWert = null;
+        bereichsForms.forEach(select => {
+            const bereichsName = select.name;
+            const ausgewaehlterWert = select.value;
             
-            radios.forEach(radio => {
-                if (radio.checked) {
-                    ausgewaehlterWert = radio.value;
-                }
-            });
-            
-            if (ausgewaehlterWert !== null) {
+            if (ausgewaehlterWert) {
                 aktualisierteAreas[bereichsName] = ausgewaehlterWert;
             }
         });
         
         // Zusätzlich auch Checkboxen berücksichtigen
-        const checkboxForms = document.querySelectorAll('.checkbox-container');
-        const aktualisierteBereiche = {};
+        const checkboxContainers = document.querySelectorAll('.checkbox-container');
         
-        checkboxForms.forEach(container => {
-            const bereichsName = container.dataset.bereich;
-            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-            const ausgewaehlteWerte = [];
+        checkboxContainers.forEach(container => {
+            const bereichsName = container.id.replace('bereich-', '');
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
             
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    ausgewaehlteWerte.push(checkbox.value);
-                }
-            });
-            
-            if (ausgewaehlteWerte.length > 0) {
-                aktualisierteBereiche[bereichsName] = ausgewaehlteWerte;
+            if (checkboxes.length > 0) {
+                // Bei mehreren ausgewählten Checkboxen die Werte mit Komma trennen
+                const werte = Array.from(checkboxes).map(checkbox => checkbox.value);
+                aktualisierteAreas[bereichsName] = werte.join(', ');
             }
         });
         
@@ -373,85 +360,125 @@ async function speichereBewohnerAenderungen() {
             areas: aktualisierteAreas
         };
         
-        // Prüfen, ob die Bewohnerdatei existiert
-        console.log(`Prüfe, ob Bewohnerdatei existiert für: ${bewohnerName}`);
-        const checkResponse = await fetch(`/api/solomenue/bewohner/${bewohnerName}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        console.log('Aktualisierte Bereiche:', aktualisierteAreas);
+        console.log('Bewohnerdaten zum Speichern:', bewohnerDaten);
         
-        if (!checkResponse.ok) {
-            console.warn(`Bewohnerdatei für ${bewohnerName} existiert nicht. Versuche, eine neue Datei zu erstellen.`);
+        // Versuche direkt zu speichern mit dem /api/solomenue/bewohner-create Endpunkt
+        console.log(`Versuche, Bewohnerdaten für ${bewohnerName} zu speichern oder zu erstellen...`);
+        
+        try {
+            // POST-Request an den Endpunkt senden
+            const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bewohnerDaten)
+            });
             
-            // Bewohnerdatei neu erstellen mit dem createBewohner-Endpunkt
-            const askCreate = confirm(`Die Bewohnerdatei für ${bewohnerName} wurde nicht gefunden. Möchten Sie eine neue Bewohnerdatei anlegen?`);
-            
-            if (askCreate) {
-                try {
-                    // Versuche, Bewohner mit alternativen Endpunkten zu erstellen
-                    console.log('Versuche, neuen Bewohner anzulegen...');
+            // 404-Fehler abfangen (Bewohner existiert nicht)
+            if (response.status === 404) {
+                console.warn(`Bewohnerdatei für ${bewohnerName} existiert nicht. Versuche, eine neue Datei zu erstellen.`);
+                
+                // Benutzer fragen, ob eine neue Datei erstellt werden soll
+                const askCreate = confirm(`Die Bewohnerdatei für ${bewohnerName} wurde nicht gefunden. Möchten Sie eine neue Bewohnerdatei anlegen?`);
+                
+                if (!askCreate) {
+                    throw new Error(`Der Vorgang wurde abgebrochen, da keine Bewohnerdatei für ${bewohnerName} gefunden wurde.`);
+                }
+                
+                // Direkter API-Aufruf zur Erstellung einer neuen Bewohnerdatei
+                // Versuche verschiedene mögliche Endpunkte
+                const createEndpoints = [
+                    '/api/solomenue/bewohner-create',
+                    '/api/solomenue/bewohner/create',
+                    '/api/solomenue/create-bewohner'
+                ];
+                
+                let createSuccess = false;
+                let createError = null;
+                
+                for (const endpoint of createEndpoints) {
+                    try {
+                        console.log(`Versuche, neuen Bewohner mit Endpunkt ${endpoint} anzulegen...`);
+                        const createResponse = await fetch(`${endpoint}/${bewohnerName}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(bewohnerDaten)
+                        });
+                        
+                        if (createResponse.ok) {
+                            console.log(`Bewohner erfolgreich mit Endpunkt ${endpoint} erstellt.`);
+                            createSuccess = true;
+                            break;
+                        } else {
+                            const errorText = await createResponse.text();
+                            console.warn(`Fehler beim Erstellen mit ${endpoint}: ${createResponse.status} - ${errorText}`);
+                        }
+                    } catch (err) {
+                        console.warn(`Fehler beim Aufruf von ${endpoint}:`, err);
+                        createError = err;
+                    }
+                }
+                
+                if (!createSuccess) {
+                    // Wenn alle Endpunkte fehlschlagen, versuchen wir eine manuelle Fallback-Methode mit direktem Schreiben
+                    console.log('Verwende Fallback-Methode: Direktes Speichern über update-bewohner mit force-Parameter');
                     
-                    // Methode 1: Direkte Erstellung via PUT
-                    const createResponse = await fetch(`/api/solomenue/bewohner/${bewohnerName}`, {
-                        method: 'PUT',
+                    const fallbackResponse = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}?force=true`, {
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(bewohnerDaten)
                     });
                     
-                    if (createResponse.ok) {
-                        console.log('Bewohner erfolgreich erstellt. Fahre mit Update fort...');
-                    } else {
-                        throw new Error('Konnte Bewohner nicht erstellen. Bitte wenden Sie sich an den Administrator.');
+                    if (!fallbackResponse.ok) {
+                        const errorText = await fallbackResponse.text();
+                        throw new Error(`Fehler beim Erstellen des Bewohners: ${fallbackResponse.status} - ${errorText}`);
                     }
-                } catch (createError) {
-                    console.error('Fehler beim Erstellen des Bewohners:', createError);
-                    throw new Error(`Konnte neuen Bewohner nicht anlegen: ${createError.message}`);
+                    
+                    console.log('Bewohner erfolgreich mit Fallback-Methode erstellt.');
                 }
+                
+                // Erfolgsmeldung anzeigen
+                alert(`Eine neue Bewohnerdatei für ${bewohnerName} wurde erfolgreich erstellt.`);
+            } else if (!response.ok) {
+                // Andere Fehler verarbeiten
+                const errorText = await response.text();
+                throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
             } else {
-                throw new Error(`Der Vorgang wurde abgebrochen, da keine Bewohnerdatei für ${bewohnerName} gefunden wurde.`);
+                // Erfolgreiche Antwort
+                const ergebnis = await response.json();
+                console.log('Bewohnerdaten erfolgreich aktualisiert:', ergebnis);
+                
+                // Erfolgsmeldung anzeigen
+                alert('Die Bewohnerdaten wurden erfolgreich aktualisiert.');
             }
+            
+            // Lokale Daten aktualisieren
+            aktiverBewohner.areas = aktualisierteAreas;
+            
+            // Zurück zur normalen Ansicht
+            bearbeitungsModus = false;
+            const content = document.getElementById('bewohner-details');
+            aktualisiereAnzeige(content);
+            
+        } catch (fetchError) {
+            console.error('Fehler beim Speichern der Bewohnerdaten:', fetchError);
+            throw fetchError; // Fehler weitergeben für die übergeordnete Fehlerbehandlung
         }
-        
-        // Korrekter API-Endpunkt, der im Backend definiert ist
-        console.log(`Versuche korrekten API-Endpoint: /api/solomenue/update-bewohner/${bewohnerName}`);
-        const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bewohnerDaten)
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
-        }
-        
-        const ergebnis = await response.json();
-        console.log('Bewohnerdaten erfolgreich aktualisiert:', ergebnis);
-        
-        // Lokale Daten aktualisieren
-        aktiverBewohner.areas = aktualisierteAreas;
-        
-        // Erfolgsmeldung anzeigen
-        alert('Die Bewohnerdaten wurden erfolgreich aktualisiert.');
-        
-        // Zurück zur normalen Ansicht
-        bearbeitungsModus = false;
-        const content = document.getElementById('bewohner-details');
-        aktualisiereAnzeige(content);
-        
     } catch (error) {
         console.error('Fehler beim Speichern der Bewohnerdaten:', error);
         alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message}
         
 Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.
 
-Hinweis: Wenn Bewohnerdaten nicht gefunden werden können, müssen diese möglicherweise erst erstellt werden. Die Bewohnerdaten befinden sich im Backend unter: /opt/render/project/src/backend/data/solo/person/upToDate`);
+Hinweis: Wenn Bewohnerdaten nicht gefunden werden können, müssen diese möglicherweise erst erstellt werden. Die Bewohnerdaten befinden sich im Backend unter: /opt/render/project/src/backend/data/solo/person/upToDate
+
+Sie können auch versuchen, eine neue Bewohnerdatei durch manuelles Erstellen auf dem Server zu erzeugen.`);
     }
 }
 
