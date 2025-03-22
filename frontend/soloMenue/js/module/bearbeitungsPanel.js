@@ -369,8 +369,8 @@ async function speichereBewohnerAenderungen() {
             areas: aktualisierteAreas
         };
         
-        // Daten an das Backend senden - Korrekter API-Endpunkt
-        const response = await fetch(`/api/bewohner/update/${bewohnerName}`, {
+        // Daten an das Backend senden - Korrekter API-Endpunkt für SoloMenue
+        const response = await fetch(`https://smartworkart.onrender.com/api/solomenue/bewohner/update/${bewohnerName}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
