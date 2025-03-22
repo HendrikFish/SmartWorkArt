@@ -177,7 +177,19 @@ function erstelleBewohnerKarte(bewohner, bereich, onClick) {
     card.appendChild(actionButtons);
     
     // Event-Listener für Klick auf die Karte
-    card.addEventListener('click', () => onClick(bewohner));
+    card.addEventListener('click', (event) => {
+        // Event auslösen für die Bewohner-Auswahl und Menüplan
+        const customEvent = new CustomEvent('bewohnerCardClicked', {
+            detail: { 
+                bewohner,
+                cardElement: card
+            }
+        });
+        document.dispatchEvent(customEvent);
+        
+        // Original onClick-Funktion ebenfalls aufrufen
+        onClick(bewohner);
+    });
     
     return card;
 }
