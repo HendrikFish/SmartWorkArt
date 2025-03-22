@@ -351,14 +351,14 @@ async function speichereBewohnerAenderungen() {
         };
         
         // Bewohnerdaten aktualisieren - Leerzeichen im Namen entfernen
-        const vorname = aktiverBewohner.firstName.trim();
-        const nachname = aktiverBewohner.lastName.trim();
+        const vorname = aktiverBewohner.firstName.trim().toLowerCase();
+        const nachname = aktiverBewohner.lastName.trim().toLowerCase();
         const bewohnerName = `${vorname}_${nachname}`;
         
         const bewohnerDaten = {
             ...aktiverBewohner,
-            firstName: vorname,  // Trimmen des Vornamens
-            lastName: nachname,  // Trimmen des Nachnamens
+            firstName: aktiverBewohner.firstName.trim(),  // Original Vorname beibehalten (nur trimmen)
+            lastName: aktiverBewohner.lastName.trim(),    // Original Nachname beibehalten (nur trimmen)
             areas: aktualisierteAreas,
             lastModified: new Date().toISOString()  // Hinzufügen eines Zeitstempels
         };
@@ -387,8 +387,8 @@ async function speichereBewohnerAenderungen() {
             console.log('Bewohnerdaten erfolgreich aktualisiert:', ergebnis);
             
             // Lokale Daten aktualisieren
-            aktiverBewohner.firstName = vorname;
-            aktiverBewohner.lastName = nachname;
+            aktiverBewohner.firstName = aktiverBewohner.firstName.trim();
+            aktiverBewohner.lastName = aktiverBewohner.lastName.trim();
             aktiverBewohner.areas = aktualisierteAreas;
             aktiverBewohner.lastModified = bewohnerDaten.lastModified;
             
