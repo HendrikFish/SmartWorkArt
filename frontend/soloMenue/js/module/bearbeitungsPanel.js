@@ -350,14 +350,22 @@ async function speichereBewohnerAenderungen() {
             ...aktualisierteBereiche
         };
         
-        // Bewohnerdaten aktualisieren
-        const bewohnerName = aktiverBewohner.firstName + '_' + aktiverBewohner.lastName;
+        // Bewohnerdaten aktualisieren - Leerzeichen im Namen entfernen
+        const vorname = aktiverBewohner.firstName.trim();
+        const nachname = aktiverBewohner.lastName.trim();
+        const bewohnerName = `${vorname}_${nachname}`;
+        
         const bewohnerDaten = {
             ...aktiverBewohner,
-            areas: aktualisierteAreas
+            firstName: vorname,  // Trimmen des Vornamens
+            lastName: nachname,  // Trimmen des Nachnamens
+            areas: aktualisierteAreas,
+            lastModified: new Date().toISOString()  // Hinzufügen eines Zeitstempels
         };
         
         try {
+            console.log(`Speichere Bewohnerdaten für: ${bewohnerName}`, bewohnerDaten);
+            
             // Daten an den Fallback-Endpunkt senden
             const response = await fetch('/api/bewohner-save-direct', {
                 method: 'POST',
@@ -379,7 +387,15 @@ async function speichereBewohnerAenderungen() {
             console.log('Bewohnerdaten erfolgreich aktualisiert:', ergebnis);
             
             // Lokale Daten aktualisieren
+            aktiverBewohner.firstName = vorname;
+            aktiverBewohner.lastName = nachname;
             aktiverBewohner.areas = aktualisierteAreas;
+            aktiverBewohner.lastModified = bewohnerDaten.lastModified;
+            
+            // Event auslösen, dass Bewohnerdaten aktualisiert wurden
+            document.dispatchEvent(new CustomEvent('bewohnerDataUpdated', {
+                detail: { bewohner: aktiverBewohner }
+            }));
             
             // Erfolgsmeldung anzeigen
             alert('Die Bewohnerdaten wurden erfolgreich aktualisiert.');
