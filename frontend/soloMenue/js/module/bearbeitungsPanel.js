@@ -361,6 +361,9 @@ async function speichereBewohnerAenderungen() {
         // Verwende die korrekte Formatierung für den Bewohnernamen in der API
         bewohnerName = `${cleanFirstName}_${cleanLastName}`;
 
+        // Aktuelle Zeit für Zeitstempel hinzufügen
+        const jetzt = new Date();
+        
         // Nur die Bereiche aktualisieren, die originalen Daten beibehalten
         const bewohnerDaten = {
             ...aktiverBewohner,
@@ -369,7 +372,8 @@ async function speichereBewohnerAenderungen() {
             areas: {
                 ...aktiverBewohner.areas, // Originale Bereiche beibehalten
                 ...aktualisierteAreas     // Nur die geänderten Bereiche überschreiben
-            }
+            },
+            lastModified: jetzt.toISOString() // Zeitstempel hinzufügen
         };
         
         console.log('Aktualisierte Bereiche:', aktualisierteAreas);
@@ -393,19 +397,40 @@ async function speichereBewohnerAenderungen() {
             
             // 404-Fehler abfangen (Bewohner existiert nicht)
             if (response.status === 404) {
-                const errorMsg = `Die Bewohnerdatei für ${bewohnerName} wurde nicht gefunden.
+                console.log(`Bewohnerdatei für ${bewohnerName} nicht gefunden. Versuche, einen neuen Bewohner zu erstellen...`);
                 
-Im SoloMenue können nur existierende Bewohner bearbeitet werden.
-Die Bewohnerdatei muss bereits unter folgendem Pfad existieren:
-/opt/render/project/src/backend/data/solo/person/upToDate/${bewohnerName}.json
-
-Bitte wenden Sie sich an den Administrator, um einen neuen Bewohner anzulegen.
-
-Hinweis: Der Bewohner erscheint in der Oberfläche, da er in der Liste sichtbar ist,
-aber die tatsächliche Datei auf dem Server kann nicht aktualisiert werden.`;
+                // Da die updateBewohner-Funktion im Backend keinen Mechanismus zum Erstellen neuer Bewohner hat,
+                // müssen wir den Benutzer informieren und eine alternative Lösung anbieten
                 
-                console.error('Bewohnerdatei nicht gefunden:', errorMsg);
-                alert(errorMsg);
+                const confirmCreate = confirm(`Die Bewohnerdatei für ${cleanFirstName} ${cleanLastName} wurde nicht gefunden.
+                
+Möchten Sie versuchen, diesen Bewohner neu zu erstellen?
+
+Wenn Sie auf "OK" klicken, wird ein Download der Bewohnerdaten angeboten.
+Sie können diese Datei herunterladen und dem Administrator zur Verfügung stellen.`);
+                
+                if (confirmCreate) {
+                    // Daten als JSON-Datei zum Download anbieten
+                    const jsonString = JSON.stringify(bewohnerDaten, null, 2);
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Download-Link erstellen und klicken
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${bewohnerName}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    alert(`Die Datei "${bewohnerName}.json" wurde zum Download angeboten. 
+                    
+Bitte stellen Sie diese Datei dem Administrator zur Verfügung, damit er sie im Verzeichnis 
+/opt/render/project/src/backend/data/solo/person/upToDate/ 
+ablegen kann.`);
+                }
+                
                 return;
             } else if (!response.ok) {
                 // Andere Fehler verarbeiten
@@ -424,6 +449,7 @@ aber die tatsächliche Datei auf dem Server kann nicht aktualisiert werden.`;
                     ...aktiverBewohner.areas,
                     ...aktualisierteAreas
                 };
+                aktiverBewohner.lastModified = jetzt.toISOString();
                 
                 // Zurück zur normalen Ansicht
                 bearbeitungsModus = false;
