@@ -317,38 +317,50 @@ function zeigeBearbeitungsAnsicht(content) {
  */
 async function speichereBewohnerAenderungen() {
     try {
-        if (!aktiverBewohner || !formConfig) return;
+        // Eingaben validieren
+        if (!aktiverBewohner) {
+            throw new Error('Kein Bewohner ausgewählt');
+        }
         
-        // Bereiche sammeln, die menuRelevant sind
-        const relevanteAreas = formConfig.areas.filter(area => area.menuRelevant === true);
+        // Aktualisierte Bereiche (Areas) aus dem Formular auslesen
+        const bereichsForms = document.querySelectorAll('.bereich-form');
+        const aktualisierteAreas = {};
         
-        // Daten aus dem Formular sammeln
-        const aktualisierteBereiche = {};
-        
-        // Für jeden relevanten Bereich den Wert aus dem Formular auslesen
-        relevanteAreas.forEach(area => {
-            const bereichName = area.name;
-            const mehrfachauswahl = area.allowMultiple === true;
+        bereichsForms.forEach(form => {
+            const bereichsName = form.dataset.bereich;
+            const radios = form.querySelectorAll('input[type="radio"]');
+            let ausgewaehlterWert = null;
             
-            if (mehrfachauswahl) {
-                // Bei Mehrfachauswahl alle ausgewählten Checkboxen sammeln
-                const checkboxes = document.querySelectorAll(`input[name="${bereichName}"]:checked`);
-                const werte = Array.from(checkboxes).map(checkbox => checkbox.value);
-                aktualisierteBereiche[bereichName] = werte.join(', ');
-            } else {
-                // Bei Einfachauswahl den Wert des Dropdowns auslesen
-                const dropdown = document.getElementById(`bereich-${bereichName}`);
-                if (dropdown) {
-                    aktualisierteBereiche[bereichName] = dropdown.value;
+            radios.forEach(radio => {
+                if (radio.checked) {
+                    ausgewaehlterWert = radio.value;
                 }
+            });
+            
+            if (ausgewaehlterWert !== null) {
+                aktualisierteAreas[bereichsName] = ausgewaehlterWert;
             }
         });
         
-        // Bestehende Bereiche kopieren und mit den aktualisierten Werten überschreiben
-        const aktualisierteAreas = {
-            ...aktiverBewohner.areas,
-            ...aktualisierteBereiche
-        };
+        // Zusätzlich auch Checkboxen berücksichtigen
+        const checkboxForms = document.querySelectorAll('.checkbox-container');
+        const aktualisierteBereiche = {};
+        
+        checkboxForms.forEach(container => {
+            const bereichsName = container.dataset.bereich;
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            const ausgewaehlteWerte = [];
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    ausgewaehlteWerte.push(checkbox.value);
+                }
+            });
+            
+            if (ausgewaehlteWerte.length > 0) {
+                aktualisierteBereiche[bereichsName] = ausgewaehlteWerte;
+            }
+        });
         
         // Bewohnerdaten aktualisieren
         const bewohnerName = aktiverBewohner.firstName + '_' + aktiverBewohner.lastName;
@@ -357,8 +369,8 @@ async function speichereBewohnerAenderungen() {
             areas: aktualisierteAreas
         };
         
-        // Daten an das Backend senden
-        const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
+        // Daten an das Backend senden - Korrekter API-Endpunkt
+        const response = await fetch(`/api/bewohner/update/${bewohnerName}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -367,7 +379,8 @@ async function speichereBewohnerAenderungen() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP Fehler: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
         }
         
         const ergebnis = await response.json();
@@ -386,7 +399,9 @@ async function speichereBewohnerAenderungen() {
         
     } catch (error) {
         console.error('Fehler beim Speichern der Bewohnerdaten:', error);
-        alert('Fehler beim Speichern der Bewohnerdaten: ' + error.message);
+        alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message}
+        
+Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.`);
     }
 }
 
