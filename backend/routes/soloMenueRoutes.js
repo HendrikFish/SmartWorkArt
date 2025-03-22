@@ -61,7 +61,7 @@ router.get('/bewohner-auswahl/:jahr/KW:kw/:bewohnerName', soloMenueController.ge
 router.post('/bewohner-auswahl/:jahr/KW:kw/:bewohnerName', soloMenueController.speichereBewohnerAuswahl);
 router.delete('/delete-plan/:jahr/KW:kw/:bewohnerName', soloMenueController.deleteBewohnerAuswahl);
 
-// Route für die Aktualisierung der Bewohnerdaten
+// Route für die Aktualisierung der Bewohnerdaten (verbessert, funktioniert in beiden Verzeichnissen)
 router.post('/update-bewohner/:bewohnerName', soloMenueController.updateBewohner);
 
 module.exports = router;

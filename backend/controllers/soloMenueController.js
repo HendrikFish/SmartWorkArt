@@ -908,6 +908,7 @@ const soloMenueController = {
     
     /**
      * Aktualisiert die Bewohnerdaten eines bestehenden Bewohners
+     * Sucht automatisch in beiden Verzeichnissen und speichert im upToDate-Verzeichnis
      */
     updateBewohner: async (req, res) => {
         try {
@@ -916,48 +917,99 @@ const soloMenueController = {
             
             console.log(`[BACKEND] Aktualisiere Bewohnerdaten für: ${bewohnerName}`);
             
-            // Pfad zur JSON-Datei erstellen
-            const bewohnerFilePath = path.join(
+            // Pfad zur JSON-Datei im upToDate-Verzeichnis
+            const upToDateFilePath = path.join(
                 UPTODATE_PERSON_PATH,
                 `${bewohnerName}.json`
             );
             
-            console.log(`[BACKEND] Vollständiger Dateipfad: ${bewohnerFilePath}`);
+            // Pfad zur JSON-Datei im Hauptverzeichnis
+            const mainFilePath = path.join(
+                PERSON_PATH,
+                `${bewohnerName}.json`
+            );
             
-            // Prüfen, ob die Datei existiert
+            console.log(`[BACKEND] Mögliche Dateipfade:
+            - upToDate: ${upToDateFilePath}
+            - Hauptverzeichnis: ${mainFilePath}`);
+            
+            // Prüfen, ob die Datei im upToDate-Verzeichnis existiert
+            let fileExistsInUpToDate = false;
             try {
-                await fs.promises.access(bewohnerFilePath, fs.constants.F_OK);
-                console.log(`[BACKEND] Bewohner-Datei gefunden: ${bewohnerFilePath}`);
+                await fs.promises.access(upToDateFilePath, fs.constants.F_OK);
+                fileExistsInUpToDate = true;
+                console.log(`[BACKEND] Bewohner-Datei gefunden im upToDate-Verzeichnis: ${upToDateFilePath}`);
             } catch (accessErr) {
-                console.log(`[BACKEND] Bewohner-Datei existiert nicht: ${bewohnerFilePath}`);
+                console.log(`[BACKEND] Bewohner-Datei existiert nicht im upToDate-Verzeichnis: ${upToDateFilePath}`);
+            }
+            
+            // Wenn nicht in upToDate, dann im Hauptverzeichnis suchen
+            let fileExistsInMain = false;
+            if (!fileExistsInUpToDate) {
+                try {
+                    await fs.promises.access(mainFilePath, fs.constants.F_OK);
+                    fileExistsInMain = true;
+                    console.log(`[BACKEND] Bewohner-Datei gefunden im Hauptverzeichnis: ${mainFilePath}`);
+                } catch (accessErr) {
+                    console.log(`[BACKEND] Bewohner-Datei existiert nicht im Hauptverzeichnis: ${mainFilePath}`);
+                }
+            }
+            
+            // Wenn die Datei weder in upToDate noch im Hauptverzeichnis existiert
+            if (!fileExistsInUpToDate && !fileExistsInMain) {
                 return res.status(404).json({ 
                     error: 'Datei nicht gefunden',
-                    message: `Die Bewohnerdatei für ${bewohnerName} wurde nicht gefunden.`,
-                    path: bewohnerFilePath
+                    message: `Die Bewohnerdatei für ${bewohnerName} wurde in keinem Verzeichnis gefunden.`,
+                    upToDatePath: upToDateFilePath,
+                    mainPath: mainFilePath
                 });
             }
+            
+            // Stelle sicher, dass das upToDate-Verzeichnis existiert
+            try {
+                await fs.promises.mkdir(UPTODATE_PERSON_PATH, { recursive: true });
+                console.log(`[BACKEND] upToDate-Verzeichnis existiert oder wurde erstellt: ${UPTODATE_PERSON_PATH}`);
+            } catch (mkdirErr) {
+                console.error(`[BACKEND] Fehler beim Erstellen des upToDate-Verzeichnisses: ${mkdirErr.message}`);
+                return res.status(500).json({
+                    error: 'Serverfehler',
+                    message: `Fehler beim Erstellen des upToDate-Verzeichnisses: ${mkdirErr.message}`
+                });
+            }
+            
+            // Wenn die Datei im Hauptverzeichnis gefunden wurde, aber nicht in upToDate, 
+            // dann kopiere die aktualisierten Daten ins upToDate-Verzeichnis
+            const targetFilePath = upToDateFilePath; // Speichere immer im upToDate-Verzeichnis
             
             // Daten schreiben
             try {
                 const jsonStr = JSON.stringify(updatedBewohnerData, null, 2);
                 await fs.promises.writeFile(
-                    bewohnerFilePath,
+                    targetFilePath,
                     jsonStr,
                     'utf8'
                 );
-                console.log(`[BACKEND] Bewohnerdaten erfolgreich aktualisiert: ${bewohnerFilePath}`);
+                console.log(`[BACKEND] Bewohnerdaten erfolgreich im upToDate-Verzeichnis gespeichert: ${targetFilePath}`);
+                
+                // Überprüfen, ob die Datei tatsächlich geschrieben wurde
+                try {
+                    await fs.promises.access(targetFilePath, fs.constants.F_OK);
+                    console.log(`[BACKEND] Datei erfolgreich verifiziert: ${targetFilePath}`);
+                } catch (accessErr) {
+                    console.warn(`[BACKEND] Datei konnte nicht verifiziert werden: ${accessErr.message}`);
+                }
                 
                 res.json({
                     success: true,
                     message: `Bewohnerdaten für ${bewohnerName} erfolgreich aktualisiert.`,
-                    data: updatedBewohnerData
+                    path: targetFilePath
                 });
             } catch (writeErr) {
                 console.error(`[BACKEND] Fehler beim Speichern der Bewohnerdaten: ${writeErr.message}`);
                 return res.status(500).json({
                     error: 'Serverfehler',
                     message: `Fehler beim Speichern der Bewohnerdaten: ${writeErr.message}`,
-                    path: bewohnerFilePath
+                    path: targetFilePath
                 });
             }
         } catch (error) {

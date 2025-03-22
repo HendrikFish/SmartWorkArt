@@ -12,6 +12,7 @@ import * as FunktionenTabelle from './module/funktionenTabelle.js';
 import * as TabeleAdd from './module/tabeleAdd.js';
 import * as BewohnerAuswahl from './module/bewohnerAuswahl.js';
 import * as KomponentenEditor from './module/komponententEditor.js';
+import * as BewohnerUpdate from './module/bewohnerUpdate.js';
 
 // Aktuell ausgewählter Bewohner für die Menüplanung
 let aktuellerBewohner = null;
@@ -169,6 +170,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // KomponentenEditor-Modul initialisieren (für Komponenten-Editor)
         KomponentenEditor.initialisiere();
         console.log('KomponentenEditor-Modul initialisiert');
+
+        // BewohnerUpdate-Modul initialisieren (für btn-success Button)
+        BewohnerUpdate.initialisiere();
+        console.log('BewohnerUpdate-Modul initialisiert');
 
         // Nach oben Button für mobile Ansicht initialisieren
         initialisiereNachObenButton();

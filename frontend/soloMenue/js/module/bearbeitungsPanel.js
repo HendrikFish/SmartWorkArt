@@ -314,13 +314,9 @@ function zeigeBearbeitungsAnsicht(content) {
 
 /**
  * Speichert die Änderungen an den Bewohnerdaten
+ * Verwendet den verbesserten API-Endpunkt, der in beiden Verzeichnissen nach dem Bewohner sucht
  */
 async function speichereBewohnerAenderungen() {
-    // Die bewohnerName-Variable außerhalb des try-Blocks definieren,
-    // damit sie auch im catch-Block verfügbar ist
-    let bewohnerName = '';
-    let existingBewohner = null;
-    
     try {
         // Eingaben validieren
         if (!aktiverBewohner) {
@@ -360,12 +356,12 @@ async function speichereBewohnerAenderungen() {
         const cleanLastName = aktiverBewohner.lastName.trim();
         
         // Verwende die korrekte Formatierung für den Bewohnernamen in der API
-        bewohnerName = `${cleanFirstName}_${cleanLastName}`;
+        const bewohnerName = `${cleanFirstName}_${cleanLastName}`;
 
         // Aktuelle Zeit für Zeitstempel hinzufügen
         const jetzt = new Date();
         
-        // Nur die Bereiche aktualisieren, die originalen Daten beibehalten
+        // Aktualisierte Bewohnerdaten erstellen
         const bewohnerDaten = {
             ...aktiverBewohner,
             firstName: cleanFirstName,
@@ -381,233 +377,64 @@ async function speichereBewohnerAenderungen() {
         console.log('Bewohnerdaten zum Speichern:', bewohnerDaten);
         console.log(`Bereinigter Bewohnername für API-Aufruf: "${bewohnerName}"`);
         
-        // Daten zum Server senden
-        console.log(`Versuche, Bewohnerdaten für ${bewohnerName} zu aktualisieren...`);
-        
-        try {
-            // Prüfen, ob der Bewohner tatsächlich in der Liste existiert
-            console.log('Frage die Bewohnerliste vom Server ab, um zu prüfen, ob der Bewohner existiert...');
-            const bewohnerListResponse = await fetch('/api/solomenue/bewohner', {
-                credentials: 'include'
-            });
-            
-            let bewohnerInListeGefunden = false;
-            
-            if (bewohnerListResponse.ok) {
-                const bewohnerListe = await bewohnerListResponse.json();
-                console.log('Gesamte Bewohnerliste vom Server:', bewohnerListe);
-                
-                // Prüfen, ob der Bewohner in der Liste ist
-                existingBewohner = bewohnerListe.find(b => 
-                    (b.firstName.trim() === cleanFirstName && b.lastName.trim() === cleanLastName) ||
-                    (`${b.firstName.trim()}_${b.lastName.trim()}`.toLowerCase() === bewohnerName.toLowerCase())
-                );
-                
-                if (existingBewohner) {
-                    bewohnerInListeGefunden = true;
-                    console.log('Bewohner wurde in der Bewohnerliste gefunden:', existingBewohner);
-                    console.log('Server-ID des Bewohners:', `${existingBewohner.firstName.trim()}_${existingBewohner.lastName.trim()}`);
-                    
-                    if (existingBewohner.lastModified) {
-                        console.log('Der Bewohner hat ein lastModified-Attribut, was darauf hinweist, dass er im upToDate-Verzeichnis existiert.');
-                    } else {
-                        console.log('Der Bewohner hat KEIN lastModified-Attribut, was darauf hinweisen könnte, dass er NICHT im upToDate-Verzeichnis existiert.');
-                    }
-                } else {
-                    console.log('Bewohner wurde NICHT in der Bewohnerliste gefunden!');
-                }
-            } else {
-                console.error('Konnte die Bewohnerliste nicht abrufen:', await bewohnerListResponse.text());
-            }
-
-            // Verwende den normalen update-bewohner Endpunkt
-            console.log('Versuche normalen update-bewohner Endpunkt...');
-            const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(bewohnerDaten),
-                credentials: 'include' // Für Authentication Cookies
-            });
-            
-            // 404-Fehler abfangen (Bewohner existiert nicht in upToDate-Verzeichnis)
-            if (response.status === 404) {
-                console.log(`Bewohnerdatei für ${bewohnerName} nicht im upToDate-Verzeichnis gefunden.`);
-                
-                // Wenn der Bewohner in der Liste gefunden wurde, aber die Datei nicht im Update-Verzeichnis,
-                // probieren wir eine direktere Methode
-                if (bewohnerInListeGefunden) {
-                    console.log('Bewohner ist in der Liste, aber Datei nicht im upToDate-Verzeichnis. Versuche direkten Ansatz...');
-                    
-                    const userFallbackChoice = confirm(`Der Bewohner wurde in der Datenbank gefunden, aber die Datei konnte nicht direkt aktualisiert werden.
-
-Möchten Sie einen alternativen Speicherweg versuchen?
-
-Wenn Sie auf "OK" klicken, wird versucht, die Datei direkt in die Datenbank zu schreiben.`);
-                    
-                    if (userFallbackChoice) {
-                        try {
-                            // Versuch mit einem direkteren Ansatz: Als neuen Bewohner speichern
-                            console.log('Versuche direkten Speicheransatz über die bewohner-API...');
-                            
-                            // Versuche, den Bewohner direkt über die /api/solomenue/bewohner-API zu speichern
-                            // Das Backend sollte prüfen, ob der Bewohner bereits existiert und entsprechend aktualisieren
-                            const directResponse = await fetch('/api/solomenue/bewohner', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    action: 'update',
-                                    data: bewohnerDaten
-                                }),
-                                credentials: 'include'
-                            });
-                            
-                            if (directResponse.ok) {
-                                console.log('Bewohner erfolgreich direkt gespeichert!');
-                                alert('Die Bewohnerdaten wurden erfolgreich über einen alternativen Weg aktualisiert.');
-                                
-                                // Lokale Daten aktualisieren
-                                aktiverBewohner.firstName = cleanFirstName;
-                                aktiverBewohner.lastName = cleanLastName;
-                                aktiverBewohner.areas = {
-                                    ...aktiverBewohner.areas,
-                                    ...aktualisierteAreas
-                                };
-                                aktiverBewohner.lastModified = jetzt.toISOString();
-                                
-                                // Zurück zur normalen Ansicht
-                                bearbeitungsModus = false;
-                                const content = document.getElementById('bewohner-details');
-                                aktualisiereAnzeige(content);
-                                return;
-                            } else {
-                                const directErrorText = await directResponse.text();
-                                console.error('Direkter Speicheransatz fehlgeschlagen:', directErrorText);
-                                throw new Error(`Direkter Speicheransatz fehlgeschlagen: ${directResponse.status} - ${directErrorText}`);
-                            }
-                        } catch (directError) {
-                            console.error('Fehler beim direkten Speicheransatz:', directError);
-                            // Weiter mit normaler Fehlerbehandlung
-                        }
-                    }
-                }
-                
-                // Versuche, den Bewohner aus der Bewohnerliste abzurufen und vergleiche die Daten
-                console.log('Biete dem Benutzer weitere Optionen an...');
-                
-                // Dialog mit mehreren Optionen anzeigen
-                let fallbackMessage = `Die Bewohnerdatei für ${cleanFirstName} ${cleanLastName} konnte nicht direkt aktualisiert werden.
-
-Mögliche Ursachen:
-1. Die Datei existiert nicht im Verzeichnis /opt/render/project/src/backend/data/solo/person/upToDate/
-2. Die Datei hat im System einen anderen Namen als "${bewohnerName}.json"
-3. Das Backend hat Berechtigungsprobleme beim Zugriff auf die Datei
-
-Was möchten Sie tun?`;
-
-                const userChoice = prompt(fallbackMessage, "download");
-                
-                if (userChoice === "download" || userChoice === null) {
-                    // Daten als JSON-Datei zum Download anbieten
-                    const jsonString = JSON.stringify(bewohnerDaten, null, 2);
-                    const blob = new Blob([jsonString], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    
-                    // Download-Link erstellen und klicken
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${bewohnerName}.json`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    
-                    // Detaillierte Anweisungen für den Administrator
-                    let adminInstructions = `Die Datei "${bewohnerName}.json" wurde zum Download angeboten.
-
-Um das Problem dauerhaft zu lösen, müssen folgende Schritte unternommen werden:
-
-1. Bitten Sie den Administrator, diese JSON-Datei im Verzeichnis 
-   "/opt/render/project/src/backend/data/solo/person/upToDate/" 
-   auf dem Server abzulegen.
-
-2. Stellen Sie sicher, dass die Datei genau so benannt ist: "${bewohnerName}.json"
-   (Achten Sie auf Groß-/Kleinschreibung und Leerzeichen)`;
-
-                    // Wenn der Bewohner bereits in der Liste gefunden wurde, füge zusätzliche Informationen hinzu
-                    if (existingBewohner) {
-                        adminInstructions += `
-
-WICHTIG: Der Bewohner wurde in der Bewohnerliste gefunden, aber die Datei konnte dennoch nicht aktualisiert werden.
-Dies deutet auf folgende mögliche Probleme hin:
-
-1. Der Dateiname auf dem Server weicht vom erwarteten Namen "${bewohnerName}.json" ab
-2. Die Datei existiert im Basis-Verzeichnis, aber nicht im upToDate-Verzeichnis
-3. Im Backend-Code gibt es ein Problem beim Zugriff auf die Datei
-
-Als Administrator sollten Sie:
-1. Prüfen, ob die Datei tatsächlich im upToDate-Verzeichnis existiert
-2. Die Dateinamen mit der erwarteten ID "${bewohnerName}" vergleichen
-3. Berechtigungen für den Dateizugriff prüfen`;
-                    }
-
-                    alert(adminInstructions);
-                }
-                
-                return;
-            } else if (!response.ok) {
-                // Andere Fehler verarbeiten
-                const errorText = await response.text();
-                throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
-            } else {
-                // Erfolgreiche Aktualisierung
-                const ergebnis = await response.json();
-                console.log('Bewohnerdaten erfolgreich aktualisiert:', ergebnis);
-                alert('Die Bewohnerdaten wurden erfolgreich aktualisiert.');
-                
-                // Lokale Daten aktualisieren mit bereinigten Namen
-                aktiverBewohner.firstName = cleanFirstName;
-                aktiverBewohner.lastName = cleanLastName;
-                aktiverBewohner.areas = {
-                    ...aktiverBewohner.areas,
-                    ...aktualisierteAreas
-                };
-                aktiverBewohner.lastModified = jetzt.toISOString();
-                
-                // Zurück zur normalen Ansicht
-                bearbeitungsModus = false;
-                const content = document.getElementById('bewohner-details');
-                aktualisiereAnzeige(content);
-            }
-        } catch (fetchError) {
-            console.error('Netzwerkfehler beim Aktualisieren der Bewohnerdaten:', fetchError);
-            
-            // Detaillierte Fehlermeldung für den Benutzer
-            const errorMsg = `Es ist ein Netzwerkfehler aufgetreten:
-
-${fetchError.message}
-
-Mögliche Gründe:
-1. CORS-Einschränkungen verhindern den direkten Zugriff auf den Server
-2. Der Server ist nicht erreichbar
-3. Ein Berechtigungsproblem liegt vor
-
-Bitte informieren Sie den Administrator über diesen Fehler.`;
-            
-            alert(errorMsg);
+        // Deaktiviere den Speichern-Button während des Speichervorgangs
+        const speichernBtn = document.getElementById('speichern-btn');
+        if (speichernBtn) {
+            speichernBtn.disabled = true;
+            speichernBtn.textContent = 'Wird gespeichert...';
         }
+        
+        // Einfache Lösung: Verwende den verbesserten update-bewohner Endpunkt direkt
+        console.log('Verwende den verbesserten update-bewohner Endpunkt...');
+        const updateResponse = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bewohnerDaten),
+            credentials: 'include'
+        });
+        
+        // Speichern-Button wieder aktivieren
+        if (speichernBtn) {
+            speichernBtn.disabled = false;
+            speichernBtn.textContent = 'Speichern';
+        }
+        
+        if (!updateResponse.ok) {
+            const errorText = await updateResponse.text();
+            throw new Error(`Fehler beim Speichern: ${updateResponse.status} ${errorText}`);
+        }
+        
+        const responseData = await updateResponse.json();
+        console.log('Speichervorgang erfolgreich:', responseData);
+        
+        // Erfolgsmeldung anzeigen
+        alert(`Die Bewohnerdaten für ${cleanFirstName} ${cleanLastName} wurden erfolgreich gespeichert.`);
+        
+        // Lokale Daten aktualisieren
+        aktiverBewohner.firstName = cleanFirstName;
+        aktiverBewohner.lastName = cleanLastName;
+        aktiverBewohner.areas = {
+            ...aktiverBewohner.areas,
+            ...aktualisierteAreas
+        };
+        aktiverBewohner.lastModified = jetzt.toISOString();
+        
+        // Zurück zur normalen Ansicht
+        bearbeitungsModus = false;
+        const content = document.getElementById('bewohner-details');
+        aktualisiereAnzeige(content);
         
     } catch (error) {
         console.error('Fehler beim Speichern der Bewohnerdaten:', error);
-        alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message}
         
-Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.
-
-Hinweis: Im SoloMenue können nur existierende Bewohner bearbeitet werden, die sich bereits im System befinden.
-Die Bewohnerdaten befinden sich im Backend unter: /opt/render/project/src/backend/data/solo/person/upToDate`);
+        // Speichern-Button wieder aktivieren, falls der Fehler auftrat
+        const speichernBtn = document.getElementById('speichern-btn');
+        if (speichernBtn && speichernBtn.disabled) {
+            speichernBtn.disabled = false;
+            speichernBtn.textContent = 'Speichern';
+        }
+        
+        alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message}\n\nBitte versuchen Sie es erneut oder kontaktieren Sie den Administrator.`);
     }
 }
 

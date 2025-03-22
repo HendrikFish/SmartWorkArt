@@ -7,6 +7,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/database');
+const multer = require('multer');
+const fs = require('fs');
+const { promisify } = require('util');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
@@ -274,6 +277,87 @@ app.use('/api/solo', conditionalAuth, soloRoutes);
 app.use('/api/soloplan', conditionalAuth, soloPlanRoutes);
 app.use('/api/soloselect', conditionalAuth, soloSelectRoutes);
 app.use('/api/solomenue', conditionalAuth, soloMenueRoutes);
+
+// Direkter File-API Endpunkt für Bewohnerdaten (Fallback zum Speichern)
+app.post('/api/bewohner-save-direct', conditionalAuth, async (req, res) => {
+    try {
+        const { name, data } = req.body;
+        
+        if (!name || !data) {
+            return res.status(400).json({ 
+                error: 'Fehlerhafte Anfrage',
+                message: 'Name und Daten müssen angegeben werden' 
+            });
+        }
+        
+        console.log(`[BACKEND] Direktes Speichern angefordert für Bewohner: ${name}`);
+        
+        // Verwende den verbesserten updateBewohner-Controller
+        req.params = { bewohnerName: name };
+        req.body = data;
+        
+        return soloMenueController.updateBewohner(req, res);
+    } catch (error) {
+        console.error('Fehler beim direkten Speichern der Bewohnerdaten:', error);
+        res.status(500).json({ 
+            error: 'Serverfehler',
+            message: `Ein unerwarteter Fehler ist aufgetreten: ${error.message}`
+        });
+    }
+});
+
+// Multer für Datei-Uploads konfigurieren
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB Limit
+});
+
+// Formular-Upload für Bewohnerdaten (zweiter Fallback)
+app.post('/api/upload-bewohner', conditionalAuth, upload.single('bewohnerFile'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ 
+                error: 'Keine Datei',
+                message: 'Es wurde keine Datei hochgeladen.' 
+            });
+        }
+        
+        const bewohnerName = req.body.bewohnerName;
+        if (!bewohnerName) {
+            return res.status(400).json({ 
+                error: 'Kein Bewohnername',
+                message: 'Es wurde kein Bewohnername angegeben.' 
+            });
+        }
+        
+        console.log(`[BACKEND] Datei-Upload angefordert für Bewohner: ${bewohnerName}`);
+        
+        // JSON-Datei parsen
+        try {
+            const bewohnerDaten = JSON.parse(req.file.buffer.toString('utf8'));
+            console.log(`[BACKEND] Upload-Datei erfolgreich geparst für: ${bewohnerName}`);
+            
+            // Verwende den verbesserten updateBewohner-Controller
+            req.params = { bewohnerName };
+            req.body = bewohnerDaten;
+            
+            return soloMenueController.updateBewohner(req, res);
+        } catch (parseError) {
+            console.error('Fehler beim Parsen der JSON-Datei:', parseError);
+            return res.status(400).json({ 
+                error: 'Ungültiges JSON',
+                message: 'Die hochgeladene Datei enthält kein gültiges JSON.' 
+            });
+        }
+    } catch (error) {
+        console.error('Fehler beim Upload der Bewohnerdaten:', error);
+        res.status(500).json({ 
+            error: 'Serverfehler',
+            message: `Ein unerwarteter Fehler ist aufgetreten: ${error.message}`
+        });
+    }
+});
+
 app.use('/api', conditionalAuth, customRoutes);
 app.use('/soloplan/config', express.static(path.join(__dirname, 'data/solo/config')));
 
