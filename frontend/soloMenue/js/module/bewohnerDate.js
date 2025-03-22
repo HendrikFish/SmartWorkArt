@@ -1,252 +1,415 @@
 /**
- * Modul für die Verwaltung der Bewohnerdaten
+ * Modul für die Verwaltung und Anzeige von Bewohnerdaten
  */
 
 import * as BewohnerButton from './bewohnerButton.js';
 
-// Globale Variablen
+// Modulvariablen
 let alleBewohner = [];
 let filterConfig = null;
+let aktuelleKategorie = 'Saal'; // Standardmäßig 'Saal' als Kategorie
+let globalAktiverBewohnerId = null; // Variable für den global aktiven Bewohner
 let aktiverBereich = null;
 
 /**
- * Lädt alle Bewohner vom Server
- * @returns {Promise<Array>} Array mit Bewohnern
+ * Lädt die Filter-Konfiguration vom Server
+ * @returns {Promise<Object>} Die Filter-Konfiguration
+ */
+async function ladeFilterKonfiguration() {
+    console.log('Lade Filter-Konfiguration...');
+    
+    try {
+        // Konfiguration vom Server abrufen
+        const response = await fetch('/api/solomenue/config/filter');
+        
+        if (!response.ok) {
+            throw new Error(`Fehler beim Laden der Filter-Konfiguration: ${response.status} ${response.statusText}`);
+        }
+        
+        const config = await response.json();
+        console.log('Filter-Konfiguration erfolgreich geladen', config);
+        
+        return config;
+    } catch (error) {
+        console.error('Fehler beim Laden der Filter-Konfiguration:', error);
+        
+        // Fallback-Konfiguration zurückgeben
+        return {
+            areas: ['Saal', '1.OG', '2.OG', '3.OG']
+        };
+    }
+}
+
+/**
+ * Lädt alle Bewohner
+ * @returns {Promise<Array>} Liste aller Bewohner
  */
 async function ladeBewohner() {
     try {
         const response = await fetch('/api/solomenue/bewohner');
         if (!response.ok) {
-            throw new Error(`HTTP Fehler: ${response.status}`);
+            throw new Error('Fehler beim Laden der Bewohnerdaten');
         }
-        
-        // Parsen der Antwort als JSON
-        const data = await response.json();
-        console.log('Bewohner geladen:', data.length);
-        
-        // Bewohner nach Nachnamen sortieren
-        data.sort((a, b) => {
-            const nachnameSortierung = a.lastName.localeCompare(b.lastName);
-            if (nachnameSortierung !== 0) return nachnameSortierung;
-            return a.firstName.localeCompare(b.firstName);
-        });
-        
-        return data;
+
+        const daten = await response.json();
+        return daten;
     } catch (error) {
-        console.error('Fehler beim Laden der Bewohner:', error);
+        console.error('Fehler beim Laden der Bewohnerdaten:', error);
         return [];
     }
 }
 
 /**
- * Lädt die Filterkonfiguration vom Server
- * @returns {Promise<Object>} Die Filterkonfiguration
+ * Erstellt Filter-Buttons basierend auf der Konfiguration
+ * @param {Object} filterConfig - Die Filter-Konfiguration
  */
-async function ladeFilterConfig() {
-    try {
-        const response = await fetch('/api/solomenue/config/filter');
-        if (!response.ok) {
-            throw new Error(`HTTP Fehler: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Filter-Konfiguration geladen');
-        return data;
-    } catch (error) {
-        console.error('Fehler beim Laden der Filter-Konfiguration:', error);
-        return [];
-    }
-}
-
-/**
- * Filtert Bewohner nach einem bestimmten Bereich/Etage
- * @param {Array} bewohner - Array mit Bewohnern
- * @param {string} bereich - Bereich/Etage zum Filtern
- * @returns {Array} Gefilterte Bewohner
- */
-function filtereBewohnerNachBereich(bewohner, bereich) {
-    if (!bereich || bereich === 'Alle') return bewohner;
+function erstelleFilterButtons(filterConfig) {
+    console.log('Erstelle Filter-Buttons');
     
-    return bewohner.filter(b => {
-        const bewohnerBereich = b.areas && b.areas['Wo wird das Essen eingetragen!'];
-        return bewohnerBereich === bereich;
-    });
-}
+    // Prüfen, ob die Konfiguration vorhanden ist
+    if (!filterConfig) {
+        console.error('Keine Filter-Konfiguration gefunden');
+        return;
+    }
 
-/**
- * Erstellt die Etagen-Filter-Buttons
- * @param {Array} bereiche - Array mit verfügbaren Bereichen
- */
-function erstelleEtageFilter(bereiche) {
     // Container für die Filter-Buttons finden
     const filterContainer = document.getElementById('etagen-filter');
-    if (!filterContainer) return;
-    
+    if (!filterContainer) {
+        console.error('Filter-Container nicht gefunden (ID: etagen-filter)');
+        return;
+    }
+
     // Container leeren
     filterContainer.innerHTML = '';
     
-    // "Alle" Button hinzufügen (Standardauswahl)
-    const alleButton = document.createElement('button');
-    alleButton.className = 'filter-button active';
-    alleButton.textContent = 'Alle';
-    alleButton.addEventListener('click', () => filternNachBereich('Alle'));
-    filterContainer.appendChild(alleButton);
-    
-    // Für jeden Bereich einen Button erstellen
-    bereiche.forEach(bereich => {
-        if (!bereich) return; // Leere Bereiche überspringen
+    // Bereiche aus der Konfiguration oder Fallback verwenden
+    const areas = filterConfig.areas || ['Saal', '1.OG', '2.OG', '3.OG'];
+    console.log(`${areas.length} Filter-Bereiche gefunden:`, areas);
 
+    // Filter-Buttons erstellen
+    areas.forEach(area => {
         const button = document.createElement('button');
-        button.className = 'filter-button';
-        button.textContent = bereich;
-        button.addEventListener('click', () => filternNachBereich(bereich));
+        button.classList.add('filter-button');
+        button.dataset.filter = area;
+        button.textContent = area;
+        
+        // Ersten Button als aktiv markieren, wenn keine Kategorie gesetzt ist
+        if (!aktuelleKategorie && areas.indexOf(area) === 0) {
+            aktuelleKategorie = area;
+        }
+        
+        // Button als aktiv markieren, wenn er der aktuellen Kategorie entspricht
+        if (area === aktuelleKategorie) {
+            button.classList.add('active');
+        }
+        
+        // Klick-Handler hinzufügen
+        button.addEventListener('click', () => {
+            wechsleKategorie(area);
+        });
+        
+        // Button zum Container hinzufügen
         filterContainer.appendChild(button);
     });
+    
+    console.log('Filter-Buttons erstellt, aktive Kategorie:', aktuelleKategorie);
 }
 
 /**
- * Filtert die Bewohnerliste nach einem bestimmten Bereich
- * @param {string} bereich - Der auszuwählende Bereich
+ * Wechselt die aktuelle Kategorie und filtert Bewohner neu
+ * @param {string} kategorie - Die neue Kategorie
  */
-function filternNachBereich(bereich) {
-    // Aktiven Bereich aktualisieren
-    aktiverBereich = bereich;
+function wechsleKategorie(kategorie) {
+    console.log(`Wechsle Kategorie auf: ${kategorie}`);
     
-    // Aktiven Button markieren
-    const filterButtons = document.querySelectorAll('.filter-button');
+    // Wenn keine Änderung, nichts tun
+    if (kategorie === aktuelleKategorie) {
+        console.log('Gleiche Kategorie, keine Änderung nötig');
+        return;
+    }
+    
+    // Neue Kategorie setzen
+    aktuelleKategorie = kategorie;
+    
+    // UI aktualisieren
+    const filterButtons = document.querySelectorAll('#etagen-filter .filter-button');
     filterButtons.forEach(button => {
-        if (button.textContent === bereich) {
+        if (button.dataset.filter === kategorie) {
             button.classList.add('active');
         } else {
             button.classList.remove('active');
         }
     });
     
-    // Bewohner filtern und anzeigen
-    const gefilterteBewohner = filtereBewohnerNachBereich(alleBewohner, bereich);
-    zeigeBewohner(gefilterteBewohner);
+    // Bewohner nach der neuen Kategorie filtern und anzeigen
+    zeigeGefilterteBewohner();
 }
 
 /**
- * Zeigt die Bewohnerliste an
- * @param {Array} bewohner - Array mit anzuzeigenden Bewohnern
+ * Filtert Bewohner nach der aktuellen Kategorie und zeigt sie an
  */
-function zeigeBewohner(bewohner) {
-    const container = document.getElementById('bewohner-container');
-    if (!container) return;
+function zeigeGefilterteBewohner() {
+    const bewohnerContainer = document.getElementById('bewohner-container');
+    if (!bewohnerContainer) return;
+
+    console.log(`Zeige gefilterte Bewohner für Kategorie: ${aktuelleKategorie}`);
+
+    // Zustand der aktiven Bewohnerkarte speichern
+    let aktiverBewohnerId = null;
+    let aktiveInfoAnzeige = null;
     
-    // Container leeren
-    container.innerHTML = '';
-    
-    // Prüfen, ob Bewohner vorhanden sind
-    if (!bewohner || bewohner.length === 0) {
-        const leerElement = document.createElement('div');
-        leerElement.className = 'keine-bewohner';
-        leerElement.textContent = aktiverBereich === 'Alle' ? 
-            'Keine Bewohner gefunden.' : 
-            `Keine Bewohner im Bereich "${aktiverBereich}" gefunden.`;
-        container.appendChild(leerElement);
-        return;
+    // Aktive Karte aus DOM ermitteln
+    const aktiveBewohnerCard = document.querySelector('.bewohner-card.active');
+    if (aktiveBewohnerCard) {
+        aktiverBewohnerId = aktiveBewohnerCard.dataset.id;
+        console.log(`Aktive Bewohnerkarte in DOM gefunden: ${aktiverBewohnerId}`);
+        
+        // Global speichern
+        globalAktiverBewohnerId = aktiverBewohnerId;
+        
+        // Info-Anzeige speichern, falls vorhanden
+        const infoElement = aktiveBewohnerCard.querySelector('.bewohner-info');
+        if (infoElement && infoElement.style.display !== 'none') {
+            aktiveInfoAnzeige = infoElement.innerHTML;
+            console.log('Info-Anzeige gespeichert');
+        }
+    } else if (globalAktiverBewohnerId) {
+        // Falls keine aktive Karte im DOM, aber globale Variable gesetzt ist
+        aktiverBewohnerId = globalAktiverBewohnerId;
+        console.log(`Keine aktive Karte im DOM, aber globale ID vorhanden: ${aktiverBewohnerId}`);
     }
     
-    // Bewohner gruppieren
-    const gruppierteBewohner = {};
-    
-    bewohner.forEach(bewohner => {
-        // Bereich des Bewohners bestimmen
-        const bereich = bewohner.areas && bewohner.areas['Wo wird das Essen eingetragen!'] 
-            ? bewohner.areas['Wo wird das Essen eingetragen!'] 
-            : 'Andere';
+    // Container leeren
+    bewohnerContainer.innerHTML = '';
+
+    // Bewohner nach der aktuellen Kategorie filtern
+    const gefilterteBewohner = alleBewohner.filter(bewohner => {
+        // Prüfen, ob der Bewohner eine gültige areas-Eigenschaft hat
+        if (!bewohner.areas) return false;
         
-        // Bereichsgruppe erstellen, falls noch nicht vorhanden
-        if (!gruppierteBewohner[bereich]) {
-            gruppierteBewohner[bereich] = [];
+        // Prüfen, ob das Feld für die Essenseintragung existiert
+        const eintragungsOrt = bewohner.areas['Wo wird das Essen eingetragen!'];
+        if (!eintragungsOrt) return false;
+        
+        // Mit der aktuellen Kategorie vergleichen
+        return eintragungsOrt === aktuelleKategorie;
+    });
+
+    console.log(`${gefilterteBewohner.length} Bewohner für Kategorie "${aktuelleKategorie}" gefunden`);
+
+    if (gefilterteBewohner.length === 0) {
+        // Wenn keine Bewohner gefunden wurden, eine Meldung anzeigen
+        const meldung = document.createElement('div');
+        meldung.textContent = `Keine Bewohner in der Kategorie "${aktuelleKategorie}" gefunden.`;
+        meldung.classList.add('keine-bewohner-meldung');
+        bewohnerContainer.appendChild(meldung);
+        return;
+    }
+
+    // Gefilterte Bewohner anzeigen
+    let aktiveBewohnerkarteWiederhergestellt = false;
+    
+    gefilterteBewohner.forEach(bewohner => {
+        // Normalisierte ID für Vergleiche erstellen
+        const bewohnerId = `${bewohner.firstName}_${bewohner.lastName}`.trim().toLowerCase().replace(/\s+/g, '_');
+        
+        const bewohnerCard = document.createElement('div');
+        bewohnerCard.classList.add('bewohner-card');
+        bewohnerCard.dataset.id = bewohnerId;
+        
+        // Bewohnername als eigenes Element mit separaten Spans für Vor- und Nachnamen
+        const nameElement = document.createElement('div');
+        nameElement.classList.add('bewohner-name');
+
+        // Vorname in eigenem Span für bessere Kontrolle in der mobilen Ansicht
+        const vornameSpan = document.createElement('span');
+        vornameSpan.classList.add('vorname');
+        vornameSpan.textContent = bewohner.firstName;
+        nameElement.appendChild(vornameSpan);
+
+        // Leerzeichen zwischen Vor- und Nachname
+        nameElement.appendChild(document.createTextNode(' '));
+
+        // Nachname in eigenem Span
+        const nachnameSpan = document.createElement('span');
+        nachnameSpan.classList.add('nachname');
+        nachnameSpan.textContent = bewohner.lastName;
+        nameElement.appendChild(nachnameSpan);
+
+        bewohnerCard.appendChild(nameElement);
+        
+        // Platz für Bewohner-Info
+        const infoElement = document.createElement('div');
+        infoElement.classList.add('bewohner-info');
+        infoElement.style.display = 'none'; // Standardmäßig versteckt
+        bewohnerCard.appendChild(infoElement);
+        
+        // Details-Button hinzufügen
+        const detailsButton = document.createElement('button');
+        detailsButton.classList.add('details-button');
+
+        // Text in einem Span, damit er in der mobilen Ansicht ausgeblendet werden kann
+        const buttonText = document.createElement('span');
+        buttonText.textContent = 'Details';
+        detailsButton.appendChild(buttonText);
+
+        bewohnerCard.appendChild(detailsButton);
+
+        // Event-Listener für Klicks auf die Bewohnerkarte (ohne Button)
+        nameElement.addEventListener('click', () => {
+            // Alle Karten zurücksetzen
+            document.querySelectorAll('.bewohner-card').forEach(card => {
+                card.classList.remove('active');
+                const info = card.querySelector('.bewohner-info');
+                if (info) info.style.display = 'none';
+            });
+            
+            // Diese Karte als aktiv markieren
+            bewohnerCard.classList.add('active');
+            
+            // Globale Variable aktualisieren
+            globalAktiverBewohnerId = bewohnerCard.dataset.id;
+            console.log(`Neuer aktiver Bewohner gesetzt: ${globalAktiverBewohnerId}`);
+            
+            // Benutzerdefiniertes Event auslösen
+            console.log('Bewohner ausgewählt für andere Funktion:', bewohner);
+            const event = new CustomEvent('bewohnerCardClicked', {
+                detail: { 
+                    bewohner,
+                    cardElement: bewohnerCard
+                }
+            });
+            document.dispatchEvent(event);
+        });
+
+        // Event-Listener für Klicks auf den Details-Button
+        detailsButton.addEventListener('click', (e) => {
+            // Verhindern, dass das Ereignis zur Karte weitergeleitet wird
+            e.stopPropagation();
+            
+            // Detailansicht anzeigen
+            console.log('Details anzeigen für:', bewohner);
+            // Benutzerdefiniertes Event auslösen für Detailansicht
+            const event = new CustomEvent('bewohnerSelected', {
+                detail: { bewohner }
+            });
+            document.dispatchEvent(event);
+        });
+
+        // Prüfen, ob diese Karte die aktive war und Zustand wiederherstellen
+        // Vergleiche case-insensitive und normalisiere IDs für bessere Übereinstimmung
+        if (aktiverBewohnerId) {
+            const normalisierterId = aktiverBewohnerId.toLowerCase().trim();
+            
+            // Vergleiche mit verschiedenen Varianten des Bewohner-IDs
+            if (
+                bewohnerId === normalisierterId ||
+                bewohnerId.replace(/_/g, ' ') === normalisierterId.replace(/_/g, ' ') ||
+                bewohnerId.replace(/\s+/g, '') === normalisierterId.replace(/\s+/g, '') ||
+                bewohnerId.replace(/_/g, '') === normalisierterId.replace(/_/g, '')
+            ) {
+                console.log(`Aktive Bewohnerkarte wiederhergestellt: ${bewohner.firstName} ${bewohner.lastName}`);
+                aktiveBewohnerkarteWiederhergestellt = true;
+                
+                // Karte als aktiv markieren mit expliziten Stilen
+                bewohnerCard.classList.add('active');
+                bewohnerCard.style.backgroundColor = '#e3f2fd';
+                bewohnerCard.style.borderColor = '#2196F3';
+                bewohnerCard.style.borderWidth = '2px';
+                bewohnerCard.style.borderStyle = 'solid';
+                bewohnerCard.style.boxShadow = '0 4px 8px rgba(33, 150, 243, 0.3)';
+                
+                // Info-Anzeige wiederherstellen, falls vorhanden
+                if (aktiveInfoAnzeige) {
+                    infoElement.innerHTML = aktiveInfoAnzeige;
+                    infoElement.style.display = 'flex';
+                    console.log('Info-Anzeige wiederhergestellt');
+                } else {
+                    // Mindestens leere Info-Anzeige zeigen
+                    infoElement.innerHTML = `<span>Essens für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>`;
+                    infoElement.style.display = 'flex';
+                }
+            }
+        }
+
+        bewohnerContainer.appendChild(bewohnerCard);
+    });
+    
+    // Feedback über Wiederherstellung
+    if (aktiverBewohnerId && !aktiveBewohnerkarteWiederhergestellt) {
+        console.log(`Warnung: Der aktive Bewohner (${aktiverBewohnerId}) ist nicht in der aktuellen Kategorie "${aktuelleKategorie}" enthalten`);
+    }
+
+    // Event auslösen, um Breitenkorrektur zu veranlassen
+    document.dispatchEvent(new CustomEvent('bewohnerListUpdated'));
+}
+
+/**
+ * Aktualisiert die Anzeige nach einer Kalenderwochenänderung
+ * @param {CustomEvent} event - Das Kalenderwochenänderungsereignis
+ */
+function aktualisiereNachKalenderwocheAenderung(event) {
+    // Die Kalenderwoche hat sich geändert, daher muss ggf. die neue Liste angefordert werden
+    // Hier können Sie auch andere Aktualisierungen vornehmen, die durch eine Kalenderwochenänderung erforderlich sind
+    
+    // Wenn ein aktiver Bewohner ausgewählt ist, dessen Karte wieder als aktiv markieren
+    const aktiveBewohnerCard = document.querySelector('.bewohner-card.active');
+    if (aktiveBewohnerCard) {
+        const aktiverBewohnerId = aktiveBewohnerCard.dataset.id;
+        console.log(`Aktiver Bewohner beim Kalenderwochenwechsel: ${aktiverBewohnerId}`);
+        
+        // Zustand der Info-Anzeige wird vom Event-Handler in script.js verwaltet
+        // Wir stellen nur sicher, dass die Karte als aktiv markiert bleibt
+    }
+}
+
+/**
+ * Setzt die ID des global aktiven Bewohners
+ * @param {string} bewohnerId - Die ID des aktiven Bewohners
+ */
+function setzeGlobalAktivenBewohner(bewohnerId) {
+    console.log(`Setze global aktiven Bewohner auf: ${bewohnerId}`);
+    globalAktiverBewohnerId = bewohnerId;
+}
+
+/**
+ * Initialisiert das Bewohner-Modul und lädt die Daten
+ */
+async function initialisiere() {
+    console.log('Initialisiere Bewohner-Modul');
+    
+    try {
+        // Zuerst die Filter-Konfiguration laden
+        filterConfig = await ladeFilterKonfiguration();
+        console.log('Filter-Konfiguration geladen:', filterConfig);
+        
+        // Dann die Bewohnerdaten laden
+        alleBewohner = await ladeBewohner();
+        console.log(`${alleBewohner.length} Bewohner geladen`);
+        
+        // Standard-Kategorie setzen (Fallback)
+        if (!aktuelleKategorie) {
+            aktuelleKategorie = 'Saal';
         }
         
-        // Bewohner zur Gruppe hinzufügen
-        gruppierteBewohner[bereich].push(bewohner);
-    });
-    
-    // Für jede Gruppe einen Abschnitt erstellen
-    Object.entries(gruppierteBewohner).forEach(([bereich, bewohnerInBereich]) => {
-        // Bereichs-Header erstellen
-        const bereichHeader = document.createElement('div');
-        bereichHeader.className = 'bewohner-bereich-header';
-        bereichHeader.textContent = bereich;
-        container.appendChild(bereichHeader);
+        // Filter-Buttons erstellen mit der Konfiguration
+        erstelleFilterButtons(filterConfig);
         
-        // Container für die Bewohner-Karten in diesem Bereich
-        const bereichContainer = document.createElement('div');
-        bereichContainer.className = 'bewohner-bereich-container';
+        // Bewohner anzeigen
+        zeigeGefilterteBewohner();
         
-        // Bewohner-Karten hinzufügen
-        bewohnerInBereich.forEach(bewohner => {
-            // Bewohner-Karte mit der neuen Funktion erstellen
-            const bewohnerKarte = BewohnerButton.erstelleBewohnerKarte(
-                bewohner, 
-                bereich,
-                (bewohner) => bewohnerAusgewaehlt(bewohner)
-            );
-            
-            bereichContainer.appendChild(bewohnerKarte);
-        });
+        // Event-Listener für Kalenderwochenänderung
+        document.addEventListener('kalenderwocheChanged', aktualisiereNachKalenderwocheAenderung);
         
-        container.appendChild(bereichContainer);
-    });
-    
-    // Nach Erstellung der Karten die einheitliche Breite setzen
-    BewohnerButton.setzeEinheitlicheKartenbreite();
-}
-
-/**
- * Wird aufgerufen, wenn ein Bewohner ausgewählt wurde
- * @param {Object} bewohner - Der ausgewählte Bewohner
- */
-function bewohnerAusgewaehlt(bewohner) {
-    console.log('Bewohner ausgewählt:', `${bewohner.firstName} ${bewohner.lastName}`);
-    
-    // Event auslösen, um andere Module zu informieren
-    // (z.B. für die Anzeige des Menüplans dieses Bewohners)
-    const event = new CustomEvent('bewohnerAusgewaehlt', {
-        detail: { bewohner: bewohner }
-    });
-    document.dispatchEvent(event);
-}
-
-/**
- * Initialisiert das Modul
- */
-export async function initialisiere() {
-    try {
-        // Bewohner und Filterkonfiguration laden
-        const [bewohner, config] = await Promise.all([
-            ladeBewohner(),
-            ladeFilterConfig()
-        ]);
-        
-        // Globale Variablen setzen
-        alleBewohner = bewohner;
-        filterConfig = config;
-        
-        // Bereiche für die Filter-Buttons ermitteln
-        const menuRelevanteBereiche = filterConfig.filter(area => 
-            area.name === 'Wo wird das Essen eingetragen!' && area.menuRelevant
-        );
-        
-        // Wenn keine menürelevanten Bereiche gefunden wurden, einen Fallback verwenden
-        const bereicheButtons = menuRelevanteBereiche.length > 0 
-            ? menuRelevanteBereiche[0].buttons.map(btn => btn.label) 
-            : ['Keine Bereiche gefunden'];
-        
-        // Filter-Buttons erstellen
-        erstelleEtageFilter(bereicheButtons);
-        
-        // Bewohner anzeigen (initial alle)
-        aktiverBereich = 'Alle';
-        zeigeBewohner(alleBewohner);
-        
-        console.log('Bewohner-Modul initialisiert');
+        console.log('Bewohner-Modul vollständig initialisiert');
     } catch (error) {
         console.error('Fehler bei der Initialisierung des Bewohner-Moduls:', error);
     }
 }
+
+// Modulexport
+export {
+    initialisiere,
+    setzeGlobalAktivenBewohner,
+    wechsleKategorie
+};

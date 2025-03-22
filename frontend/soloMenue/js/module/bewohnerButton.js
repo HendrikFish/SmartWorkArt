@@ -111,7 +111,7 @@ function setzeEinheitlicheKartenbreite() {
  * @param {Function} onClick - Die Funktion, die bei Klick auf die Karte ausgeführt wird
  * @returns {HTMLElement} Die erstellte Bewohner-Karte
  */
-function erstelleBewohnerKarte(bewohner, bereich, onClick) {
+export function erstelleBewohnerKarte(bewohner, bereich, onClick) {
     const card = document.createElement('div');
     card.className = 'bewohner-card';
     card.dataset.bewohnerId = `${bewohner.firstName.trim()}_${bewohner.lastName.trim()}`;

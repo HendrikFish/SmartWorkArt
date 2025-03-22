@@ -314,127 +314,86 @@ function zeigeBearbeitungsAnsicht(content) {
 
 /**
  * Speichert die Änderungen an den Bewohnerdaten
- * Verwendet den verbesserten API-Endpunkt, der in beiden Verzeichnissen nach dem Bewohner sucht
  */
 async function speichereBewohnerAenderungen() {
     try {
-        // Eingaben validieren
-        if (!aktiverBewohner) {
-            throw new Error('Kein Bewohner ausgewählt');
-        }
+        if (!aktiverBewohner || !formConfig) return;
         
-        // Aktualisierte Bereiche (Areas) aus dem Formular auslesen
-        const bereichsForms = document.querySelectorAll('select[id^="bereich-"]');
-        const aktualisierteAreas = {};
+        // Bereiche sammeln, die menuRelevant sind
+        const relevanteAreas = formConfig.areas.filter(area => area.menuRelevant === true);
         
-        bereichsForms.forEach(select => {
-            const bereichsName = select.name;
-            const ausgewaehlterWert = select.value;
+        // Daten aus dem Formular sammeln
+        const aktualisierteBereiche = {};
+        
+        // Für jeden relevanten Bereich den Wert aus dem Formular auslesen
+        relevanteAreas.forEach(area => {
+            const bereichName = area.name;
+            const mehrfachauswahl = area.allowMultiple === true;
             
-            if (ausgewaehlterWert) {
-                aktualisierteAreas[bereichsName] = ausgewaehlterWert;
-            }
-        });
-        
-        // Zusätzlich auch Checkboxen berücksichtigen
-        const checkboxContainers = document.querySelectorAll('.checkbox-container');
-        
-        checkboxContainers.forEach(container => {
-            const bereichsName = container.id.replace('bereich-', '');
-            const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
-            
-            if (checkboxes.length > 0) {
-                // Bei mehreren ausgewählten Checkboxen die Werte mit Komma trennen
+            if (mehrfachauswahl) {
+                // Bei Mehrfachauswahl alle ausgewählten Checkboxen sammeln
+                const checkboxes = document.querySelectorAll(`input[name="${bereichName}"]:checked`);
                 const werte = Array.from(checkboxes).map(checkbox => checkbox.value);
-                aktualisierteAreas[bereichsName] = werte.join(', ');
+                aktualisierteBereiche[bereichName] = werte.join(', ');
+            } else {
+                // Bei Einfachauswahl den Wert des Dropdowns auslesen
+                const dropdown = document.getElementById(`bereich-${bereichName}`);
+                if (dropdown) {
+                    aktualisierteBereiche[bereichName] = dropdown.value;
+                }
             }
         });
+        
+        // Bestehende Bereiche kopieren und mit den aktualisierten Werten überschreiben
+        const aktualisierteAreas = {
+            ...aktiverBewohner.areas,
+            ...aktualisierteBereiche
+        };
         
         // Bewohnerdaten aktualisieren
-        // Alle Leerzeichen am Anfang und Ende von Vor- und Nachnamen entfernen
-        const cleanFirstName = aktiverBewohner.firstName.trim();
-        const cleanLastName = aktiverBewohner.lastName.trim();
-        
-        // Verwende die korrekte Formatierung für den Bewohnernamen in der API
-        const bewohnerName = `${cleanFirstName}_${cleanLastName}`;
-
-        // Aktuelle Zeit für Zeitstempel hinzufügen
-        const jetzt = new Date();
-        
-        // Aktualisierte Bewohnerdaten erstellen
+        const bewohnerName = aktiverBewohner.firstName + '_' + aktiverBewohner.lastName;
         const bewohnerDaten = {
             ...aktiverBewohner,
-            firstName: cleanFirstName,
-            lastName: cleanLastName,
-            areas: {
-                ...aktiverBewohner.areas, // Originale Bereiche beibehalten
-                ...aktualisierteAreas     // Nur die geänderten Bereiche überschreiben
-            },
-            lastModified: jetzt.toISOString() // Zeitstempel hinzufügen
+            areas: aktualisierteAreas
         };
         
-        console.log('Aktualisierte Bereiche:', aktualisierteAreas);
-        console.log('Bewohnerdaten zum Speichern:', bewohnerDaten);
-        console.log(`Bereinigter Bewohnername für API-Aufruf: "${bewohnerName}"`);
-        
-        // Deaktiviere den Speichern-Button während des Speichervorgangs
-        const speichernBtn = document.getElementById('speichern-btn');
-        if (speichernBtn) {
-            speichernBtn.disabled = true;
-            speichernBtn.textContent = 'Wird gespeichert...';
+        try {
+            // Daten an das Backend senden - Korrekter API-Endpunkt
+            const response = await fetch(`/api/bewohner/update/${bewohnerName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bewohnerDaten)
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
+            }
+            
+            const ergebnis = await response.json();
+            console.log('Bewohnerdaten erfolgreich aktualisiert:', ergebnis);
+            
+            // Lokale Daten aktualisieren
+            aktiverBewohner.areas = aktualisierteAreas;
+            
+            // Erfolgsmeldung anzeigen
+            alert('Die Bewohnerdaten wurden erfolgreich aktualisiert.');
+            
+            // Zurück zur normalen Ansicht
+            bearbeitungsModus = false;
+            const content = document.getElementById('bewohner-details');
+            aktualisiereAnzeige(content);
+        } catch (error) {
+            console.error('Fehler beim Speichern der Bewohnerdaten:', error);
+            alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message} 
+            
+Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.`);
         }
-        
-        // Einfache Lösung: Verwende den verbesserten update-bewohner Endpunkt direkt
-        console.log('Verwende den verbesserten update-bewohner Endpunkt...');
-        const updateResponse = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bewohnerDaten),
-            credentials: 'include'
-        });
-        
-        // Speichern-Button wieder aktivieren
-        if (speichernBtn) {
-            speichernBtn.disabled = false;
-            speichernBtn.textContent = 'Speichern';
-        }
-        
-        if (!updateResponse.ok) {
-            const errorText = await updateResponse.text();
-            throw new Error(`Fehler beim Speichern: ${updateResponse.status} ${errorText}`);
-        }
-        
-        const responseData = await updateResponse.json();
-        console.log('Speichervorgang erfolgreich:', responseData);
-        
-        // Erfolgsmeldung anzeigen
-        alert(`Die Bewohnerdaten für ${cleanFirstName} ${cleanLastName} wurden erfolgreich gespeichert.`);
-        
-        // Lokale Daten aktualisieren
-        aktiverBewohner.firstName = cleanFirstName;
-        aktiverBewohner.lastName = cleanLastName;
-        aktiverBewohner.areas = {
-            ...aktiverBewohner.areas,
-            ...aktualisierteAreas
-        };
-        aktiverBewohner.lastModified = jetzt.toISOString();
-        
-        // Zurück zur normalen Ansicht
-        bearbeitungsModus = false;
-        const content = document.getElementById('bewohner-details');
-        aktualisiereAnzeige(content);
-        
     } catch (error) {
         console.error('Fehler beim Speichern der Bewohnerdaten:', error);
-        
-        // Speichern-Button wieder aktivieren, falls der Fehler auftrat
-        const speichernBtn = document.getElementById('speichern-btn');
-        if (speichernBtn && speichernBtn.disabled) {
-            speichernBtn.disabled = false;
-            speichernBtn.textContent = 'Speichern';
-        }
-        
-        alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message}\n\nBitte versuchen Sie es erneut oder kontaktieren Sie den Administrator.`);
+        alert('Fehler beim Speichern der Bewohnerdaten: ' + error.message);
     }
 }
 
