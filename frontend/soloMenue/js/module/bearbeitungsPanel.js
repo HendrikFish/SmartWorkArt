@@ -369,18 +369,48 @@ async function speichereBewohnerAenderungen() {
             areas: aktualisierteAreas
         };
         
-        // Daten an das Backend senden - Korrekter API-Endpunkt für SoloMenue
-        const response = await fetch(`https://smartworkart.onrender.com/api/solomenue/bewohner/update/${bewohnerName}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bewohnerDaten)
-        });
+        // Aktuelle Domain ermitteln
+        const currentDomain = window.location.origin;
         
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
+        // Liste der möglichen API-Endpoints
+        const endpoints = [
+            `/api/solo/person/update/${bewohnerName}`,
+            `/api/person/update/${bewohnerName}`,
+            `/api/residents/update/${bewohnerName}`,
+            `/api/solo/residents/update/${bewohnerName}`
+        ];
+        
+        let response = null;
+        let erfolg = false;
+        let fehlerMeldungen = [];
+        
+        // Versuche nacheinander die verschiedenen Endpoints
+        for (const endpoint of endpoints) {
+            try {
+                console.log(`Versuche API-Endpoint: ${endpoint}`);
+                response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bewohnerDaten)
+                });
+                
+                if (response.ok) {
+                    erfolg = true;
+                    console.log(`Erfolgreicher API-Aufruf mit Endpoint: ${endpoint}`);
+                    break;
+                } else {
+                    const errorText = await response.text();
+                    fehlerMeldungen.push(`Endpoint ${endpoint}: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                fehlerMeldungen.push(`Endpoint ${endpoint}: ${error.message}`);
+            }
+        }
+        
+        if (!erfolg) {
+            throw new Error(`Alle API-Aufrufe fehlgeschlagen:\n${fehlerMeldungen.join('\n')}`);
         }
         
         const ergebnis = await response.json();
@@ -401,7 +431,9 @@ async function speichereBewohnerAenderungen() {
         console.error('Fehler beim Speichern der Bewohnerdaten:', error);
         alert(`Fehler beim Speichern der Bewohnerdaten: ${error.message}
         
-Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.`);
+Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.
+
+Hinweis: Die Bewohnerdaten befinden sich im Backend unter: backend\\data\\solo\\person\\upToDate`);
     }
 }
 
