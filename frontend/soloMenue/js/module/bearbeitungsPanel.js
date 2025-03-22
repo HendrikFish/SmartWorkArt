@@ -358,13 +358,16 @@ async function speichereBewohnerAenderungen() {
         };
         
         try {
-            // Daten an das Backend senden - Korrekter API-Endpunkt
-            const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
+            // Daten an den Fallback-Endpunkt senden
+            const response = await fetch('/api/bewohner-save-direct', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(bewohnerDaten)
+                body: JSON.stringify({
+                    name: bewohnerName,
+                    data: bewohnerDaten
+                })
             });
             
             if (!response.ok) {
