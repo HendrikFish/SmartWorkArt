@@ -380,7 +380,8 @@ async function speichereBewohnerAenderungen() {
         console.log(`Versuche, Bewohnerdaten für ${bewohnerName} zu aktualisieren...`);
         
         try {
-            // Verwende relativen Pfad, um CORS-Probleme zu vermeiden und zur verfügbaren API-Route
+            // Verwende den TATSÄCHLICH im Backend existierenden Endpunkt
+            // Basierend auf der soloMenueRoutes.js Datei
             const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
                 method: 'POST',
                 headers: {
@@ -398,7 +399,10 @@ Im SoloMenue können nur existierende Bewohner bearbeitet werden.
 Die Bewohnerdatei muss bereits unter folgendem Pfad existieren:
 /opt/render/project/src/backend/data/solo/person/upToDate/${bewohnerName}.json
 
-Bitte wenden Sie sich an den Administrator, um einen neuen Bewohner anzulegen.`;
+Bitte wenden Sie sich an den Administrator, um einen neuen Bewohner anzulegen.
+
+Hinweis: Der Bewohner erscheint in der Oberfläche, da er in der Liste sichtbar ist,
+aber die tatsächliche Datei auf dem Server kann nicht aktualisiert werden.`;
                 
                 console.error('Bewohnerdatei nicht gefunden:', errorMsg);
                 alert(errorMsg);
@@ -429,41 +433,19 @@ Bitte wenden Sie sich an den Administrator, um einen neuen Bewohner anzulegen.`;
         } catch (fetchError) {
             console.error('Netzwerkfehler beim Aktualisieren der Bewohnerdaten:', fetchError);
             
-            // Versuch eines Workarounds, falls es ein CORS-Problem ist
-            console.log('Versuche alternativen Ansatz...');
+            // Detaillierte Fehlermeldung für den Benutzer
+            const errorMsg = `Es ist ein Netzwerkfehler aufgetreten:
+
+${fetchError.message}
+
+Mögliche Gründe:
+1. CORS-Einschränkungen verhindern den direkten Zugriff auf den Server
+2. Der Server ist nicht erreichbar
+3. Ein Berechtigungsproblem liegt vor
+
+Bitte informieren Sie den Administrator über diesen Fehler.`;
             
-            // Wenn verfügbar, lokalen Proxy-Endpunkt verwenden
-            const backupResponse = await fetch(`/api/proxy/solomenue/update-bewohner/${bewohnerName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(bewohnerDaten),
-                credentials: 'include'
-            });
-            
-            if (!backupResponse.ok) {
-                const errorText = await backupResponse.text();
-                throw new Error(`Auch der Backup-Ansatz schlug fehl: ${backupResponse.status} - ${errorText}`);
-            }
-            
-            // Erfolgreiche Aktualisierung über Backup-Methode
-            const ergebnis = await backupResponse.json();
-            console.log('Bewohnerdaten erfolgreich über Backup-Methode aktualisiert:', ergebnis);
-            alert('Die Bewohnerdaten wurden erfolgreich aktualisiert.');
-            
-            // Lokale Daten aktualisieren
-            aktiverBewohner.firstName = cleanFirstName;
-            aktiverBewohner.lastName = cleanLastName;
-            aktiverBewohner.areas = {
-                ...aktiverBewohner.areas,
-                ...aktualisierteAreas
-            };
-            
-            // Zurück zur normalen Ansicht
-            bearbeitungsModus = false;
-            const content = document.getElementById('bewohner-details');
-            aktualisiereAnzeige(content);
+            alert(errorMsg);
         }
         
     } catch (error) {
