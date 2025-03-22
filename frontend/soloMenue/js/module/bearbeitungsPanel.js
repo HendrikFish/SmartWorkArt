@@ -384,6 +384,38 @@ async function speichereBewohnerAenderungen() {
         console.log(`Versuche, Bewohnerdaten für ${bewohnerName} zu aktualisieren...`);
         
         try {
+            // Prüfen, ob der Bewohner tatsächlich in der Liste existiert
+            console.log('Frage die Bewohnerliste vom Server ab, um zu prüfen, ob der Bewohner existiert...');
+            const bewohnerListResponse = await fetch('/api/solomenue/bewohner', {
+                credentials: 'include'
+            });
+            
+            if (bewohnerListResponse.ok) {
+                const bewohnerListe = await bewohnerListResponse.json();
+                console.log('Gesamte Bewohnerliste vom Server:', bewohnerListe);
+                
+                // Prüfen, ob der Bewohner in der Liste ist
+                const existingBewohner = bewohnerListe.find(b => 
+                    (b.firstName.trim() === cleanFirstName && b.lastName.trim() === cleanLastName) ||
+                    (`${b.firstName.trim()}_${b.lastName.trim()}`.toLowerCase() === bewohnerName.toLowerCase())
+                );
+                
+                if (existingBewohner) {
+                    console.log('Bewohner wurde in der Bewohnerliste gefunden:', existingBewohner);
+                    console.log('Server-ID des Bewohners:', `${existingBewohner.firstName.trim()}_${existingBewohner.lastName.trim()}`);
+                    
+                    if (existingBewohner.lastModified) {
+                        console.log('Der Bewohner hat ein lastModified-Attribut, was darauf hinweist, dass er im upToDate-Verzeichnis existiert.');
+                    } else {
+                        console.log('Der Bewohner hat KEIN lastModified-Attribut, was darauf hinweisen könnte, dass er NICHT im upToDate-Verzeichnis existiert.');
+                    }
+                } else {
+                    console.log('Bewohner wurde NICHT in der Bewohnerliste gefunden!');
+                }
+            } else {
+                console.error('Konnte die Bewohnerliste nicht abrufen:', await bewohnerListResponse.text());
+            }
+
             // Verwende den TATSÄCHLICH im Backend existierenden Endpunkt
             // Basierend auf der soloMenueRoutes.js Datei
             const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
@@ -395,21 +427,40 @@ async function speichereBewohnerAenderungen() {
                 credentials: 'include' // Für Authentication Cookies
             });
             
-            // 404-Fehler abfangen (Bewohner existiert nicht)
+            // 404-Fehler abfangen (Bewohner existiert nicht in upToDate-Verzeichnis)
             if (response.status === 404) {
-                console.log(`Bewohnerdatei für ${bewohnerName} nicht gefunden. Versuche, einen neuen Bewohner zu erstellen...`);
+                console.log(`Bewohnerdatei für ${bewohnerName} nicht im upToDate-Verzeichnis gefunden.`);
                 
-                // Da die updateBewohner-Funktion im Backend keinen Mechanismus zum Erstellen neuer Bewohner hat,
-                // müssen wir den Benutzer informieren und eine alternative Lösung anbieten
+                // Versuche, den Bewohner aus der Bewohnerliste abzurufen und vergleiche die Daten
+                console.log('Versuchen wir, mehr Informationen zu bekommen...');
                 
-                const confirmCreate = confirm(`Die Bewohnerdatei für ${cleanFirstName} ${cleanLastName} wurde nicht gefunden.
+                // Wenn wir einen direkten API-Aufruf verwenden wollen, der den Bewohner an einen anderen Endpunkt sendet
+                const fallbackOptions = [
+                    {
+                        name: "Herunterladen der Datei",
+                        action: "download", 
+                        description: "Lädt die Bewohnerdatei herunter, damit sie dem Administrator gegeben werden kann."
+                    },
+                    {
+                        name: "Nach Basis-Verzeichnis suchen", 
+                        action: "checkBase",
+                        description: "Versucht zu prüfen, ob der Bewohner im Basis-Verzeichnis existiert."
+                    }
+                ];
                 
-Möchten Sie versuchen, diesen Bewohner neu zu erstellen?
+                // Dialog mit mehreren Optionen anzeigen
+                let fallbackMessage = `Die Bewohnerdatei für ${cleanFirstName} ${cleanLastName} wurde nicht im upToDate-Verzeichnis gefunden.
 
-Wenn Sie auf "OK" klicken, wird ein Download der Bewohnerdaten angeboten.
-Sie können diese Datei herunterladen und dem Administrator zur Verfügung stellen.`);
+Mögliche Ursachen:
+1. Die Datei existiert nicht im Verzeichnis /opt/render/project/src/backend/data/solo/person/upToDate/
+2. Die Datei existiert im Basis-Verzeichnis /opt/render/project/src/backend/data/solo/person/ aber nicht im upToDate-Verzeichnis
+3. Die Datei hat einen etwas anderen Namen als erwartet (z.B. Unterschiede bei Leerzeichen oder Sonderzeichen)
+
+Was möchten Sie tun?`;
+
+                const userChoice = prompt(fallbackMessage, "download");
                 
-                if (confirmCreate) {
+                if (userChoice === "download") {
                     // Daten als JSON-Datei zum Download anbieten
                     const jsonString = JSON.stringify(bewohnerDaten, null, 2);
                     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -424,11 +475,26 @@ Sie können diese Datei herunterladen und dem Administrator zur Verfügung stell
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                     
-                    alert(`Die Datei "${bewohnerName}.json" wurde zum Download angeboten. 
-                    
-Bitte stellen Sie diese Datei dem Administrator zur Verfügung, damit er sie im Verzeichnis 
-/opt/render/project/src/backend/data/solo/person/upToDate/ 
-ablegen kann.`);
+                    alert(`Die Datei "${bewohnerName}.json" wurde zum Download angeboten.
+
+Um das Problem dauerhaft zu lösen, müssen folgende Schritte unternommen werden:
+
+1. Bitten Sie den Administrator, diese JSON-Datei im Verzeichnis 
+   "/opt/render/project/src/backend/data/solo/person/upToDate/" 
+   auf dem Server abzulegen.
+
+2. Stellen Sie sicher, dass die Datei genau so benannt ist: "${bewohnerName}.json"
+   (Achten Sie auf Groß-/Kleinschreibung und Leerzeichen)
+
+3. Alternativ: Bitten Sie den Administrator, den Backend-Code zu ändern, um beide Verzeichnisse 
+   (upToDate und Hauptverzeichnis) beim Aktualisieren zu durchsuchen, 
+   analog zur getAllBewohner-Funktion.`);
+                } else if (userChoice === "checkBase") {
+                    alert(`Diese Funktion würde prüfen, ob der Bewohner im Basis-Verzeichnis existiert.
+Leider kann dies nur serverseitig implementiert werden.
+
+Bitten Sie den Administrator, diese Prüfung durchzuführen und ggf. die Datei vom Basis-Verzeichnis
+ins upToDate-Verzeichnis zu kopieren.`);
                 }
                 
                 return;
