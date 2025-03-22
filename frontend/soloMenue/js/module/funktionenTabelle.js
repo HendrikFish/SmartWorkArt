@@ -507,8 +507,20 @@ function initialisiere() {
     document.addEventListener('kalenderwocheChanged', aktualisiereNachKalenderwocheAenderung);
     
     // Event-Listener für Fenstergröße hinzufügen, um bei Größenänderung die Mobilansicht anzupassen
-    window.addEventListener('resize', bearbeiteMobileAnsichtNeuStruktur);
-    window.addEventListener('orientationchange', bearbeiteMobileAnsichtNeuStruktur);
+    window.addEventListener('resize', () => {
+        // Bestehende mobile Umstrukturierung entfernen
+        const mobilContainer = document.querySelector('.mobile-menueplan-container');
+        if (mobilContainer) {
+            mobilContainer.remove();
+        }
+        
+        // Tabelle neu umstrukturieren, falls vorhanden
+        const tabelle = document.querySelector('.menueplan-tabelle');
+        if (tabelle) {
+            tabelle.classList.remove('mobile-formatiert');
+            strukturiereTabelleFuerMobile(tabelle);
+        }
+    });
     
     // Event-Listener für Bewohnerauswahl hinzufügen, um die mobile Ansicht zu aktualisieren
     document.addEventListener('bewohnerSelected', () => {
@@ -543,22 +555,6 @@ function getWeekNumber(datum) {
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-}
-
-// Funktion zur Neustrukturierung der mobilen Ansicht
-function bearbeiteMobileAnsichtNeuStruktur() {
-    // Bestehende mobile Umstrukturierung entfernen
-    const mobilContainer = document.querySelector('.mobile-menueplan-container');
-    if (mobilContainer) {
-        mobilContainer.remove();
-    }
-    
-    // Tabelle neu umstrukturieren, falls vorhanden
-    const tabelle = document.querySelector('.menueplan-tabelle');
-    if (tabelle) {
-        tabelle.classList.remove('mobile-formatiert');
-        strukturiereTabelleFuerMobile(tabelle);
-    }
 }
 
 // Module exportieren
