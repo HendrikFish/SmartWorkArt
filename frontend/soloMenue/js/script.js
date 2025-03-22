@@ -39,8 +39,11 @@ function initialisiereNachObenButton() {
     
     // Button nur anzeigen, wenn wir unter den Bewohner-Container scrollen
     window.addEventListener('scroll', () => {
-        // Prüfen, ob wir auf einem mobilen Gerät sind
-        if (window.innerWidth <= 1000) {
+        // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+        const isTabletOrMobile = window.innerWidth <= 1000 || 
+                               /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+                               
+        if (isTabletOrMobile) {
             // Position des Bewohner-Containers
             const bewohnerPosition = bewohnerContainer.getBoundingClientRect().bottom;
             

@@ -213,8 +213,10 @@ async function erstelleMenueplanTabelle(kw, jahr) {
  * @param {HTMLElement} tabelle - Die Tabelle, die umstrukturiert werden soll
  */
 function strukturiereTabelleFuerMobile(tabelle) {
-    // Nur auf kleinen Bildschirmen umstrukturieren
-    if (window.innerWidth > 1000) return;
+    // Nur auf kleinen Bildschirmen oder Tablets umstrukturieren
+    const isTabletOrMobile = window.innerWidth <= 1000 || 
+                           /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+    if (!isTabletOrMobile) return;
     
     console.log('[Mobile] Strukturiere Tabelle für Mobilgeräte um');
     
@@ -505,20 +507,8 @@ function initialisiere() {
     document.addEventListener('kalenderwocheChanged', aktualisiereNachKalenderwocheAenderung);
     
     // Event-Listener für Fenstergröße hinzufügen, um bei Größenänderung die Mobilansicht anzupassen
-    window.addEventListener('resize', () => {
-        // Bestehende mobile Umstrukturierung entfernen
-        const mobilContainer = document.querySelector('.mobile-menueplan-container');
-        if (mobilContainer) {
-            mobilContainer.remove();
-        }
-        
-        // Tabelle neu umstrukturieren, falls vorhanden
-        const tabelle = document.querySelector('.menueplan-tabelle');
-        if (tabelle) {
-            tabelle.classList.remove('mobile-formatiert');
-            strukturiereTabelleFuerMobile(tabelle);
-        }
-    });
+    window.addEventListener('resize', bearbeiteMobileAnsichtNeuStruktur);
+    window.addEventListener('orientationchange', bearbeiteMobileAnsichtNeuStruktur);
     
     // Event-Listener für Bewohnerauswahl hinzufügen, um die mobile Ansicht zu aktualisieren
     document.addEventListener('bewohnerSelected', () => {
@@ -553,6 +543,22 @@ function getWeekNumber(datum) {
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+// Funktion zur Neustrukturierung der mobilen Ansicht
+function bearbeiteMobileAnsichtNeuStruktur() {
+    // Bestehende mobile Umstrukturierung entfernen
+    const mobilContainer = document.querySelector('.mobile-menueplan-container');
+    if (mobilContainer) {
+        mobilContainer.remove();
+    }
+    
+    // Tabelle neu umstrukturieren, falls vorhanden
+    const tabelle = document.querySelector('.menueplan-tabelle');
+    if (tabelle) {
+        tabelle.classList.remove('mobile-formatiert');
+        strukturiereTabelleFuerMobile(tabelle);
+    }
 }
 
 // Module exportieren

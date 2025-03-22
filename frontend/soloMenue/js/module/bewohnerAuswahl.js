@@ -674,9 +674,10 @@ function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
  * @param {HTMLElement} originaleZelle - Die Original-Zelle aus der Desktop-Ansicht
  */
 function aktualisiereZellInMobileAnsicht(originaleZelle) {
-    // Prüfen, ob wir auf einem mobilen Gerät sind
-    const isMobile = window.innerWidth <= 1000;
-    if (!isMobile) return;
+    // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+    const isTabletOrMobile = window.innerWidth <= 1000 || 
+                           /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+    if (!isTabletOrMobile) return;
 
     // Daten der Original-Zelle abrufen
     const tag = originaleZelle.dataset.tag;
@@ -811,9 +812,10 @@ function aktualisiereZellInMobileAnsicht(originaleZelle) {
  * Aktualisiert alle Zellen in der mobilen Ansicht
  */
 function aktualisiereZellenInMobileAnsicht() {
-    // Prüfen, ob wir auf einem mobilen Gerät sind
-    const isMobile = window.innerWidth <= 1000;
-    if (!isMobile) return;
+    // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+    const isTabletOrMobile = window.innerWidth <= 1000 || 
+                           /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+    if (!isTabletOrMobile) return;
     
     // Mobile-Container suchen
     const mobileContainer = document.querySelector('.mobile-menueplan-container');

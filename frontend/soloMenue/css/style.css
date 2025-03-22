@@ -218,7 +218,10 @@ main {
 }
 
 /* Responsive Design */
-@media (max-width: 1000px) {
+@media (max-width: 1000px), 
+       (max-device-width: 1000px),
+       (orientation: portrait),
+       (-webkit-min-device-pixel-ratio: 1) and (max-device-width: 1024px) {
     .top-container {
         flex-direction: column;
     }
@@ -331,7 +334,10 @@ main {
 }
 
 /* Responsive Anpassung für die Tabelle */
-@media (max-width: 1000px) {
+@media (max-width: 1000px), 
+       (max-device-width: 1000px),
+       (orientation: portrait),
+       (-webkit-min-device-pixel-ratio: 1) and (max-device-width: 1024px) {
     .menueplan-tabelle {
         font-size: 0.9rem;
     }
