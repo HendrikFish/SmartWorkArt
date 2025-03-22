@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             {
                 id: 'solo-static',
                 icon: 'fa-user',
-                title: 'Einzelplanung',
+                title: 'Bewohner',
                 description: 'Individuelle Planungen'
             },
             {

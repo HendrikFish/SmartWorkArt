@@ -78,7 +78,7 @@ function displayUserModules(modules) {
         '/calc-static/': { name: 'Kalkulation', icon: 'fa-calculator' },
         '/number-static/': { name: 'Nummern', icon: 'fa-hashtag' },
         '/menue-static/': { name: 'Menü', icon: 'fa-bars' },
-        '/solo-static/': { name: 'Einzelplanung', icon: 'fa-user' },
+        '/solo-static/': { name: 'Bewohner', icon: 'fa-user' },
         '/soloPlan-static/': { name: 'Solo Planung', icon: 'fa-tasks' },
         '/soloSelect-static/': { name: 'Solo Auswahl', icon: 'fa-check-square' },
         '/customer-static/': { name: 'Benutzerverwaltung', icon: 'fa-users-cog' }
