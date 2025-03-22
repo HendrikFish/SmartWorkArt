@@ -282,6 +282,15 @@ function zeigeGefilterteBewohner() {
             document.dispatchEvent(event);
         });
 
+        // Zusätzlicher Event-Listener für die gesamte Karte (nicht nur den Namen)
+        bewohnerCard.addEventListener('click', (e) => {
+            // Verhindern, dass der Klick auf Buttons behandelt wird
+            if (e.target.closest('button')) return;
+            
+            // Simuliere einen Klick auf das Namenselement, um den gleichen Code zu verwenden
+            nameElement.click();
+        });
+
         // Event-Listener für Klicks auf den Details-Button
         detailsButton.addEventListener('click', (e) => {
             // Verhindern, dass das Ereignis zur Karte weitergeleitet wird

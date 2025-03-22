@@ -178,6 +178,14 @@ function erstelleBewohnerKarte(bewohner, bereich, onClick) {
     
     // Event-Listener für Klick auf die Karte
     card.addEventListener('click', (event) => {
+        // Prüfen, ob der Klick auf einen Button erfolgt ist
+        if (event.target.closest('button')) {
+            console.log(`Klick auf Button in der Bewohner-Karte ignoriert (${bewohner.firstName} ${bewohner.lastName})`);
+            return; // Button-Klicks ignorieren, da diese eigene Handler haben
+        }
+        
+        console.log(`Bewohner-Karte wurde angeklickt: ${bewohner.firstName} ${bewohner.lastName}`);
+        
         // Event auslösen für die Bewohner-Auswahl und Menüplan
         const customEvent = new CustomEvent('bewohnerCardClicked', {
             detail: { 
@@ -186,7 +194,6 @@ function erstelleBewohnerKarte(bewohner, bereich, onClick) {
             }
         });
         document.dispatchEvent(customEvent);
-        console.log(`Bewohner-Karte wurde angeklickt: ${bewohner.firstName} ${bewohner.lastName}`);
         
         // Original onClick-Funktion ebenfalls aufrufen
         onClick(bewohner);
