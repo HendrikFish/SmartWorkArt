@@ -933,37 +933,9 @@ const soloMenueController = {
             - upToDate: ${upToDateFilePath}
             - Hauptverzeichnis: ${mainFilePath}`);
             
-            // Prüfen, ob die Datei im upToDate-Verzeichnis existiert
-            let fileExistsInUpToDate = false;
-            try {
-                await fs.promises.access(upToDateFilePath, fs.constants.F_OK);
-                fileExistsInUpToDate = true;
-                console.log(`[BACKEND] Bewohner-Datei gefunden im upToDate-Verzeichnis: ${upToDateFilePath}`);
-            } catch (accessErr) {
-                console.log(`[BACKEND] Bewohner-Datei existiert nicht im upToDate-Verzeichnis: ${upToDateFilePath}`);
-            }
-            
-            // Wenn nicht in upToDate, dann im Hauptverzeichnis suchen
-            let fileExistsInMain = false;
-            if (!fileExistsInUpToDate) {
-                try {
-                    await fs.promises.access(mainFilePath, fs.constants.F_OK);
-                    fileExistsInMain = true;
-                    console.log(`[BACKEND] Bewohner-Datei gefunden im Hauptverzeichnis: ${mainFilePath}`);
-                } catch (accessErr) {
-                    console.log(`[BACKEND] Bewohner-Datei existiert nicht im Hauptverzeichnis: ${mainFilePath}`);
-                }
-            }
-            
-            // Wenn die Datei weder in upToDate noch im Hauptverzeichnis existiert
-            if (!fileExistsInUpToDate && !fileExistsInMain) {
-                return res.status(404).json({ 
-                    error: 'Datei nicht gefunden',
-                    message: `Die Bewohnerdatei für ${bewohnerName} wurde in keinem Verzeichnis gefunden.`,
-                    upToDatePath: upToDateFilePath,
-                    mainPath: mainFilePath
-                });
-            }
+            // Neue Strategie: Durchsuchen aller Bewohnerdateien nach Namen
+            let bewohnerFileFound = false;
+            let existingFilePath = null;
             
             // Stelle sicher, dass das upToDate-Verzeichnis existiert
             try {
@@ -971,15 +943,147 @@ const soloMenueController = {
                 console.log(`[BACKEND] upToDate-Verzeichnis existiert oder wurde erstellt: ${UPTODATE_PERSON_PATH}`);
             } catch (mkdirErr) {
                 console.error(`[BACKEND] Fehler beim Erstellen des upToDate-Verzeichnisses: ${mkdirErr.message}`);
-                return res.status(500).json({
-                    error: 'Serverfehler',
-                    message: `Fehler beim Erstellen des upToDate-Verzeichnisses: ${mkdirErr.message}`
-                });
             }
             
-            // Wenn die Datei im Hauptverzeichnis gefunden wurde, aber nicht in upToDate, 
-            // dann kopiere die aktualisierten Daten ins upToDate-Verzeichnis
-            const targetFilePath = upToDateFilePath; // Speichere immer im upToDate-Verzeichnis
+            // Suche in upToDate nach Name statt Dateiname
+            try {
+                const files = await fs.promises.readdir(UPTODATE_PERSON_PATH);
+                
+                // Extrahiere Namen aus dem Parameter
+                let searchFirstName, searchLastName;
+                if (bewohnerName.includes('_')) {
+                    [searchFirstName, searchLastName] = bewohnerName.split('_').map(part => part.toLowerCase().trim());
+                }
+                
+                console.log(`[BACKEND] Suche nach Bewohner mit Namen: ${searchFirstName} ${searchLastName}`);
+                
+                // Durchsuche alle Dateien
+                for (const file of files) {
+                    if (!file.endsWith('.json')) continue;
+                    
+                    try {
+                        const filePath = path.join(UPTODATE_PERSON_PATH, file);
+                        const content = await fs.promises.readFile(filePath, 'utf8');
+                        const bewohner = JSON.parse(content);
+                        
+                        // Vergleiche Namen (case-insensitive)
+                        const firstName = (bewohner.firstName || '').toLowerCase().trim();
+                        const lastName = (bewohner.lastName || '').toLowerCase().trim();
+                        
+                        if (firstName === searchFirstName && lastName === searchLastName) {
+                            console.log(`[BACKEND] Bewohner gefunden in Datei: ${file}`);
+                            bewohnerFileFound = true;
+                            existingFilePath = filePath;
+                            break;
+                        }
+                        
+                        // Falls searchFirstName oder searchLastName nicht definiert sind, alternative Suche
+                        if (!searchFirstName || !searchLastName) {
+                            const fileNameWithoutExt = file.replace('.json', '').toLowerCase();
+                            if (fileNameWithoutExt === bewohnerName.toLowerCase()) {
+                                console.log(`[BACKEND] Bewohner gefunden über Dateinamen: ${file}`);
+                                bewohnerFileFound = true;
+                                existingFilePath = filePath;
+                                break;
+                            }
+                        }
+                    } catch (err) {
+                        console.error(`[BACKEND] Fehler beim Lesen/Parsen von ${file}:`, err);
+                    }
+                }
+                
+                // Wenn in upToDate nicht gefunden, im Hauptverzeichnis suchen
+                if (!bewohnerFileFound) {
+                    try {
+                        const files = await fs.promises.readdir(PERSON_PATH);
+                        
+                        for (const file of files) {
+                            if (!file.endsWith('.json')) continue;
+                            
+                            try {
+                                const filePath = path.join(PERSON_PATH, file);
+                                const content = await fs.promises.readFile(filePath, 'utf8');
+                                const bewohner = JSON.parse(content);
+                                
+                                // Vergleiche Namen (case-insensitive)
+                                const firstName = (bewohner.firstName || '').toLowerCase().trim();
+                                const lastName = (bewohner.lastName || '').toLowerCase().trim();
+                                
+                                if (firstName === searchFirstName && lastName === searchLastName) {
+                                    console.log(`[BACKEND] Bewohner gefunden in Hauptverzeichnis-Datei: ${file}`);
+                                    bewohnerFileFound = true;
+                                    existingFilePath = filePath;
+                                    break;
+                                }
+                                
+                                // Falls searchFirstName oder searchLastName nicht definiert sind, alternative Suche
+                                if (!searchFirstName || !searchLastName) {
+                                    const fileNameWithoutExt = file.replace('.json', '').toLowerCase();
+                                    if (fileNameWithoutExt === bewohnerName.toLowerCase()) {
+                                        console.log(`[BACKEND] Bewohner gefunden über Dateinamen im Hauptverzeichnis: ${file}`);
+                                        bewohnerFileFound = true;
+                                        existingFilePath = filePath;
+                                        break;
+                                    }
+                                }
+                            } catch (err) {
+                                console.error(`[BACKEND] Fehler beim Lesen/Parsen von ${file} im Hauptverzeichnis:`, err);
+                            }
+                        }
+                    } catch (dirErr) {
+                        console.error(`[BACKEND] Fehler beim Lesen des Hauptverzeichnisses:`, dirErr);
+                    }
+                }
+            } catch (dirErr) {
+                console.error(`[BACKEND] Fehler beim Lesen des upToDate-Verzeichnisses:`, dirErr);
+            }
+            
+            // Wenn der Bewohner nicht gefunden wurde und wir keinen expliziten Namen haben,
+            // dann versuche es mit dem angegebenen Dateinamen
+            if (!bewohnerFileFound) {
+                try {
+                    // Prüfe, ob die Datei mit dem exakten Namen existiert
+                    await fs.promises.access(upToDateFilePath, fs.constants.F_OK);
+                    bewohnerFileFound = true;
+                    existingFilePath = upToDateFilePath;
+                    console.log(`[BACKEND] Bewohner-Datei existiert exakt im upToDate-Verzeichnis: ${upToDateFilePath}`);
+                } catch (err) {
+                    try {
+                        await fs.promises.access(mainFilePath, fs.constants.F_OK);
+                        bewohnerFileFound = true;
+                        existingFilePath = mainFilePath;
+                        console.log(`[BACKEND] Bewohner-Datei existiert exakt im Hauptverzeichnis: ${mainFilePath}`);
+                    } catch (err) {
+                        console.log(`[BACKEND] Bewohner nicht gefunden, weder über Namen noch über Dateinamen.`);
+                    }
+                }
+            }
+            
+            // Wenn die Datei immer noch nicht gefunden wurde, erstelle eine neue
+            const targetFilePath = bewohnerFileFound ? upToDateFilePath : path.join(
+                UPTODATE_PERSON_PATH,
+                `${bewohnerName}.json`
+            );
+            
+            // Wenn ein Bewohner gefunden wurde, aber in einer anderen Datei, kopiere ihn
+            if (bewohnerFileFound && existingFilePath && existingFilePath !== upToDateFilePath) {
+                try {
+                    // Lösche alte Datei im upToDate, falls vorhanden
+                    try {
+                        await fs.promises.access(upToDateFilePath, fs.constants.F_OK);
+                        await fs.promises.unlink(upToDateFilePath);
+                        console.log(`[BACKEND] Alte Bewohner-Datei in upToDate gelöscht: ${upToDateFilePath}`);
+                    } catch (err) {
+                        // Datei existiert nicht, ignorieren
+                    }
+                    
+                    // Kopiere Datei
+                    const content = await fs.promises.readFile(existingFilePath, 'utf8');
+                    console.log(`[BACKEND] Inhalt der gefundenen Datei:`, content.substring(0, 100) + '...');
+                } catch (err) {
+                    console.error(`[BACKEND] Fehler beim Kopieren der Bewohnerdatei:`, err);
+                }
+            }
             
             // Daten schreiben
             try {
@@ -989,7 +1093,7 @@ const soloMenueController = {
                     jsonStr,
                     'utf8'
                 );
-                console.log(`[BACKEND] Bewohnerdaten erfolgreich im upToDate-Verzeichnis gespeichert: ${targetFilePath}`);
+                console.log(`[BACKEND] Bewohnerdaten erfolgreich gespeichert: ${targetFilePath}`);
                 
                 // Überprüfen, ob die Datei tatsächlich geschrieben wurde
                 try {
