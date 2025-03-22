@@ -359,7 +359,7 @@ async function speichereBewohnerAenderungen() {
         
         try {
             // Daten an das Backend senden - Korrekter API-Endpunkt
-            const response = await fetch(`/api/bewohner/update/${bewohnerName}`, {
+            const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
