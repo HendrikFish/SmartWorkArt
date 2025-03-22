@@ -186,6 +186,7 @@ function erstelleBewohnerKarte(bewohner, bereich, onClick) {
             }
         });
         document.dispatchEvent(customEvent);
+        console.log(`Bewohner-Karte wurde angeklickt: ${bewohner.firstName} ${bewohner.lastName}`);
         
         // Original onClick-Funktion ebenfalls aufrufen
         onClick(bewohner);

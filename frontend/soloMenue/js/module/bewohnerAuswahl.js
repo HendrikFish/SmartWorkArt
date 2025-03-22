@@ -1391,7 +1391,37 @@ function setzeAktuellenBewohner(bewohner) {
                 return result;
             });
     } else {
-        console.log('Kalenderwoche/Jahr nicht bekannt, Auswahl wird nicht automatisch geladen');
+        console.log('Kalenderwoche/Jahr nicht bekannt, versuche sie aus der Anzeige zu lesen');
+        
+        try {
+            const kwDaten = document.querySelector('#current-week-display').textContent;
+            const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
+            if (match) {
+                aktuelleKW = parseInt(match[1]);
+                aktuellesJahr = parseInt(match[2]);
+                console.log(`Kalenderwoche/Jahr aus der Anzeige gelesen: KW${aktuelleKW}/${aktuellesJahr}`);
+                
+                // Mit den gelesenen Werten erneut versuchen
+                return ladeBewohnerAuswahl(bewohner, aktuelleKW, aktuellesJahr)
+                    .then(result => {
+                        // Nach dem Laden auch direkt die Tabelle aktualisieren
+                        const tabelle = document.querySelector('.menueplan-tabelle');
+                        if (tabelle) {
+                            console.log("Plan wird nach Bewohnerwechsel neu geladen");
+                            aktualisiereTabelle(tabelle);
+                            
+                            // Sicherstellen, dass alle Klick-Handler aktiv sind
+                            fuegeZellenKlickHinzu(tabelle, true);
+                        }
+                        return result;
+                    });
+            }
+        } catch (error) {
+            console.warn('Konnte Kalenderwoche/Jahr nicht aus der Anzeige lesen:', error);
+        }
+        
+        // Wenn wir hier sind, konnten wir keine aktuelle KW/Jahr ermitteln
+        console.log('Auswahl wird nicht automatisch geladen - keine KW/Jahr verfügbar');
         return Promise.resolve({ auswahl: null, isExisting: false });
     }
 }
@@ -1452,7 +1482,10 @@ function initialisiere() {
         }
     });
     
-    // Event-Listener für Bewohnerwechsel
+    // Wir lassen die Event-Listener für 'bewohnerCardClicked' in script.js abarbeiten
+    // um Doppelausführungen zu vermeiden. Dieser Event-Listener wird nur hier als Fallback
+    // behalten, falls script.js nicht richtig reagiert
+    /*
     document.addEventListener('bewohnerCardClicked', async (event) => {
         const { bewohner } = event.detail;
         console.log(`Event für Bewohnerwechsel empfangen: ${bewohner.firstName} ${bewohner.lastName}`);
@@ -1462,6 +1495,7 @@ function initialisiere() {
         
         // Hier ist kein erneutes aktualisiereTabelle notwendig, da es bereits in setzeAktuellenBewohner erfolgt
     });
+    */
     
     // Anfangswerte aus der aktuellen Anzeige auslesen
     try {

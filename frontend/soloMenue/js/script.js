@@ -410,11 +410,28 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
         
         try {
             // Das setzeAktuellenBewohner im Modul lädt automatisch die Auswahl
+            // Wichtig: Auf die Fertigstellung dieses Aufrufs warten
             result = await BewohnerAuswahl.setzeAktuellenBewohner(bewohner);
+            console.log('Ergebnis von setzeAktuellenBewohner:', result);
             
             // Wenn keine Auswahl zurückgegeben wurde, manuell laden (Fallback)
             if (!result || !result.auswahl) {
-                result = await BewohnerAuswahl.ladeBewohnerAuswahl(bewohner);
+                console.log('Keine Auswahl zurückgegeben, lade manuell');
+                // Aktuelle KW und Jahr ermitteln
+                let kw, jahr;
+                try {
+                    const kwDaten = document.querySelector('#current-week-display').textContent;
+                    const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
+                    if (match) {
+                        kw = parseInt(match[1]);
+                        jahr = parseInt(match[2]);
+                    }
+                } catch (error) {
+                    console.warn('Konnte KW/Jahr nicht aus der Anzeige lesen, verwende aktuelle Werte');
+                }
+                
+                result = await BewohnerAuswahl.ladeBewohnerAuswahl(bewohner, kw, jahr);
+                console.log('Manuell geladene Bewohnerauswahl:', result);
             }
         } catch (loadError) {
             console.error('Fehler beim Laden der Bewohnerauswahl:', loadError);
@@ -492,7 +509,7 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
                 infoElement.innerHTML = `<span>Essen für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
                                <span class="auswahl-status">(Plan)</span>`;
             } else {
-                infoElement.innerHTML = `<span>Esse für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
+                infoElement.innerHTML = `<span>Essen für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
                                <span class="auswahl-status">(Neue Auswahl erstellt)</span>`;
             }
             
