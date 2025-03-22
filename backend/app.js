@@ -10,6 +10,7 @@ const connectDB = require('./config/database');
 const multer = require('multer');
 const fs = require('fs');
 const { promisify } = require('util');
+const soloMenueController = require('./controllers/soloMenueController');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
