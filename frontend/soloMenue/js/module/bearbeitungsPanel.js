@@ -369,48 +369,19 @@ async function speichereBewohnerAenderungen() {
             areas: aktualisierteAreas
         };
         
-        // Aktuelle Domain ermitteln
-        const currentDomain = window.location.origin;
+        // Korrekter API-Endpunkt, der im Backend definiert ist
+        console.log(`Versuche korrekten API-Endpoint: /api/solomenue/update-bewohner/${bewohnerName}`);
+        const response = await fetch(`/api/solomenue/update-bewohner/${bewohnerName}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bewohnerDaten)
+        });
         
-        // Liste der möglichen API-Endpoints
-        const endpoints = [
-            `/api/solo/person/update/${bewohnerName}`,
-            `/api/person/update/${bewohnerName}`,
-            `/api/residents/update/${bewohnerName}`,
-            `/api/solo/residents/update/${bewohnerName}`
-        ];
-        
-        let response = null;
-        let erfolg = false;
-        let fehlerMeldungen = [];
-        
-        // Versuche nacheinander die verschiedenen Endpoints
-        for (const endpoint of endpoints) {
-            try {
-                console.log(`Versuche API-Endpoint: ${endpoint}`);
-                response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bewohnerDaten)
-                });
-                
-                if (response.ok) {
-                    erfolg = true;
-                    console.log(`Erfolgreicher API-Aufruf mit Endpoint: ${endpoint}`);
-                    break;
-                } else {
-                    const errorText = await response.text();
-                    fehlerMeldungen.push(`Endpoint ${endpoint}: ${response.status} - ${errorText}`);
-                }
-            } catch (error) {
-                fehlerMeldungen.push(`Endpoint ${endpoint}: ${error.message}`);
-            }
-        }
-        
-        if (!erfolg) {
-            throw new Error(`Alle API-Aufrufe fehlgeschlagen:\n${fehlerMeldungen.join('\n')}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP Fehler: ${response.status} - ${errorText}`);
         }
         
         const ergebnis = await response.json();
@@ -433,7 +404,7 @@ async function speichereBewohnerAenderungen() {
         
 Wenn das Problem weiterhin besteht, informieren Sie bitte den Administrator über diesen Fehler.
 
-Hinweis: Die Bewohnerdaten befinden sich im Backend unter: backend\\data\\solo\\person\\upToDate`);
+Hinweis: Der korrekte API-Endpunkt sollte '/api/solomenue/update-bewohner/${bewohnerName}' sein. Die Bewohnerdaten befinden sich im Backend unter: backend\\data\\solo\\person\\upToDate`);
     }
 }
 
