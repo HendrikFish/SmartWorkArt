@@ -126,6 +126,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             Kalenderwoche.initialisiere();
         }
         
+        // Initialisierung der Menüplantabelle nach der Kalenderwoche
+        console.log('Initialisiere FunktionenTabelle-Modul');
+        FunktionenTabelle.initialisiere();
+        
         // Initialisierung abgeschlossen 
         console.log('Initialisierung abgeschlossen');
     } catch (error) {

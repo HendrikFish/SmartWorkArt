@@ -129,6 +129,8 @@ function aktualisiereKalenderwocheAnzeige() {
  * @param {number} jahr - Das Jahr
  */
 function setzeKalenderwoche(kw, jahr) {
+    console.log(`Debug: setzeKalenderwoche aufgerufen mit kw=${kw}, jahr=${jahr}`);
+    
     // Sicherstellen, dass KW und Jahr gültige Werte haben
     if (kw < 1) {
         kw = 52;
@@ -136,6 +138,12 @@ function setzeKalenderwoche(kw, jahr) {
     } else if (kw > 52) {
         kw = 1;
         jahr++;
+    }
+    
+    // Parameter prüfen
+    if (!kw || !jahr) {
+        console.error('Ungültige Kalenderwoche oder Jahr');
+        return;
     }
     
     // Kalenderwochendaten berechnen
@@ -154,6 +162,21 @@ function setzeKalenderwoche(kw, jahr) {
     
     // Für Debugging-Zwecke
     logKalenderwoche('Kalenderwoche gesetzt');
+    
+    // Event auslösen, dass sich die Kalenderwoche geändert hat
+    const event = new CustomEvent('kalenderwocheChanged', {
+        detail: {
+            kw: aktuelleKalenderwoche.kw,
+            jahr: aktuelleKalenderwoche.jahr,
+            startDatum: aktuelleKalenderwoche.startDatum,
+            endDatum: aktuelleKalenderwoche.endDatum
+        }
+    });
+    
+    console.log(`Debug: Löse Event 'kalenderwocheChanged' aus mit kw=${aktuelleKalenderwoche.kw}, jahr=${aktuelleKalenderwoche.jahr}`);
+    document.dispatchEvent(event);
+    
+    console.log(`Debug: Event 'kalenderwocheChanged' wurde ausgelöst`);
 }
 
 /**
