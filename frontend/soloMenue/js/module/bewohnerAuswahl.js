@@ -19,7 +19,7 @@ let aktuellesJahr = 0;
 let aktuellerBewohner = null;
 
 // Neue statische Variable für den Zellstatus
-let istZelleInBearbeitung = false;
+// let istZelleInBearbeitung = false;
 // Globalen Zugriff auf Verarbeitungsstatus ermöglichen
 window.istZelleInBearbeitung = false;
 
@@ -870,7 +870,7 @@ function aktualisiereZellenInMobileAnsicht() {
  */
 async function rotierePortionsGroesse(zelle, tag, kategorie) {
     // Wenn die Zelle bereits in Bearbeitung ist, abbrechen
-    if (zelle.classList.contains('zelle-in-bearbeitung')) {
+    if (zelle.classList.contains('zelle-in-bearbeitung') || window.istZelleInBearbeitung) {
         console.log('Zelle wird bereits bearbeitet, ignoriere diese Anfrage');
         return false;
     }
@@ -1170,6 +1170,65 @@ async function rotierePortionsGroesse(zelle, tag, kategorie) {
 }
 
 /**
+ * Verarbeitet die Portionsgröße für eine bestimmte Zelle
+ * @param {HTMLElement} zelle - Die geklickte Tabellenzelle
+ * @param {string} tag - Der Tag (z.B. "Montag")
+ * @param {string} kategorie - Die Kategorie (z.B. "milchspeise")
+ * @returns {Promise<boolean>} True bei Erfolg, False bei Fehler
+ */
+async function verarbeitePortionsGroesse(zelle, tag, kategorie) {
+    try {
+        const erfolg = await rotierePortionsGroesse(zelle, tag, kategorie);
+        if (erfolg) {
+            console.log(`Auswahl gespeichert: ${tag}, ${kategorie} (Portion geändert)`);
+            
+            // NEUE FUNKTION: Animation für die mobile Ansicht
+            const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
+            if (mobilAnsicht) {
+                const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
+                
+                if (mobilZelle) {
+                    // Extra-Animation für die mobile Ansicht
+                    const mobileNeuePortions = getAktuellePortion(tag, kategorie);
+                    
+                    if (mobileNeuePortions !== 'none') {
+                        // Originalinhalt der Mobilzelle speichern
+                        const originalMobilHTML = mobilZelle.innerHTML;
+                        
+                        // Hintergrundfarbe je nach Portionsgröße
+                        let feedbackColor;
+                        if (mobileNeuePortions === '100%') {
+                            feedbackColor = '#4CAF50'; // Grün
+                        } else if (mobileNeuePortions === '50%') {
+                            feedbackColor = '#FF9800'; // Orange
+                        } else if (mobileNeuePortions === '25%') {
+                            feedbackColor = '#90CAF9'; // Hellblau
+                        }
+                        
+                        // Zelle leeren und Prozentzahl anzeigen
+                        mobilZelle.innerHTML = `<div class="portion-feedback" style="background-color: ${feedbackColor}; color: ${mobileNeuePortions === '25%' ? 'black' : 'white'}">${mobileNeuePortions}</div>`;
+                        
+                        // Nach kurzer Zeit den ursprünglichen Inhalt wiederherstellen
+                        setTimeout(() => {
+                            mobilZelle.innerHTML = originalMobilHTML;
+                            // Sicherstellen, dass die Mobil-Zelle korrekt aktualisiert wird
+                            aktualisiereZellInMobileAnsicht(zelle);
+                        }, 600);
+                    }
+                }
+            }
+            return true;
+        } else {
+            console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
+            return false;
+        }
+    } catch (error) {
+        console.error(`Fehler beim Ändern der Portionsgröße für ${tag}, ${kategorie}:`, error);
+        throw error; // Fehler weiterreichen für übergeordnete Fehlerbehandlung
+    }
+}
+
+/**
  * Behandelt einen Klick auf eine Tabellenzelle
  * @param {HTMLElement} zelle - Die geklickte Tabellenzelle
  * @param {Event|null} eventObj - Das Event-Objekt (optional)
@@ -1185,8 +1244,8 @@ async function handleZellenKlick(zelle, eventObj) {
     }
     
     // Prüfen, ob gerade eine Zelle bearbeitet wird
-    if (istZelleInBearbeitung || window.istZelleInBearbeitung) {
-        console.log('Klick ignoriert: Eine andere Zelle wird gerade bearbeitet');
+    if (window.istZelleInBearbeitung) {
+        console.log(`Klick ignoriert: Eine andere Zelle wird gerade bearbeitet (${tag}, ${kategorie})`);
         return;
     }
     
@@ -1212,29 +1271,13 @@ async function handleZellenKlick(zelle, eventObj) {
         }
     }
     
-    // Prüfen, ob der Klick auf ein Element innerhalb des Bearbeiten-Buttons erfolgte
-    if (eventObj && eventObj.target) {
-        const bearbeitenButton = zelle.querySelector('.komponenten-bearbeiten-btn');
-        if (bearbeitenButton && (bearbeitenButton.contains(eventObj.target) || eventObj.target === bearbeitenButton)) {
-            console.log('Klick auf Element innerhalb des Bearbeiten-Buttons, wird an KomponentenEditor weitergeleitet');
-            
-            // Event wird hier nicht mehr ignoriert, sondern direkt den KomponentenEditor öffnen
-            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                setTimeout(() => {
-                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-                }, 10);
-            }
-            return;
-        }
-    }
-    
     // Prüfen, ob der letzte Klick zu kurz her ist (Schutz vor ungewollten Doppelklicks)
     if (zelle.dataset.lastClickTime) {
         const lastClickTime = parseInt(zelle.dataset.lastClickTime);
         const now = Date.now();
         // Wenn der letzte Klick weniger als 300ms her ist, ignorieren (verhindert unbeabsichtigte Doppelklicks)
         if (now - lastClickTime < 300) {
-            console.log('Klicks zu schnell hintereinander, ignoriere diesen Klick');
+            console.log(`Klicks zu schnell hintereinander, ignoriere diesen Klick (${tag}, ${kategorie})`);
             return;
         }
     }
@@ -1243,19 +1286,10 @@ async function handleZellenKlick(zelle, eventObj) {
     zelle.dataset.lastClickTime = Date.now().toString();
     
     // Zelle als "in Bearbeitung" markieren
-    istZelleInBearbeitung = true;
     window.istZelleInBearbeitung = true;
+    zelle.classList.add('zelle-in-bearbeitung');
     
     try {
-        // Zelle visuell als "in Bearbeitung" markieren
-        zelle.classList.add('zelle-in-bearbeitung');
-        
-        // Erkennen, ob es sich um eine Extra-Kategorie handelt
-        const isExtraKategorie = kategorie.startsWith('extra_');
-        if (isExtraKategorie) {
-            console.log(`Erkannt als Extra-Kategorie: ${kategorie}`);
-        }
-        
         // Prüfen, ob ein Bewohner ausgewählt ist
         if (!aktuellerBewohner) {
             console.warn('Kein Bewohner ausgewählt, bitte wählen Sie zuerst einen Bewohner aus');
@@ -1274,7 +1308,7 @@ async function handleZellenKlick(zelle, eventObj) {
                     const kw = parseInt(match[1]);
                     const jahr = parseInt(match[2]);
                     
-                    console.log('Aktualisierte Bewohnerinformationen werden geladen vor dem Zellenklick');
+                    console.log(`Aktualisierte Bewohnerinformationen werden geladen vor dem Zellenklick (${tag}, ${kategorie})`);
                     await ladeBewohnerAuswahl(aktuellerBewohner, kw, jahr);
                 } else {
                     console.error('Konnte aktuelle Kalenderwoche nicht ermitteln');
@@ -1282,68 +1316,28 @@ async function handleZellenKlick(zelle, eventObj) {
                     return;
                 }
             } catch (error) {
-                console.error('Fehler beim Laden der aktuellen Auswahl:', error);
+                console.error(`Fehler beim Laden der aktuellen Auswahl für ${tag}, ${kategorie}:`, error);
                 alert('Ein Fehler ist aufgetreten. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.');
                 return;
             }
         }
         
-        // Portionsgröße rotieren und Zelle aktualisieren mit sofortigem Speichern
-        try {
-            const erfolg = await rotierePortionsGroesse(zelle, tag, kategorie);
-            if (erfolg) {
-                console.log(`Auswahl gespeichert: ${tag}, ${kategorie} (Portion geändert)`);
-                
-                // NEUE FUNKTION: Animation für die mobile Ansicht
-                const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
-                if (mobilAnsicht) {
-                    const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
-                    
-                    if (mobilZelle) {
-                        // Extra-Animation für die mobile Ansicht
-                        const mobileNeuePortions = getAktuellePortion(tag, kategorie);
-                        
-                        if (mobileNeuePortions !== 'none') {
-                            // Originalinhalt der Mobilzelle speichern
-                            const originalMobilHTML = mobilZelle.innerHTML;
-                            
-                            // Hintergrundfarbe je nach Portionsgröße
-                            let feedbackColor;
-                            if (mobileNeuePortions === '100%') {
-                                feedbackColor = '#4CAF50'; // Grün
-                            } else if (mobileNeuePortions === '50%') {
-                                feedbackColor = '#FF9800'; // Orange
-                            } else if (mobileNeuePortions === '25%') {
-                                feedbackColor = '#90CAF9'; // Hellblau
-                            }
-                            
-                            // Zelle leeren und Prozentzahl anzeigen
-                            mobilZelle.innerHTML = `<div class="portion-feedback" style="background-color: ${feedbackColor}; color: ${mobileNeuePortions === '25%' ? 'black' : 'white'}">${mobileNeuePortions}</div>`;
-                            
-                            // Nach kurzer Zeit den ursprünglichen Inhalt wiederherstellen
-                            setTimeout(() => {
-                                mobilZelle.innerHTML = originalMobilHTML;
-                                // Sicherstellen, dass die Mobil-Zelle korrekt aktualisiert wird
-                                aktualisiereZellInMobileAnsicht(zelle);
-                            }, 600);
-                        }
-                    }
-                }
-            } else {
-                console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
-                alert('Fehler beim Speichern der Auswahl. Bitte versuchen Sie es erneut.');
-            }
-        } catch (error) {
-            console.error('Fehler beim Rotieren der Portionsgröße:', error);
-            alert(`Fehler beim Ändern der Portionsgröße: ${error.message}`);
+        // Portionsgröße rotieren und Zelle aktualisieren
+        const erfolg = await verarbeitePortionsGroesse(zelle, tag, kategorie);
+        if (!erfolg) {
+            alert(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}. Bitte versuchen Sie es erneut.`);
         }
+    } catch (error) {
+        console.error(`Fehler beim Verarbeiten des Zellenklicks für ${tag}, ${kategorie}:`, error);
+        alert(`Fehler beim Verarbeiten der Auswahl: ${error.message}`);
     } finally {
-        // Wichtig: Zelle immer wieder als "nicht in Bearbeitung" markieren, um Blockade zu vermeiden
+        // WICHTIG: Zelle immer als "nicht in Bearbeitung" markieren, damit keine Blockade entsteht
+        window.istZelleInBearbeitung = false;
+        
+        // Nach der Animation die Klasse entfernen
         setTimeout(() => {
-            istZelleInBearbeitung = false;
-            window.istZelleInBearbeitung = false;
             zelle.classList.remove('zelle-in-bearbeitung');
-        }, 600); // Verzögerung entsprechend der Animation, damit die Zelle vollständig aktualisiert ist
+        }, 600);
     }
 }
 
