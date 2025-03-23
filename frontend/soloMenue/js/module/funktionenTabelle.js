@@ -313,6 +313,14 @@ function strukturiereTabelleFuerMobile(tabelle) {
                     
                     // Klick-Ereignis hinzufügen
                     kategorieInhalt.addEventListener('click', function() {
+                        // Prüfen, ob die Zelle oder die Original-Zelle in Bearbeitung ist
+                        if (kategorieInhalt.classList.contains('zelle-in-bearbeitung') || 
+                            menueZelle.classList.contains('zelle-in-bearbeitung') ||
+                            window.istZelleInBearbeitung === true) {
+                            console.log(`[Mobile] Zelle wird gerade bearbeitet, Klick ignoriert: ${tag} - ${kategorie.name}`);
+                            return;
+                        }
+                        
                         // Das gleiche Event auslösen wie bei der Original-Zelle
                         console.log(`[Mobile] Klick auf ${tag} - ${kategorie.name}`);
                         const event = new MouseEvent('click', {

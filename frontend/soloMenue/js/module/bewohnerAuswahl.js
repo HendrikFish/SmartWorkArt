@@ -18,6 +18,14 @@ let aktuelleKW = 0;
 let aktuellesJahr = 0;
 let aktuellerBewohner = null;
 
+// Neue statische Variable für den Zellstatus
+let istZelleInBearbeitung = false;
+// Globalen Zugriff auf Verarbeitungsstatus ermöglichen
+window.istZelleInBearbeitung = false;
+
+// Variable für den aktuell ausgewählten Bewohner
+let aktiverBewohner = null;
+
 /**
  * Lädt die Auswahl für einen Bewohner oder erstellt eine neue, wenn keine existiert
  * @param {Object} bewohner - Der Bewohner
@@ -649,7 +657,7 @@ function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
                 zelle.style.backgroundColor = '#e0e0e0';
                 
                 try {
-                    await handleZellenKlick(zelle, tag, kategorie, event);
+                    await handleZellenKlick(zelle, event);
                 } catch (error) {
                     console.error(`Fehler beim Behandeln des Zellenklicks für ${tag}, ${kategorie}:`, error);
                     
@@ -715,8 +723,8 @@ function aktualisiereZellInMobileAnsicht(originaleZelle) {
     const originalHtmlOhneButton = originaleZelle.innerHTML.replace(/<button[^>]*komponenten-bearbeiten-btn[^>]*>.*?<\/button>/g, '');
     mobileZelle.innerHTML = originalHtmlOhneButton;
     
-    // Klassen synchronisieren (besonders wichtig für die Auswahl-Klassen)
-    ['auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen'].forEach(klasse => {
+    // Klassen synchronisieren (besonders wichtig für die Auswahl-Klassen und Bearbeitungsstatus)
+    ['auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen', 'zelle-in-bearbeitung'].forEach(klasse => {
         if (originaleZelle.classList.contains(klasse)) {
             mobileZelle.classList.add(klasse);
         } else {
@@ -861,6 +869,12 @@ function aktualisiereZellenInMobileAnsicht() {
  * @returns {boolean} - True, wenn die Änderung erfolgreich war, sonst false
  */
 async function rotierePortionsGroesse(zelle, tag, kategorie) {
+    // Wenn die Zelle bereits in Bearbeitung ist, abbrechen
+    if (zelle.classList.contains('zelle-in-bearbeitung')) {
+        console.log('Zelle wird bereits bearbeitet, ignoriere diese Anfrage');
+        return false;
+    }
+    
     // Prüfen, ob die Kategorie eine Extra-Kategorie ist
     const isExtraKategorie = kategorie.startsWith('extra_');
     let extraKategorieTitle = '';
@@ -1158,11 +1172,24 @@ async function rotierePortionsGroesse(zelle, tag, kategorie) {
 /**
  * Behandelt einen Klick auf eine Tabellenzelle
  * @param {HTMLElement} zelle - Die geklickte Tabellenzelle
- * @param {string} tag - Der Tag (z.B. "Montag")
- * @param {string} kategorie - Die Kategorie (z.B. "suppe")
  * @param {Event|null} eventObj - Das Event-Objekt (optional)
  */
-async function handleZellenKlick(zelle, tag, kategorie, eventObj) {
+async function handleZellenKlick(zelle, eventObj) {
+    // Tag und Kategorie aus den Datenattributen der Zelle extrahieren
+    const tag = zelle.dataset.tag;
+    const kategorie = zelle.dataset.kategorie;
+    
+    if (!tag || !kategorie) {
+        console.error('Zelle hat keine Tag oder Kategorie Attribute');
+        return;
+    }
+    
+    // Prüfen, ob gerade eine Zelle bearbeitet wird
+    if (istZelleInBearbeitung || window.istZelleInBearbeitung) {
+        console.log('Klick ignoriert: Eine andere Zelle wird gerade bearbeitet');
+        return;
+    }
+    
     console.log(`Zelle geklickt: ${tag}, ${kategorie}`);
     
     // Prüfen, ob der Klick vom Bearbeiten-Button kam
@@ -1211,95 +1238,112 @@ async function handleZellenKlick(zelle, tag, kategorie, eventObj) {
             return;
         }
     }
+    
     // Aktuelle Zeit für den Klick speichern
     zelle.dataset.lastClickTime = Date.now().toString();
     
-    // Erkennen, ob es sich um eine Extra-Kategorie handelt
-    const isExtraKategorie = kategorie.startsWith('extra_');
-    if (isExtraKategorie) {
-        console.log(`Erkannt als Extra-Kategorie: ${kategorie}`);
-    }
+    // Zelle als "in Bearbeitung" markieren
+    istZelleInBearbeitung = true;
+    window.istZelleInBearbeitung = true;
     
-    // Prüfen, ob ein Bewohner ausgewählt ist
-    if (!aktuellerBewohner) {
-        console.warn('Kein Bewohner ausgewählt, bitte wählen Sie zuerst einen Bewohner aus');
-        alert('Bitte wählen Sie zuerst einen Bewohner aus, bevor Sie eine Essensauswahl treffen.');
-        return;
-    }
-    
-    // Sicherstellen, dass wir die aktuellen Daten haben
-    if (!aktuelleBewohnerAuswahl || !aktuelleBewohnerAuswahl.name) {
-        try {
-            // Versuche, aktuelle Auswahl zu laden oder zu erstellen
-            const kalenderWoche = document.querySelector('#current-week-display').textContent;
-            const match = kalenderWoche.match(/KW\s*(\d+)\/(\d+)/);
-            
-            if (match) {
-                const kw = parseInt(match[1]);
-                const jahr = parseInt(match[2]);
-                
-                console.log('Aktualisierte Bewohnerinformationen werden geladen vor dem Zellenklick');
-                await ladeBewohnerAuswahl(aktuellerBewohner, kw, jahr);
-            } else {
-                console.error('Konnte aktuelle Kalenderwoche nicht ermitteln');
-                alert('Ein Fehler ist aufgetreten beim Ermitteln der aktuellen Kalenderwoche. Bitte aktualisieren Sie die Seite.');
-                return;
-            }
-        } catch (error) {
-            console.error('Fehler beim Laden der aktuellen Auswahl:', error);
-            alert('Ein Fehler ist aufgetreten. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.');
+    try {
+        // Zelle visuell als "in Bearbeitung" markieren
+        zelle.classList.add('zelle-in-bearbeitung');
+        
+        // Erkennen, ob es sich um eine Extra-Kategorie handelt
+        const isExtraKategorie = kategorie.startsWith('extra_');
+        if (isExtraKategorie) {
+            console.log(`Erkannt als Extra-Kategorie: ${kategorie}`);
+        }
+        
+        // Prüfen, ob ein Bewohner ausgewählt ist
+        if (!aktuellerBewohner) {
+            console.warn('Kein Bewohner ausgewählt, bitte wählen Sie zuerst einen Bewohner aus');
+            alert('Bitte wählen Sie zuerst einen Bewohner aus, bevor Sie eine Essensauswahl treffen.');
             return;
         }
-    }
-    
-    // Portionsgröße rotieren und Zelle aktualisieren mit sofortigem Speichern
-    try {
-        const erfolg = await rotierePortionsGroesse(zelle, tag, kategorie);
-        if (erfolg) {
-            console.log(`Auswahl gespeichert: ${tag}, ${kategorie} (Portion geändert)`);
-            
-            // NEUE FUNKTION: Animation für die mobile Ansicht
-            const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
-            if (mobilAnsicht) {
-                const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
+        
+        // Sicherstellen, dass wir die aktuellen Daten haben
+        if (!aktuelleBewohnerAuswahl || !aktuelleBewohnerAuswahl.name) {
+            try {
+                // Versuche, aktuelle Auswahl zu laden oder zu erstellen
+                const kalenderWoche = document.querySelector('#current-week-display').textContent;
+                const match = kalenderWoche.match(/KW\s*(\d+)\/(\d+)/);
                 
-                if (mobilZelle) {
-                    // Extra-Animation für die mobile Ansicht
-                    const mobileNeuePortions = getAktuellePortion(tag, kategorie);
+                if (match) {
+                    const kw = parseInt(match[1]);
+                    const jahr = parseInt(match[2]);
                     
-                    if (mobileNeuePortions !== 'none') {
-                        // Originalinhalt der Mobilzelle speichern
-                        const originalMobilHTML = mobilZelle.innerHTML;
+                    console.log('Aktualisierte Bewohnerinformationen werden geladen vor dem Zellenklick');
+                    await ladeBewohnerAuswahl(aktuellerBewohner, kw, jahr);
+                } else {
+                    console.error('Konnte aktuelle Kalenderwoche nicht ermitteln');
+                    alert('Ein Fehler ist aufgetreten beim Ermitteln der aktuellen Kalenderwoche. Bitte aktualisieren Sie die Seite.');
+                    return;
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der aktuellen Auswahl:', error);
+                alert('Ein Fehler ist aufgetreten. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.');
+                return;
+            }
+        }
+        
+        // Portionsgröße rotieren und Zelle aktualisieren mit sofortigem Speichern
+        try {
+            const erfolg = await rotierePortionsGroesse(zelle, tag, kategorie);
+            if (erfolg) {
+                console.log(`Auswahl gespeichert: ${tag}, ${kategorie} (Portion geändert)`);
+                
+                // NEUE FUNKTION: Animation für die mobile Ansicht
+                const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
+                if (mobilAnsicht) {
+                    const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
+                    
+                    if (mobilZelle) {
+                        // Extra-Animation für die mobile Ansicht
+                        const mobileNeuePortions = getAktuellePortion(tag, kategorie);
                         
-                        // Hintergrundfarbe je nach Portionsgröße
-                        let feedbackColor;
-                        if (mobileNeuePortions === '100%') {
-                            feedbackColor = '#4CAF50'; // Grün
-                        } else if (mobileNeuePortions === '50%') {
-                            feedbackColor = '#FF9800'; // Orange
-                        } else if (mobileNeuePortions === '25%') {
-                            feedbackColor = '#90CAF9'; // Hellblau
+                        if (mobileNeuePortions !== 'none') {
+                            // Originalinhalt der Mobilzelle speichern
+                            const originalMobilHTML = mobilZelle.innerHTML;
+                            
+                            // Hintergrundfarbe je nach Portionsgröße
+                            let feedbackColor;
+                            if (mobileNeuePortions === '100%') {
+                                feedbackColor = '#4CAF50'; // Grün
+                            } else if (mobileNeuePortions === '50%') {
+                                feedbackColor = '#FF9800'; // Orange
+                            } else if (mobileNeuePortions === '25%') {
+                                feedbackColor = '#90CAF9'; // Hellblau
+                            }
+                            
+                            // Zelle leeren und Prozentzahl anzeigen
+                            mobilZelle.innerHTML = `<div class="portion-feedback" style="background-color: ${feedbackColor}; color: ${mobileNeuePortions === '25%' ? 'black' : 'white'}">${mobileNeuePortions}</div>`;
+                            
+                            // Nach kurzer Zeit den ursprünglichen Inhalt wiederherstellen
+                            setTimeout(() => {
+                                mobilZelle.innerHTML = originalMobilHTML;
+                                // Sicherstellen, dass die Mobil-Zelle korrekt aktualisiert wird
+                                aktualisiereZellInMobileAnsicht(zelle);
+                            }, 600);
                         }
-                        
-                        // Zelle leeren und Prozentzahl anzeigen
-                        mobilZelle.innerHTML = `<div class="portion-feedback" style="background-color: ${feedbackColor}; color: ${mobileNeuePortions === '25%' ? 'black' : 'white'}">${mobileNeuePortions}</div>`;
-                        
-                        // Nach kurzer Zeit den ursprünglichen Inhalt wiederherstellen
-                        setTimeout(() => {
-                            mobilZelle.innerHTML = originalMobilHTML;
-                            // Sicherstellen, dass die Mobil-Zelle korrekt aktualisiert wird
-                            aktualisiereZellInMobileAnsicht(zelle);
-                        }, 600);
                     }
                 }
+            } else {
+                console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
+                alert('Fehler beim Speichern der Auswahl. Bitte versuchen Sie es erneut.');
             }
-        } else {
-            console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
-            alert('Fehler beim Speichern der Auswahl. Bitte versuchen Sie es erneut.');
+        } catch (error) {
+            console.error('Fehler beim Rotieren der Portionsgröße:', error);
+            alert(`Fehler beim Ändern der Portionsgröße: ${error.message}`);
         }
-    } catch (error) {
-        console.error('Fehler beim Rotieren der Portionsgröße:', error);
-        alert(`Fehler beim Ändern der Portionsgröße: ${error.message}`);
+    } finally {
+        // Wichtig: Zelle immer wieder als "nicht in Bearbeitung" markieren, um Blockade zu vermeiden
+        setTimeout(() => {
+            istZelleInBearbeitung = false;
+            window.istZelleInBearbeitung = false;
+            zelle.classList.remove('zelle-in-bearbeitung');
+        }, 600); // Verzögerung entsprechend der Animation, damit die Zelle vollständig aktualisiert ist
     }
 }
 
