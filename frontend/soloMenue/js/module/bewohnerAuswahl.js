@@ -1963,8 +1963,6 @@ async function setzeAktuellenBewohner(bewohner) {
 // Module exportieren
 export {
     initialisiere,
-    setzeGlobalAktivenBewohner,
-    wechsleKategorie,
     setzeAktuellenBewohner,
     markiereBewohnerKarteAlsAktiv,
     resetAuswahl
