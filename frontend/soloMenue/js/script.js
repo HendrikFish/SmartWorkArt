@@ -38,44 +38,6 @@ window.KomponentenEditorData = {
     extraWuensche: []
 };
 
-// Initialisiert den "Nach oben"-Button für die mobile Ansicht
-function initialisiereNachObenButton() {
-    const nachObenButton = document.getElementById('nach-oben-button');
-    const bewohnerContainer = document.getElementById('bewohner-container');
-    const kalenderContainer = document.getElementById('kalenderwochen-container');
-    
-    // Button nur anzeigen, wenn wir unter den Bewohner-Container scrollen
-    window.addEventListener('scroll', () => {
-        // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
-        const isTabletOrMobile = window.innerWidth <= 1000 || 
-                               /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
-                               
-        if (isTabletOrMobile) {
-            // Position des Bewohner-Containers
-            const bewohnerPosition = bewohnerContainer.getBoundingClientRect().bottom;
-            
-            // Button anzeigen, wenn wir unter den Bewohner-Container gescrollt haben
-            if (bewohnerPosition < 0) {
-                nachObenButton.style.display = 'flex';
-            } else {
-                nachObenButton.style.display = 'none';
-            }
-        } else {
-            // Auf Desktop-Geräten immer ausblenden
-            nachObenButton.style.display = 'none';
-        }
-    });
-    
-    // Bei Klick zum Kalender- und Bewohner-Container scrollen
-    nachObenButton.addEventListener('click', () => {
-        // Schneller Bildlaufeffekt nach oben
-        scrollMitEffekt(kalenderContainer.offsetTop, 500);
-    });
-    
-    // Initial ausblenden
-    nachObenButton.style.display = 'none';
-}
-
 /**
  * Scrollt mit einem schnellen Bildlaufeffekt zur angegebenen Position
  * @param {number} zielPosition - Die Zielposition in Pixel vom Seitenanfang
@@ -122,6 +84,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Hinzufügen der fehlenden Initialisierung für FunktionenTabelle
         FunktionenTabelle.initialisiere();
+        
+        // Nach-Oben-Button initialisieren
+        const nachObenButton = document.getElementById('nach-oben-button');
+        if (nachObenButton) {
+            console.log('Nach-Oben-Button gefunden, füge Event-Listener hinzu');
+            // Bei Klick zum Kalender- und Bewohner-Container scrollen
+            nachObenButton.addEventListener('click', () => {
+                const kalenderContainer = document.getElementById('kalenderwochen-container');
+                if (kalenderContainer) {
+                    // Schneller Bildlaufeffekt nach oben
+                    scrollMitEffekt(kalenderContainer.offsetTop, 500);
+                }
+            });
+            
+            // Initial ausblenden
+            nachObenButton.style.display = 'none';
+            
+            // Button nur anzeigen, wenn wir unter den Bewohner-Container scrollen
+            window.addEventListener('scroll', () => {
+                const bewohnerContainer = document.getElementById('bewohner-container');
+                if (!bewohnerContainer) return;
+                
+                // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+                const isTabletOrMobile = window.innerWidth <= 1000 || 
+                                      /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+                                      
+                if (isTabletOrMobile) {
+                    // Position des Bewohner-Containers
+                    const bewohnerPosition = bewohnerContainer.getBoundingClientRect().bottom;
+                    
+                    // Button anzeigen, wenn wir unter den Bewohner-Container gescrollt haben
+                    if (bewohnerPosition < 0) {
+                        nachObenButton.style.display = 'flex';
+                    } else {
+                        nachObenButton.style.display = 'none';
+                    }
+                } else {
+                    // Auf Desktop-Geräten immer ausblenden
+                    nachObenButton.style.display = 'none';
+                }
+            });
+        } else {
+            console.warn('Nach-Oben-Button nicht gefunden');
+        }
         
         // UI-Komponenten initialisieren
         initBurgerMenu();
