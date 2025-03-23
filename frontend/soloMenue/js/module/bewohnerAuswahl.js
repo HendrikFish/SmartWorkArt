@@ -1293,6 +1293,8 @@ async function handleZellenKlick(zelle, eventObj) {
         if (!aktuellerBewohner) {
             console.warn('Kein Bewohner ausgewählt, bitte wählen Sie zuerst einen Bewohner aus');
             alert('Bitte wählen Sie zuerst einen Bewohner aus, bevor Sie eine Essensauswahl treffen.');
+            window.istZelleInBearbeitung = false;
+            zelle.classList.remove('zelle-in-bearbeitung');
             return;
         }
         
@@ -1312,11 +1314,13 @@ async function handleZellenKlick(zelle, eventObj) {
                 } else {
                     console.error('Konnte aktuelle Kalenderwoche nicht ermitteln');
                     alert('Ein Fehler ist aufgetreten beim Ermitteln der aktuellen Kalenderwoche. Bitte aktualisieren Sie die Seite.');
+                    window.istZelleInBearbeitung = false;
+                    zelle.classList.remove('zelle-in-bearbeitung');
                     return;
                 }
             } catch (error) {
                 console.error(`Fehler beim Laden der aktuellen Auswahl für ${tag}, ${kategorie}:`, error);
-                window.istZelleInBearbeitung = false; // Verarbeitungsstatus zurücksetzen
+                window.istZelleInBearbeitung = false;
                 zelle.classList.remove('zelle-in-bearbeitung');
                 alert('Ein Fehler ist aufgetreten. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.');
                 return;
@@ -1394,11 +1398,17 @@ async function handleZellenKlick(zelle, eventObj) {
         const erfolg = await aktualisiereMenueAuswahl(tag, kategorie, neuePortion, mahlzeiten);
         
         if (erfolg) {
+            // WICHTIG: Vor dem Start der Animation die Bearbeitungsmarkierung entfernen!
+            window.istZelleInBearbeitung = false;
+            
             // WICHTIG: Bestehenden Bearbeiten-Button vor der Änderung sichern
             const existingButton = zelle.querySelector('.komponenten-bearbeiten-btn');
             
             // Visuelles Feedback - Prozentzahl kurz einblenden
             if (neuePortion !== 'none') {
+                // Bearbeitungsklasse entfernen
+                zelle.classList.remove('zelle-in-bearbeitung');
+                
                 // Hintergrundfarbe je nach Portionsgröße
                 let feedbackColor;
                 if (neuePortion === '100%') {
@@ -1476,6 +1486,21 @@ async function handleZellenKlick(zelle, eventObj) {
                         }
                     }
                     
+                    // Direkte Farbgebung als zusätzliche Sicherheit (falls CSS nicht korrekt geladen)
+                    if (neuePortion === '100%') {
+                        zelle.style.backgroundColor = '#4CAF50';
+                        zelle.style.color = 'white';
+                        zelle.style.border = '2px solid #2E7D32';
+                    } else if (neuePortion === '50%') {
+                        zelle.style.backgroundColor = '#FF9800';
+                        zelle.style.color = 'white';
+                        zelle.style.border = '2px solid #EF6C00';
+                    } else if (neuePortion === '25%') {
+                        zelle.style.backgroundColor = '#90CAF9';
+                        zelle.style.color = 'black';
+                        zelle.style.border = '2px solid #1976D2';
+                    }
+                    
                     // Bearbeiten-Button neu erstellen
                     if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
                         window.KomponentenEditor.erstelleBearbeitenButton(zelle);
@@ -1528,6 +1553,9 @@ async function handleZellenKlick(zelle, eventObj) {
                     aktualisiereZellInMobileAnsicht(zelle);
                 }, 600); // Ende des Timeouts für das Feedback
             } else {
+                // Bearbeitungsklasse entfernen
+                zelle.classList.remove('zelle-in-bearbeitung');
+                
                 // Wenn keine Portion ausgewählt wurde (none)
                 // Formatierung zurücksetzen
                 zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
@@ -1599,21 +1627,23 @@ async function handleZellenKlick(zelle, eventObj) {
                     }
                 }
             }
+            
+            // Hier loggen wir den Status, um zu überprüfen, ob alles funktioniert
+            console.log(`Zellstatus nach der Verarbeitung: ${tag}, ${kategorie}, Portion: ${neuePortion}, Bearbeitung: ${window.istZelleInBearbeitung ? 'Ja' : 'Nein'}`);
         } else {
+            // Wenn das Speichern fehlschlägt, Bearbeitungsstatus zurücksetzen
+            window.istZelleInBearbeitung = false;
+            zelle.classList.remove('zelle-in-bearbeitung');
             console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
             alert(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}. Bitte versuchen Sie es erneut.`);
         }
     } catch (error) {
         console.error(`Fehler beim Verarbeiten des Zellenklicks für ${tag}, ${kategorie}:`, error);
         alert(`Fehler beim Verarbeiten der Auswahl: ${error.message}`);
-    } finally {
-        // KRITISCH: Immer sicherstellen, dass der Verarbeitungsstatus zurückgesetzt wird
-        window.istZelleInBearbeitung = false;
         
-        // Nach der Animation die Klasse entfernen
-        setTimeout(() => {
-            zelle.classList.remove('zelle-in-bearbeitung');
-        }, 600);
+        // Bei einem Fehler immer den Bearbeitungsstatus zurücksetzen!
+        window.istZelleInBearbeitung = false;
+        zelle.classList.remove('zelle-in-bearbeitung');
     }
 }
 
