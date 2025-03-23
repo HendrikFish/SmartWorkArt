@@ -1724,75 +1724,6 @@ function resetAuswahl() {
 }
 
 /**
- * Speichert den aktuellen Bewohner und setzt alle zugehörigen Variablen
- * @param {Object} bewohner - Der ausgewählte Bewohner
- */
-function setzeAktuellenBewohner(bewohner) {
-    console.log(`Bewohner wird gesetzt: ${bewohner.firstName} ${bewohner.lastName}`);
-    
-    // Alten Bewohner vollständig zurücksetzen
-    if (aktuellerBewohner && (aktuellerBewohner.firstName !== bewohner.firstName || aktuellerBewohner.lastName !== bewohner.lastName)) {
-        console.log(`Wechsel des Bewohners von ${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName} zu ${bewohner.firstName} ${bewohner.lastName}`);
-        resetAuswahl();
-    }
-    
-    // Neuen Bewohner setzen
-    aktuellerBewohner = bewohner;
-    aktuelleBewohnerName = `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_');
-    
-    // Automatisch auch die aktuelle Auswahl für diesen Bewohner laden, falls KW und Jahr bekannt sind
-    if (aktuelleKW && aktuellesJahr) {
-        console.log(`Lade automatisch Bewohnerauswahl für ${aktuelleBewohnerName} (KW${aktuelleKW}/${aktuellesJahr})`);
-        return ladeBewohnerAuswahl(bewohner, aktuelleKW, aktuellesJahr)
-            .then(result => {
-                // Nach dem Laden auch direkt die Tabelle aktualisieren
-                const tabelle = document.querySelector('.menueplan-tabelle');
-                if (tabelle) {
-                    console.log("Plan wird nach Bewohnerwechsel neu geladen");
-                    aktualisiereTabelle(tabelle);
-                    
-                    // Sicherstellen, dass alle Klick-Handler aktiv sind
-                    fuegeZellenKlickHinzu(tabelle, true);
-                }
-                return result;
-            });
-    } else {
-        console.log('Kalenderwoche/Jahr nicht bekannt, versuche sie aus der Anzeige zu lesen');
-        
-        try {
-            const kwDaten = document.querySelector('#current-week-display').textContent;
-            const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
-            if (match) {
-                aktuelleKW = parseInt(match[1]);
-                aktuellesJahr = parseInt(match[2]);
-                console.log(`Kalenderwoche/Jahr aus der Anzeige gelesen: KW${aktuelleKW}/${aktuellesJahr}`);
-                
-                // Mit den gelesenen Werten erneut versuchen
-                return ladeBewohnerAuswahl(bewohner, aktuelleKW, aktuellesJahr)
-                    .then(result => {
-                        // Nach dem Laden auch direkt die Tabelle aktualisieren
-                        const tabelle = document.querySelector('.menueplan-tabelle');
-                        if (tabelle) {
-                            console.log("Plan wird nach Bewohnerwechsel neu geladen");
-                            aktualisiereTabelle(tabelle);
-                            
-                            // Sicherstellen, dass alle Klick-Handler aktiv sind
-                            fuegeZellenKlickHinzu(tabelle, true);
-                        }
-                        return result;
-                    });
-            }
-        } catch (error) {
-            console.warn('Konnte Kalenderwoche/Jahr nicht aus der Anzeige lesen:', error);
-        }
-        
-        // Wenn wir hier sind, konnten wir keine aktuelle KW/Jahr ermitteln
-        console.log('Auswahl wird nicht automatisch geladen - keine KW/Jahr verfügbar');
-        return Promise.resolve({ auswahl: null, isExisting: false });
-    }
-}
-
-/**
  * Initialisiert das Modul und richtet alle Event-Listener ein
  */
 function initialisiere() {
@@ -1929,8 +1860,8 @@ function getAktuelleBewohnerAuswahl() {
  * Findet eine Tabellenzelle anhand von Tag und Kategorie
  * @param {HTMLElement} tabelle - Die Tabelle, in der gesucht werden soll
  * @param {string} tag - Der Tag (z.B. "Montag")
- * @param {string} kategorie - Die Kategorie (z.B. "menue1" oder "extra_kaltePlatte")
- * @returns {HTMLElement|null} - Die gefundene Zelle oder null, wenn keine gefunden wurde
+ * @param {string} kategorie - Die Kategorie (z.B. "frühstück")
+ * @returns {HTMLElement|null} Die gefundene Zelle oder null
  */
 function findeTabellenZelle(tabelle, tag, kategorie) {
     // Versuche zuerst, die Zelle direkt über ein Attribut-Selektor zu finden
