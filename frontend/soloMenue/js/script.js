@@ -362,6 +362,14 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
         const bewohnerCard = event.detail.cardElement;
         console.log('Bewohner ausgewählt für Essensauswahl:', bewohner);
         
+        // WICHTIG: Sicherstellen, dass alle Bearbeitungsstatus-Flags zurückgesetzt werden
+        window.istZelleInBearbeitung = false;
+        
+        // Alle "zelle-in-bearbeitung" Klassen entfernen
+        document.querySelectorAll('.zelle-in-bearbeitung').forEach(element => {
+            element.classList.remove('zelle-in-bearbeitung');
+        });
+        
         // Bewohner-ID für globalen Zugriff speichern (falls bewohnerDate.js diese Information benötigt)
         if (window.BewohnerDate && typeof BewohnerDate.setzeGlobalAktivenBewohner === 'function') {
             const bewohnerId = `${bewohner.firstName}_${bewohner.lastName}`.trim().toLowerCase().replace(/\s+/g, '_');
