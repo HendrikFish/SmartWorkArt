@@ -1937,13 +1937,7 @@ async function aktualisiereSonderwunschFormularDaten() {
 // Module exportieren
 export {
     initialisiere,
-    oeffneKategorieFormular,
-    wechsleTab,
-    zeigeExtraOptionenListe,
-    zeigeSonderwunschListe,
     getExtraKategorien,
     getExtraOptionen,
-    aktualisiereKategorieDropdowns,
-    fuegeExtraKategorienHinzu,
-    aktualisiereSonderwunschFormularDaten
+    oeffneKategorieFormular
 };

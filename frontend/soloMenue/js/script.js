@@ -147,6 +147,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('KomponentenEditor-Modul konnte nicht initialisiert werden - nicht definiert oder keine initialisiere-Funktion');
         }
         
+        // Event-Listener für den Kategoriebutton hinzufügen
+        const addKategorieBtn = document.getElementById('add-kategorie-btn');
+        if (addKategorieBtn) {
+            console.log('Füge Event-Listener zum Kategorie-Button hinzu');
+            addKategorieBtn.addEventListener('click', () => {
+                if (TabeleAdd && typeof TabeleAdd.oeffneKategorieFormular === 'function') {
+                    console.log('Öffne Kategorieformular');
+                    TabeleAdd.oeffneKategorieFormular();
+                } else {
+                    console.error('TabeleAdd.oeffneKategorieFormular ist nicht verfügbar');
+                }
+            });
+        } else {
+            console.warn('Kategorie-Button nicht gefunden');
+        }
+        
         // Initialisierung abgeschlossen 
         console.log('Initialisierung abgeschlossen');
     } catch (error) {
