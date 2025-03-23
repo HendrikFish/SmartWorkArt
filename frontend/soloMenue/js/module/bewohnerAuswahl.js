@@ -588,6 +588,59 @@ function aktualisiereTabelle(tabelle) {
             // "Bearbeiten"-Button hinzufügen
             if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
                 window.KomponentenEditor.erstelleBearbeitenButton(zelle);
+            } else {
+                // Verbesserten Bearbeiten-Button erstellen, falls verfügbar
+                if (typeof erstelleVerbessertesBearbeitenButton === 'function') {
+                    if (neuePortion !== 'none') {
+                        const button = erstelleVerbessertesBearbeitenButton(zelle);
+                        if (button) {
+                            zelle.appendChild(button);
+                        }
+                    }
+                } else {
+                    // Fallback: Bearbeiten-Button manuell erstellen
+                    if (neuePortion !== 'none') {
+                        let button = document.createElement('button');
+                        button.className = 'komponenten-bearbeiten-btn';
+                        button.title = 'Komponenten bearbeiten';
+                        button.innerHTML = '✎'; // Pencil-Symbol
+                        button.id = `edit-btn-${tag}-${kategorie}`;
+                        button.dataset.tag = tag;
+                        button.dataset.kategorie = kategorie;
+                        
+                        // Wichtige Stile für bessere Clickability
+                        button.style.pointerEvents = 'auto';
+                        button.style.zIndex = '1000';
+                        button.style.position = 'absolute';
+                        button.style.right = '8px';
+                        button.style.display = 'flex';
+                        
+                        // Event-Listener für den Button
+                        button.addEventListener('click', function handleButtonClick(event) {
+                            // Event-Propagation stoppen
+                            event.stopPropagation();
+                            event.preventDefault();
+                            event.cancelBubble = true;
+                            
+                            // Zeitstempel zur Vermeidung von Doppelklicks
+                            const jetzt = Date.now();
+                            const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
+                            if (jetzt - letzterButtonKlick < 300) {
+                                console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
+                                return;
+                            }
+                            button.dataset.lastClickTime = jetzt.toString();
+                            
+                            // Editor öffnen
+                            console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
+                            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                                window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                            }
+                        });
+                        
+                        zelle.appendChild(button);
+                    }
+                }
             }
         });
     });
@@ -602,79 +655,92 @@ function aktualisiereTabelle(tabelle) {
 }
 
 /**
- * Fügt Klick-Handler zu den Tabellenzellen hinzu
- * @param {HTMLTableElement} tabelle - Die Menüplantabelle
- * @param {boolean} forceReattach - Ob bestehende Handler entfernt und neu hinzugefügt werden sollen
+ * Fügt Event-Listener für Klicks auf die Tabellenzellen hinzu
+ * @param {HTMLElement} tabelle - Die Menüplan-Tabelle
+ * @param {boolean} forceReattach - Ob Event-Listener neu hinzugefügt werden sollen, auch wenn bereits vorhanden
  */
 function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
-    if (!tabelle) {
-        console.error('Keine Tabelle für Klick-Handler vorhanden');
+    const zellen = tabelle.querySelectorAll('td.menue-zelle');
+    
+    zellen.forEach(zelle => {
+        // Die Zellenklasse bietet die eindeutige ID für diese Zelle
+        if (!zelle.id && zelle.classList.length > 0) {
+            // Erstellen einer eindeutigen ID aus den Klassen
+            const klassenString = Array.from(zelle.classList).join('-');
+            zelle.id = `zelle-${klassenString}`;
+        }
+        
+        // Tag-Information aus dem data-tag-Attribut oder aus der Spaltenüberschrift ermitteln
+        if (!zelle.dataset.tag) {
+            const spaltenIndex = Array.from(zelle.parentNode.children).indexOf(zelle);
+            const tag = tabelle.querySelector(`thead th:nth-child(${spaltenIndex + 1})`);
+            if (tag) {
+                zelle.dataset.tag = tag.textContent.trim();
+            }
+        }
+        
+        // Kategorie-Information aus dem data-kategorie-Attribut oder aus der Zeilenüberschrift ermitteln
+        if (!zelle.dataset.kategorie) {
+            const zeile = zelle.parentNode;
+            const kategorieZelle = zeile.querySelector('th, td:first-child');
+            if (kategorieZelle) {
+                const kategorieText = kategorieZelle.textContent.trim();
+                zelle.dataset.kategorie = kategorieText.toLowerCase().replace(/\s+/g, '');
+            }
+        }
+        
+        // Hover-Effekt für alle klickbaren Zellen
+        zelle.classList.add('klickbar');
+        
+        // Event-Listener nur hinzufügen, wenn noch nicht vorhanden oder Force-Reattach
+        if (forceReattach || !zelle.dataset.hasEventListener) {
+            // Alten Event-Listener entfernen, falls vorhanden
+            zelle.removeEventListener('click', handleZellenKlickWrapper);
+            
+            // Event-Listener hinzufügen
+            zelle.addEventListener('click', handleZellenKlickWrapper);
+            
+            // Markieren, dass ein Event-Listener hinzugefügt wurde
+            zelle.dataset.hasEventListener = 'true';
+        }
+    });
+}
+
+/**
+ * Wrapper-Funktion für Event-Listener, um Event-Objekt zu übergeben
+ * @param {Event} event - Das Event-Objekt
+ */
+function handleZellenKlickWrapper(event) {
+    // Prüfe zunächst, ob der Klick auf einen Button oder dessen Kinder erfolgte
+    const target = event.target;
+    
+    // Verbesserte Prüfung für den Komponenten-Bearbeiten-Button
+    if (target.classList && target.classList.contains('komponenten-bearbeiten-btn') || 
+        target.closest('.komponenten-bearbeiten-btn') ||
+        target.textContent === '✎' || (target.parentNode && target.parentNode.textContent === '✎')) {
+        
+        console.log('Klick auf Bearbeiten-Button erkannt - wird separat behandelt');
+        
+        // Für den Button selbst sorgen wir dafür, dass das Event weitergeleitet wird
+        const zelle = event.currentTarget;
+        const tag = zelle.dataset.tag;
+        const kategorie = zelle.dataset.kategorie;
+        
+        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+            // Event-Propagation stoppen
+            event.stopPropagation();
+            event.preventDefault();
+            
+            setTimeout(() => {
+                window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+            }, 10);
+        }
+        
         return;
     }
     
-    console.log('Füge Klick-Handler zu Tabellenzellen hinzu', forceReattach ? '(erzwinge Neuverknüpfung)' : '');
-    
-    // Alle Zellen mit einem Klick-Handler versehen
-    const zellen = tabelle.querySelectorAll('td[data-tag]');
-    console.log(`${zellen.length} Zellen gefunden für Klick-Handler`);
-    
-    zellen.forEach(zelle => {
-        // Wenn erzwungene Neuverknüpfung oder noch kein Handler existiert
-        if (forceReattach || zelle.dataset.hasClickHandler !== 'true') {
-            const tag = zelle.dataset.tag;
-            const kategorie = zelle.getAttribute('data-kategorie') || zelle.closest('tr')?.dataset.kategorie;
-            
-            if (!tag || !kategorie) {
-                console.warn('Zelle ohne Tag oder Kategorie gefunden, überspringe');
-                return;
-            }
-            
-            // Bei Neuverknüpfung den alten Event-Listener entfernen
-            if (forceReattach && zelle.dataset.hasClickHandler === 'true') {
-                console.log(`Erneuere Klick-Handler für ${tag}, ${kategorie}`);
-                // Alle bestehenden Klick-Listener entfernen durch Klonen des Elements
-                const oldZelle = zelle;
-                const newZelle = oldZelle.cloneNode(true);
-                oldZelle.parentNode.replaceChild(newZelle, oldZelle);
-                zelle = newZelle; // Referenz aktualisieren
-            }
-            
-            // Sicherstellen, dass die Zelle eine ID hat
-            if (!zelle.id) {
-                zelle.id = `zelle-${tag}-${kategorie}`;
-            }
-            
-            // Klasse für Hover-Effekt hinzufügen
-            zelle.classList.add('klickbar');
-            
-            // Klick-Event hinzufügen
-            zelle.addEventListener('click', async (event) => {
-                // Verhindern, dass das Ereignis mehrfach ausgelöst wird
-                event.stopPropagation();
-                
-                // Visuelles Feedback während der Verarbeitung
-                const originalBackground = zelle.style.backgroundColor;
-                zelle.style.backgroundColor = '#e0e0e0';
-                
-                try {
-                    await handleZellenKlick(zelle, event);
-                } catch (error) {
-                    console.error(`Fehler beim Behandeln des Zellenklicks für ${tag}, ${kategorie}:`, error);
-                    
-                    // Zurück zur ursprünglichen Farbe bei Fehler
-                    zelle.style.backgroundColor = originalBackground;
-                    
-                    // Fehlermeldung anzeigen
-                    alert(`Fehler beim Verarbeiten der Auswahl: ${error.message}`);
-                }
-            });
-            
-            // Markieren, dass Handler hinzugefügt wurde
-            zelle.dataset.hasClickHandler = 'true';
-        }
-    });
-    
-    console.log('Alle Klick-Handler zu Tabellenzellen hinzugefügt');
+    // Wenn es kein Button-Klick war, normal fortfahren
+    handleZellenKlick(event.currentTarget, event);
 }
 
 /**
@@ -1050,55 +1116,58 @@ async function rotierePortionsGroesse(zelle, tag, kategorie) {
                     if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
                         window.KomponentenEditor.erstelleBearbeitenButton(zelle);
                     } else {
-                        // Fallback: Bearbeiten-Button manuell erstellen
-                        let button = document.createElement('button');
-                        button.className = 'komponenten-bearbeiten-btn';
-                        button.title = 'Komponenten bearbeiten';
-                        button.innerHTML = '✎'; // Pencil-Symbol
-                        button.id = `edit-btn-${tag}-${kategorie}`;
-                        button.dataset.tag = tag;
-                        button.dataset.kategorie = kategorie;
-                        
-                        // Wichtige Stile für bessere Clickability
-                        button.style.pointerEvents = 'auto';
-                        button.style.zIndex = '1000';
-                        button.style.position = 'absolute';
-                        button.style.right = '8px';
-                        button.style.display = 'flex';
-                        
-                        // Event-Listener für den Button
-                        button.addEventListener('click', function handleButtonClick(event) {
-                            // Event-Propagation stoppen
-                            event.stopPropagation();
-                            event.preventDefault();
-                            event.cancelBubble = true;
-                            
-                            // Zeitstempel zur Vermeidung von Doppelklicks
-                            const jetzt = Date.now();
-                            const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
-                            if (jetzt - letzterButtonKlick < 300) {
-                                console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
-                                return;
+                        // Verbesserten Bearbeiten-Button erstellen, falls verfügbar
+                        if (typeof erstelleVerbessertesBearbeitenButton === 'function') {
+                            if (neuePortion !== 'none') {
+                                const button = erstelleVerbessertesBearbeitenButton(zelle);
+                                if (button) {
+                                    zelle.appendChild(button);
+                                }
                             }
-                            button.dataset.lastClickTime = jetzt.toString();
-                            
-                            // Editor öffnen
-                            console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
-                            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                                window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                        } else {
+                            // Fallback: Bearbeiten-Button manuell erstellen
+                            if (neuePortion !== 'none') {
+                                let button = document.createElement('button');
+                                button.className = 'komponenten-bearbeiten-btn';
+                                button.title = 'Komponenten bearbeiten';
+                                button.innerHTML = '✎'; // Pencil-Symbol
+                                button.id = `edit-btn-${tag}-${kategorie}`;
+                                button.dataset.tag = tag;
+                                button.dataset.kategorie = kategorie;
+                                
+                                // Wichtige Stile für bessere Clickability
+                                button.style.pointerEvents = 'auto';
+                                button.style.zIndex = '1000';
+                                button.style.position = 'absolute';
+                                button.style.right = '8px';
+                                button.style.display = 'flex';
+                                
+                                // Event-Listener für den Button
+                                button.addEventListener('click', function handleButtonClick(event) {
+                                    // Event-Propagation stoppen
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                    event.cancelBubble = true;
+                                    
+                                    // Zeitstempel zur Vermeidung von Doppelklicks
+                                    const jetzt = Date.now();
+                                    const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
+                                    if (jetzt - letzterButtonKlick < 300) {
+                                        console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
+                                        return;
+                                    }
+                                    button.dataset.lastClickTime = jetzt.toString();
+                                    
+                                    // Editor öffnen
+                                    console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
+                                    if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                                        window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                                    }
+                                });
+                                
+                                zelle.appendChild(button);
                             }
-                        });
-                        
-                        // Zusätzlicher Event-Listener für Touch-Geräte
-                        button.addEventListener('touchend', function(event) {
-                            event.stopPropagation();
-                            event.preventDefault();
-                            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                                window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-                            }
-                        });
-                        
-                        zelle.appendChild(button);
+                        }
                     }
                     
                     // Mobile Ansicht aktualisieren, falls nötig
@@ -1248,19 +1317,52 @@ async function handleZellenKlick(zelle, eventObj) {
         return;
     }
     
-    console.log(`Zelle geklickt: ${tag}, ${kategorie}`);
-    
-    // Prüfen, ob der Klick vom Bearbeiten-Button kam
+    // VERBESSERTE PRÜFUNG AUF BEARBEITEN-BUTTON:
+    // Prüfen, ob der Klick auf den Bearbeiten-Button oder dessen Kinder erfolgte
     if (eventObj && eventObj.target) {
-        // Prüfen, ob das geklickte Element oder eines seiner Elternelemente der Bearbeiten-Button ist
         const target = eventObj.target;
-        const isEditButtonClick = target.classList.contains('komponenten-bearbeiten-btn') || 
-                               target.closest('.komponenten-bearbeiten-btn');
         
-        if (isEditButtonClick) {
-            console.log('Klick kam vom Bearbeiten-Button, wird an KomponentenEditor weitergeleitet');
+        // 1. Prüfen, ob das Ziel selbst der Button ist
+        if (target.classList && target.classList.contains('komponenten-bearbeiten-btn')) {
+            console.log('Klick direkt auf Bearbeiten-Button - Event wird weitergeleitet');
             
-            // Event wird hier nicht mehr ignoriert, sondern direkt den KomponentenEditor öffnen
+            // Sicherstellen, dass das Event nicht die Zelle beeinflusst
+            eventObj.stopPropagation();
+            
+            // KomponentenEditor öffnen, falls verfügbar
+            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                setTimeout(() => {
+                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                }, 10);
+            }
+            return;
+        }
+        
+        // 2. Prüfen, ob das Ziel ein Kind des Bearbeiten-Buttons ist
+        const parentButton = target.closest('.komponenten-bearbeiten-btn');
+        if (parentButton) {
+            console.log('Klick auf Element innerhalb des Bearbeiten-Buttons - Event wird weitergeleitet');
+            
+            // Sicherstellen, dass das Event nicht die Zelle beeinflusst
+            eventObj.stopPropagation();
+            
+            // KomponentenEditor öffnen, falls verfügbar
+            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                setTimeout(() => {
+                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                }, 10);
+            }
+            return;
+        }
+        
+        // 3. Zusätzlich: Prüfen, ob der Klick auf das Pencil-Symbol (✎) erfolgt ist
+        if (target.textContent === '✎' || (target.parentNode && target.parentNode.textContent === '✎')) {
+            console.log('Klick auf Pencil-Symbol - Event wird weitergeleitet');
+            
+            // Sicherstellen, dass das Event nicht die Zelle beeinflusst
+            eventObj.stopPropagation();
+            
+            // KomponentenEditor öffnen, falls verfügbar
             if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
                 setTimeout(() => {
                     window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
@@ -1269,6 +1371,8 @@ async function handleZellenKlick(zelle, eventObj) {
             return;
         }
     }
+    
+    console.log(`Zelle geklickt: ${tag}, ${kategorie}`);
     
     // Prüfen, ob der letzte Klick zu kurz her ist (Schutz vor ungewollten Doppelklicks)
     if (zelle.dataset.lastClickTime) {
@@ -1505,47 +1609,57 @@ async function handleZellenKlick(zelle, eventObj) {
                     if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
                         window.KomponentenEditor.erstelleBearbeitenButton(zelle);
                     } else {
-                        // Fallback: Bearbeiten-Button manuell erstellen
-                        if (neuePortion !== 'none') {
-                            let button = document.createElement('button');
-                            button.className = 'komponenten-bearbeiten-btn';
-                            button.title = 'Komponenten bearbeiten';
-                            button.innerHTML = '✎'; // Pencil-Symbol
-                            button.id = `edit-btn-${tag}-${kategorie}`;
-                            button.dataset.tag = tag;
-                            button.dataset.kategorie = kategorie;
-                            
-                            // Wichtige Stile für bessere Clickability
-                            button.style.pointerEvents = 'auto';
-                            button.style.zIndex = '1000';
-                            button.style.position = 'absolute';
-                            button.style.right = '8px';
-                            button.style.display = 'flex';
-                            
-                            // Event-Listener für den Button
-                            button.addEventListener('click', function handleButtonClick(event) {
-                                // Event-Propagation stoppen
-                                event.stopPropagation();
-                                event.preventDefault();
-                                event.cancelBubble = true;
-                                
-                                // Zeitstempel zur Vermeidung von Doppelklicks
-                                const jetzt = Date.now();
-                                const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
-                                if (jetzt - letzterButtonKlick < 300) {
-                                    console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
-                                    return;
+                        // Verbesserten Bearbeiten-Button erstellen, falls verfügbar
+                        if (typeof erstelleVerbessertesBearbeitenButton === 'function') {
+                            if (neuePortion !== 'none') {
+                                const button = erstelleVerbessertesBearbeitenButton(zelle);
+                                if (button) {
+                                    zelle.appendChild(button);
                                 }
-                                button.dataset.lastClickTime = jetzt.toString();
+                            }
+                        } else {
+                            // Fallback: Bearbeiten-Button manuell erstellen
+                            if (neuePortion !== 'none') {
+                                let button = document.createElement('button');
+                                button.className = 'komponenten-bearbeiten-btn';
+                                button.title = 'Komponenten bearbeiten';
+                                button.innerHTML = '✎'; // Pencil-Symbol
+                                button.id = `edit-btn-${tag}-${kategorie}`;
+                                button.dataset.tag = tag;
+                                button.dataset.kategorie = kategorie;
                                 
-                                // Editor öffnen
-                                console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
-                                if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-                                }
-                            });
-                            
-                            zelle.appendChild(button);
+                                // Wichtige Stile für bessere Clickability
+                                button.style.pointerEvents = 'auto';
+                                button.style.zIndex = '1000';
+                                button.style.position = 'absolute';
+                                button.style.right = '8px';
+                                button.style.display = 'flex';
+                                
+                                // Event-Listener für den Button
+                                button.addEventListener('click', function handleButtonClick(event) {
+                                    // Event-Propagation stoppen
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                    event.cancelBubble = true;
+                                    
+                                    // Zeitstempel zur Vermeidung von Doppelklicks
+                                    const jetzt = Date.now();
+                                    const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
+                                    if (jetzt - letzterButtonKlick < 300) {
+                                        console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
+                                        return;
+                                    }
+                                    button.dataset.lastClickTime = jetzt.toString();
+                                    
+                                    // Editor öffnen
+                                    console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
+                                    if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                                        window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                                    }
+                                });
+                                
+                                zelle.appendChild(button);
+                            }
                         }
                     }
                     
@@ -1910,6 +2024,114 @@ function findeTabellenZelle(tabelle, tag, kategorie) {
     return zelle;
 }
 
+/**
+ * Verbessert den Komponenten-Bearbeiten-Button visuell und funktional
+ * @param {HTMLElement} zelle - Die Zelle, für die der Button erstellt wird
+ * @returns {HTMLElement} - Der erstellte Button
+ */
+function erstelleVerbessertesBearbeitenButton(zelle) {
+    const tag = zelle.dataset.tag;
+    const kategorie = zelle.dataset.kategorie;
+    
+    if (!tag || !kategorie) {
+        console.warn('Keine Tag/Kategorie-Info für Button verfügbar');
+        return null;
+    }
+    
+    // Alten Button entfernen, falls vorhanden
+    const oldButton = zelle.querySelector('.komponenten-bearbeiten-btn');
+    if (oldButton) {
+        oldButton.remove();
+    }
+    
+    // Neuen Button erstellen
+    const button = document.createElement('button');
+    button.className = 'komponenten-bearbeiten-btn';
+    button.title = 'Komponenten bearbeiten';
+    button.innerHTML = '<span class="pencil-icon">✎</span>'; // Pencil-Symbol in einem Span für besseres Styling
+    button.id = `edit-btn-${tag}-${kategorie}`;
+    button.dataset.tag = tag;
+    button.dataset.kategorie = kategorie;
+    
+    // Wichtige Stile für bessere Klickbarkeit direkt anwenden
+    button.style.position = 'absolute';
+    button.style.right = '5px';
+    button.style.top = '5px';
+    button.style.width = '26px';
+    button.style.height = '26px';
+    button.style.padding = '2px';
+    button.style.border = '1px solid #ccc';
+    button.style.borderRadius = '4px';
+    button.style.backgroundColor = 'white';
+    button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+    button.style.cursor = 'pointer';
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    button.style.zIndex = '1000';
+    button.style.pointerEvents = 'auto'; // Wichtig für korrekte Klick-Erkennung
+    
+    // Spezielle Stile für den Button-Inhalt
+    const pencilIcon = button.querySelector('.pencil-icon');
+    if (pencilIcon) {
+        pencilIcon.style.fontSize = '16px';
+        pencilIcon.style.pointerEvents = 'none'; // Verhindert, dass das Icon selbst Klicks abfängt
+    }
+    
+    // Ereignisse stoppen, damit sie nicht an die Zelle weitergegeben werden
+    button.addEventListener('click', (event) => {
+        console.log('Direkter Klick auf Bearbeiten-Button registriert');
+        event.stopPropagation();
+        event.preventDefault();
+        
+        // Zeitstempel zur Vermeidung von Doppelklicks
+        const jetzt = Date.now();
+        const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
+        if (jetzt - letzterButtonKlick < 300) {
+            console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
+            return;
+        }
+        button.dataset.lastClickTime = jetzt.toString();
+        
+        // Editor öffnen
+        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+        }
+    });
+    
+    // Auch für Touch-Geräte funktioniert der Button
+    button.addEventListener('touchstart', (event) => {
+        event.stopPropagation();
+    });
+    
+    button.addEventListener('touchend', (event) => {
+        console.log('Touch-Ende auf Bearbeiten-Button registriert');
+        event.stopPropagation();
+        event.preventDefault();
+        
+        // Zeitstempel zur Vermeidung von Doppelklicks
+        const jetzt = Date.now();
+        const letzterButtonKlick = parseInt(button.dataset.lastTouchTime || '0');
+        if (jetzt - letzterButtonKlick < 300) {
+            console.log('Touch auf Bearbeiten-Button zu schnell nach vorherigem Touch - ignoriert');
+            return;
+        }
+        button.dataset.lastTouchTime = jetzt.toString();
+        
+        // Editor öffnen
+        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+        }
+    });
+    
+    // Damit der Button in relativen Containern korrekt positioniert wird
+    if (window.getComputedStyle(zelle).position === 'static') {
+        zelle.style.position = 'relative';
+    }
+    
+    return button;
+}
+
 // Module exportieren
 export {
     initialisiere,
@@ -1923,5 +2145,6 @@ export {
     aktualisiereZellInMobileAnsicht,
     aktualisiereZellenInMobileAnsicht,
     handleZellenKlick,
-    ladeBewohnerAuswahl
+    ladeBewohnerAuswahl,
+    erstelleVerbessertesBearbeitenButton
 }; 

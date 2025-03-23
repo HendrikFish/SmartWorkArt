@@ -5,6 +5,7 @@
 
 // Module-Imports
 import * as BewohnerAuswahl from './bewohnerAuswahl.js';
+import { erstelleVerbessertesBearbeitenButton } from './bewohnerAuswahl.js';
 
 // Globale Variablen
 let aktiveZelle = null;
@@ -818,6 +819,16 @@ function aktualisiereZellenDarstellung(zelle, ausgeschlosseneKomponenten, extraM
  * @param {HTMLElement} zelle - Die Tabellenzelle, die einen Bearbeiten-Button erhalten soll
  */
 function erstelleBearbeitenButton(zelle) {
+    // Verwende den verbesserten Button, wenn verfügbar
+    if (typeof erstelleVerbessertesBearbeitenButton === 'function') {
+        const button = erstelleVerbessertesBearbeitenButton(zelle);
+        if (button) {
+            zelle.appendChild(button);
+            return;
+        }
+    }
+
+    // Fallback zur ursprünglichen Implementierung
     // Prüfen, ob bereits ein Button existiert
     let button = zelle.querySelector('.komponenten-bearbeiten-btn');
     const tag = zelle.dataset.tag;
@@ -1042,7 +1053,7 @@ function initialisiere() {
         });
 }
 
-// Module exportieren 
+// Module exportieren
 export {
     initialisiere,
     oeffneKomponentenEditor,
