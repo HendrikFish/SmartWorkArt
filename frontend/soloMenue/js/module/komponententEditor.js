@@ -123,20 +123,20 @@ async function ladeExtraWuensche() {
 }
 
 /**
- * Öffnet das Panel zur Bearbeitung einer Essenskomponente
- * @param {HTMLElement} zelle - Die Tabellenzelle, die bearbeitet werden soll
+ * Öffnet den Komponenten-Editor für eine bestimmte Zelle
+ * @param {HTMLElement} zelle - Die Zelle, für die der Editor geöffnet werden soll
  * @param {string} tag - Der Tag (z.B. "Montag")
- * @param {string} kategorie - Die Kategorie (z.B. "suppe" oder "extra_kaltePlatte")
+ * @param {string} kategorie - Die Kategorie (z.B. "suppe")
  */
 async function oeffneKomponentenEditor(zelle, tag, kategorie) {
-    // Prüfen, ob der letzte Klick auf der Zelle erst kurz her ist (um Öffnen durch schnelles Doppelklicken zu verhindern)
-    const letzterZellenKlick = parseInt(zelle.dataset.lastClickTime || '0');
-    const jetzt = Date.now();
+    console.log(`Öffne Komponenten-Editor für: ${tag}, ${kategorie}`);
     
-    // Wenn der letzte Klick weniger als 300ms her ist, könnte es ein unbeabsichtigter "zweiter Klick" sein
-    // In diesem Fall nicht den Editor öffnen, um unbeabsichtigte Aktionen zu vermeiden
-    if (jetzt - letzterZellenKlick < 300) {
-        console.log('Vermeide unbeabsichtigtes Öffnen durch schnelles Doppelklicken');
+    // Wenn schon ein Editor geöffnet ist, diesen schließen
+    schliessePanel();
+    
+    // Prüfen, ob alle Parameter vorhanden sind
+    if (!zelle || !tag || !kategorie) {
+        console.error('Fehlende Parameter für Komponenten-Editor:', { zelle, tag, kategorie });
         return;
     }
     
@@ -145,14 +145,27 @@ async function oeffneKomponentenEditor(zelle, tag, kategorie) {
     aktiverTag = tag;
     aktiveKategorie = kategorie;
 
-    // Prüfen, ob ein Bewohner ausgewählt ist
-    const bewohnerAuswahl = BewohnerAuswahl.getAktuelleBewohnerAuswahl();
-    if (!bewohnerAuswahl) {
-        alert('Bitte wählen Sie zuerst einen Bewohner aus.');
-        return;
-    }
-
     try {
+        // Prüfen, ob ein Bewohner ausgewählt ist
+        let bewohnerAuswahl;
+        try {
+            bewohnerAuswahl = BewohnerAuswahl.getAktuelleBewohnerAuswahl();
+            console.log("Bewohnerauswahl erhalten:", bewohnerAuswahl ? "Ja" : "Nein");
+        } catch (auswahlfehler) {
+            console.error("Fehler beim Abrufen der Bewohnerauswahl:", auswahlfehler);
+            if (typeof BewohnerAuswahl !== 'undefined') {
+                console.log("BewohnerAuswahl-Modul verfügbar:", Object.keys(BewohnerAuswahl));
+            } else {
+                console.error("BewohnerAuswahl-Modul nicht definiert");
+            }
+            throw new Error(`Konnte Bewohnerauswahl nicht abrufen: ${auswahlfehler.message}`);
+        }
+        
+        if (!bewohnerAuswahl) {
+            alert('Bitte wählen Sie zuerst einen Bewohner aus.');
+            return;
+        }
+
         // Extra-Menüs und Wünsche laden, falls noch nicht geladen
         // Daten laden, falls die Arrays leer sind
         const ladeBeladePromises = [];
@@ -180,7 +193,9 @@ async function oeffneKomponentenEditor(zelle, tag, kategorie) {
         const panel = erstellePanel();
         const content = document.getElementById('komponenten-editor-content');
 
-        if (!content) return;
+        if (!content) {
+            throw new Error("Komponenten-Editor-Content-Element nicht gefunden");
+        }
 
         // Inhalt des Panels aktualisieren
         content.innerHTML = erzeugeKomponentenEditorHTML(komponentenDaten);
@@ -194,7 +209,8 @@ async function oeffneKomponentenEditor(zelle, tag, kategorie) {
         if (overlay) overlay.classList.add('active');
     } catch (error) {
         console.error('Fehler beim Öffnen des Komponenten-Editors:', error);
-        alert('Fehler beim Laden der Komponenten-Daten. Bitte versuchen Sie es erneut.');
+        // Detaillierte Fehlermeldung anzeigen
+        alert(`Fehler beim Laden der Komponenten-Daten: ${error.message || 'Unbekannter Fehler'}`);
     }
 }
 

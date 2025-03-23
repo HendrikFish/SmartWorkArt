@@ -23,7 +23,14 @@ window.aktuellerBewohner = null;
 // Module global verfügbar machen für Modulkommunikation
 window.BewohnerDate = BewohnerDate;
 window.TabeleAdd = TabeleAdd;
-window.KomponentenEditor = KomponentenEditor;
+
+// Stellen wir sicher, dass das KomponentenEditor-Modul korrekt global verfügbar ist
+if (KomponentenEditor) {
+    console.log('KomponentenEditor-Modul wird global verfügbar gemacht');
+    window.KomponentenEditor = KomponentenEditor;
+} else {
+    console.error('KomponentenEditor-Modul konnte nicht global verfügbar gemacht werden - Modul nicht definiert');
+}
 
 // Globales Datenobjekt für den KomponentenEditor erstellen
 window.KomponentenEditorData = {
@@ -113,6 +120,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         BewohnerButton.initialisiere();
         
+        // Hinzufügen der fehlenden Initialisierung für FunktionenTabelle
+        FunktionenTabelle.initialisiere();
+        
         // UI-Komponenten initialisieren
         initBurgerMenu();
         initSeitenwahl();
@@ -126,9 +136,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             Kalenderwoche.initialisiere();
         }
         
-        // Initialisierung der Menüplantabelle nach der Kalenderwoche
-        console.log('Initialisiere FunktionenTabelle-Modul');
-        FunktionenTabelle.initialisiere();
+        // KomponentenEditor als letztes initialisieren
+        console.log('Initialisiere KomponentenEditor-Modul');
+        if (typeof KomponentenEditor !== 'undefined' && typeof KomponentenEditor.initialisiere === 'function') {
+            KomponentenEditor.initialisiere();
+            // Erneut global verfügbar machen für den Fall, dass es Probleme gab
+            window.KomponentenEditor = KomponentenEditor;
+            console.log('KomponentenEditor global neu zugewiesen');
+        } else {
+            console.error('KomponentenEditor-Modul konnte nicht initialisiert werden - nicht definiert oder keine initialisiere-Funktion');
+        }
         
         // Initialisierung abgeschlossen 
         console.log('Initialisierung abgeschlossen');
