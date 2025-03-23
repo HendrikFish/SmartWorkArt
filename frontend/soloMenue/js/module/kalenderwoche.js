@@ -129,8 +129,6 @@ function aktualisiereKalenderwocheAnzeige() {
  * @param {number} jahr - Das Jahr
  */
 function setzeKalenderwoche(kw, jahr) {
-    console.log(`Debug: setzeKalenderwoche aufgerufen mit kw=${kw}, jahr=${jahr}`);
-    
     // Sicherstellen, dass KW und Jahr gültige Werte haben
     if (kw < 1) {
         kw = 52;
@@ -138,12 +136,6 @@ function setzeKalenderwoche(kw, jahr) {
     } else if (kw > 52) {
         kw = 1;
         jahr++;
-    }
-    
-    // Parameter prüfen
-    if (!kw || !jahr) {
-        console.error('Ungültige Kalenderwoche oder Jahr');
-        return;
     }
     
     // Kalenderwochendaten berechnen
@@ -162,21 +154,6 @@ function setzeKalenderwoche(kw, jahr) {
     
     // Für Debugging-Zwecke
     logKalenderwoche('Kalenderwoche gesetzt');
-    
-    // Event auslösen, dass sich die Kalenderwoche geändert hat
-    const event = new CustomEvent('kalenderwocheChanged', {
-        detail: {
-            kw: aktuelleKalenderwoche.kw,
-            jahr: aktuelleKalenderwoche.jahr,
-            startDatum: aktuelleKalenderwoche.startDatum,
-            endDatum: aktuelleKalenderwoche.endDatum
-        }
-    });
-    
-    console.log(`Debug: Löse Event 'kalenderwocheChanged' aus mit kw=${aktuelleKalenderwoche.kw}, jahr=${aktuelleKalenderwoche.jahr}`);
-    document.dispatchEvent(event);
-    
-    console.log(`Debug: Event 'kalenderwocheChanged' wurde ausgelöst`);
 }
 
 /**
@@ -246,6 +223,81 @@ function getAktuelleKalenderwoche() {
     };
 }
 
+/**
+ * Wechselt zur angegebenen Kalenderwoche im angegebenen Jahr
+ * @param {number} kw - Die Kalenderwoche
+ * @param {number} jahr - Das Jahr
+ * @returns {Promise<void>}
+ */
+async function wechsleZuKalenderwoche(kw, jahr) {
+    // Validierung der Eingaben
+    if (!kw || kw < 1 || kw > 53) {
+        console.error(`Ungültige Kalenderwoche: ${kw}`);
+        return;
+    }
+    
+    if (!jahr || jahr < 2000 || jahr > 2100) {
+        console.error(`Ungültiges Jahr: ${jahr}`);
+        return;
+    }
+    
+    try {
+        // Format: /api/solomenue/wochentage/2023/KW35
+        const url = `/api/solomenue/wochentage/${jahr}/KW${kw}`;
+        console.log(`Lade Wochentage für KW ${kw}/${jahr} von ${url}`);
+        
+        // Daten vom Server abrufen
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP-Fehler: ${response.status}`);
+        }
+        
+        // Daten aus der Antwort extrahieren
+        const wochentage = await response.json();
+        console.log('Geladene Wochentage:', wochentage);
+        
+        // Wochentage im globalen Objekt speichern
+        window.wochentage = wochentage;
+        window.aktuelleKW = kw;
+        window.aktuellesJahr = jahr;
+        
+        // Anzeige aktualisieren
+        const displayElement = document.getElementById('current-week-display');
+        if (displayElement) {
+            const formattiertesDatum = formatiereWochenDatum(wochentage);
+            displayElement.innerHTML = `KW ${kw}/${jahr}<br>${formattiertesDatum}`;
+        }
+        
+        // Event auslösen, um andere Module zu informieren
+        const event = new CustomEvent('kalenderwocheChanged', {
+            detail: {
+                kw: kw,
+                jahr: jahr,
+                wochentage: wochentage
+            }
+        });
+        
+        // Das Event loggen und dann dispatchen
+        console.log('Löse kalenderwocheChanged-Event aus mit Detail:', event.detail);
+        document.dispatchEvent(event);
+        
+        return wochentage;
+        
+    } catch (error) {
+        console.error('Fehler beim Wechseln der Kalenderwoche:', error);
+        // Event für Fehler auslösen
+        const errorEvent = new CustomEvent('kalenderwocheChangedError', {
+            detail: {
+                kw: kw,
+                jahr: jahr,
+                error: error.message
+            }
+        });
+        document.dispatchEvent(errorEvent);
+    }
+}
+
 // Module exportieren
 export {
     initialisiere,
@@ -256,5 +308,6 @@ export {
     naechsteKalenderwoche,
     vorherigeKalenderwoche,
     getAktuelleKalenderwoche,
-    setzeAktuelleKalenderwoche
+    setzeAktuelleKalenderwoche,
+    wechsleZuKalenderwoche
 };

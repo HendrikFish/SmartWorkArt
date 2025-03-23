@@ -419,7 +419,6 @@ async function zeigeMenueplanTabelle(containerId, kw, jahr) {
 function aktualisiereNachKalenderwocheAenderung(event) {
     const { kw, jahr } = event.detail;
     console.log(`Kalenderwochen-Handler: KW${kw}/${jahr}`);
-    console.log(`Debug: Event kalenderwocheChanged empfangen, aktualisiere Menüplantabelle für KW${kw}/${jahr}`);
     
     // Menüplantabelle aktualisieren
     zeigeMenueplanTabelle('menueplan-container', kw, jahr);
@@ -501,13 +500,10 @@ function aktualisiereNachBewohnerAuswahl() {
  * Initialisiert die Menüplantabelle
  */
 function initialisiere() {
-    console.log('Debug: FunktionenTabelle.initialisiere() wird aufgerufen');
-    
     // Container für die Menüplantabelle erstellen, falls noch nicht vorhanden
     let menuplanContainer = document.getElementById('menueplan-container');
     
     if (!menuplanContainer) {
-        console.log('Debug: Menüplan-Container nicht gefunden, erstelle neuen Container');
         menuplanContainer = document.createElement('section');
         menuplanContainer.id = 'menueplan-container';
         menuplanContainer.classList.add('menueplan-container');
@@ -515,24 +511,17 @@ function initialisiere() {
         // Container im DOM platzieren (nach dem Bewohner-Container)
         const bewohnerContainer = document.getElementById('bewohner-container');
         if (bewohnerContainer && bewohnerContainer.parentNode) {
-            console.log('Debug: Füge Menüplan-Container nach Bewohner-Container ein');
             bewohnerContainer.parentNode.insertBefore(menuplanContainer, bewohnerContainer.nextSibling);
         } else {
             // Alternativ an main anhängen
-            console.log('Debug: Bewohner-Container nicht gefunden, füge Menüplan-Container an main an');
             const main = document.querySelector('main');
             if (main) {
                 main.appendChild(menuplanContainer);
-            } else {
-                console.error('Debug: Weder Bewohner-Container noch main-Element gefunden!');
             }
         }
-    } else {
-        console.log('Debug: Menüplan-Container bereits vorhanden');
     }
     
     // Event-Listener für Änderungen der Kalenderwoche
-    console.log('Debug: Füge Event-Listener für kalenderwocheChanged hinzu');
     document.addEventListener('kalenderwocheChanged', aktualisiereNachKalenderwocheAenderung);
     
     // Event-Listener für Fenstergröße hinzufügen, um bei Größenänderung die Mobilansicht anzupassen
@@ -570,10 +559,7 @@ function initialisiere() {
     const kw = getWeekNumber(heute);
     const jahr = heute.getFullYear();
     
-    console.log(`Debug: Zeige initiale Menüplantabelle für KW${kw}/${jahr}`);
     zeigeMenueplanTabelle('menueplan-container', kw, jahr);
-    
-    console.log('Debug: FunktionenTabelle.initialisiere() abgeschlossen');
 }
 
 /**

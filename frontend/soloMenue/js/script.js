@@ -4,14 +4,14 @@
  */
 
 // Module importieren
-import * as FunktionenTabelle from './module/funktionenTabelle.js';
+import * as Kalenderwoche from './module/kalenderwoche.js';
 import * as BewohnerDate from './module/bewohnerDate.js';
 import * as BearbeitungsPanel from './module/bearbeitungsPanel.js';
 import * as BewohnerButton from './module/bewohnerButton.js';
+import * as FunktionenTabelle from './module/funktionenTabelle.js';
 import * as TabeleAdd from './module/tabeleAdd.js';
 import * as BewohnerAuswahl from './module/bewohnerAuswahl.js';
 import * as KomponentenEditor from './module/komponententEditor.js';
-import * as Kalenderwoche from './module/kalenderwoche.js';
 
 // Aktuell ausgewählter Bewohner für die Menüplanung
 let aktuellerBewohner = null;
@@ -23,20 +23,51 @@ window.aktuellerBewohner = null;
 // Module global verfügbar machen für Modulkommunikation
 window.BewohnerDate = BewohnerDate;
 window.TabeleAdd = TabeleAdd;
-
-// Stellen wir sicher, dass das KomponentenEditor-Modul korrekt global verfügbar ist
-if (KomponentenEditor) {
-    console.log('KomponentenEditor-Modul wird global verfügbar gemacht');
-    window.KomponentenEditor = KomponentenEditor;
-} else {
-    console.error('KomponentenEditor-Modul konnte nicht global verfügbar gemacht werden - Modul nicht definiert');
-}
+window.KomponentenEditor = KomponentenEditor;
 
 // Globales Datenobjekt für den KomponentenEditor erstellen
 window.KomponentenEditorData = {
     extraMenues: [],
     extraWuensche: []
 };
+
+// Initialisiert den "Nach oben"-Button für die mobile Ansicht
+function initialisiereNachObenButton() {
+    const nachObenButton = document.getElementById('nach-oben-button');
+    const bewohnerContainer = document.getElementById('bewohner-container');
+    const kalenderContainer = document.getElementById('kalenderwochen-container');
+    
+    // Button nur anzeigen, wenn wir unter den Bewohner-Container scrollen
+    window.addEventListener('scroll', () => {
+        // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+        const isTabletOrMobile = window.innerWidth <= 1000 || 
+                               /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+                               
+        if (isTabletOrMobile) {
+            // Position des Bewohner-Containers
+            const bewohnerPosition = bewohnerContainer.getBoundingClientRect().bottom;
+            
+            // Button anzeigen, wenn wir unter den Bewohner-Container gescrollt haben
+            if (bewohnerPosition < 0) {
+                nachObenButton.style.display = 'flex';
+            } else {
+                nachObenButton.style.display = 'none';
+            }
+        } else {
+            // Auf Desktop-Geräten immer ausblenden
+            nachObenButton.style.display = 'none';
+        }
+    });
+    
+    // Bei Klick zum Kalender- und Bewohner-Container scrollen
+    nachObenButton.addEventListener('click', () => {
+        // Schneller Bildlaufeffekt nach oben
+        scrollMitEffekt(kalenderContainer.offsetTop, 500);
+    });
+    
+    // Initial ausblenden
+    nachObenButton.style.display = 'none';
+}
 
 /**
  * Scrollt mit einem schnellen Bildlaufeffekt zur angegebenen Position
@@ -69,110 +100,83 @@ function scrollMitEffekt(zielPosition, dauer) {
     requestAnimationFrame(animation);
 }
 
-// Initialisierung, wenn DOMContent geladen ist
+// Warten, bis das DOM vollständig geladen ist
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded - Initialisierung der Anwendung');
-    
-    // Module initialisieren
     try {
+        console.log('Initialisiere SoloMenü-Anwendung...');
+
+        // Spezielles Debugging für Kalenderwochenänderungen
+        console.log("Debug: Füge direkten Event-Listener für Button-Klicks hinzu");
+        const nextWeekBtn = document.getElementById('next-week-btn');
+        const prevWeekBtn = document.getElementById('prev-week-btn');
+        
+        if (nextWeekBtn) {
+            nextWeekBtn.addEventListener('click', () => {
+                console.log("[DEBUG] Direkt-Event: Next-Week-Button wurde geklickt");
+            });
+        }
+        
+        if (prevWeekBtn) {
+            prevWeekBtn.addEventListener('click', () => {
+                console.log("[DEBUG] Direkt-Event: Prev-Week-Button wurde geklickt");
+            });
+        }
+        
+        // Event-Listener für kalenderwocheChanged-Event
+        document.addEventListener('kalenderwocheChanged', (debugEvent) => {
+            console.log('[DEBUG] kalenderwocheChanged-Event empfangen:', 
+                        `KW${debugEvent.detail.kw}/${debugEvent.detail.jahr}`,
+                        'Aktueller Bewohner:', aktuellerBewohner ? 
+                        `${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName}` : 'Keiner');
+        });
+
+        // Kalenderwochen-Funktionalität initialisieren
+        Kalenderwoche.initialisiere();
+        console.log('Kalenderwoche-Modul initialisiert');
+
+        // Bewohnerdaten initialisieren
         await BewohnerDate.initialisiere();
-        BewohnerAuswahl.initialisiere();
+        console.log('BewohnerDate-Modul initialisiert');
+
+        // Bearbeitungspanel initialisieren (falls vorhanden)
         if (typeof BearbeitungsPanel.initialisiere === 'function') {
             BearbeitungsPanel.initialisiere();
+            console.log('BearbeitungsPanel-Modul initialisiert');
         }
-        BewohnerButton.initialisiere();
-        
-        // Hinzufügen der fehlenden Initialisierung für FunktionenTabelle
-        FunktionenTabelle.initialisiere();
-        
-        // Nach-Oben-Button initialisieren
-        const nachObenButton = document.getElementById('nach-oben-button');
-        if (nachObenButton) {
-            console.log('Nach-Oben-Button gefunden, füge Event-Listener hinzu');
-            // Bei Klick zum Kalender- und Bewohner-Container scrollen
-            nachObenButton.addEventListener('click', () => {
-                const kalenderContainer = document.getElementById('kalenderwochen-container');
-                if (kalenderContainer) {
-                    // Schneller Bildlaufeffekt nach oben
-                    scrollMitEffekt(kalenderContainer.offsetTop, 500);
-                }
-            });
-            
-            // Initial ausblenden
-            nachObenButton.style.display = 'none';
-            
-            // Button nur anzeigen, wenn wir unter den Bewohner-Container scrollen
-            window.addEventListener('scroll', () => {
-                const bewohnerContainer = document.getElementById('bewohner-container');
-                if (!bewohnerContainer) return;
-                
-                // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
-                const isTabletOrMobile = window.innerWidth <= 1000 || 
-                                      /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
-                                      
-                if (isTabletOrMobile) {
-                    // Position des Bewohner-Containers
-                    const bewohnerPosition = bewohnerContainer.getBoundingClientRect().bottom;
-                    
-                    // Button anzeigen, wenn wir unter den Bewohner-Container gescrollt haben
-                    if (bewohnerPosition < 0) {
-                        nachObenButton.style.display = 'flex';
-                    } else {
-                        nachObenButton.style.display = 'none';
-                    }
-                } else {
-                    // Auf Desktop-Geräten immer ausblenden
-                    nachObenButton.style.display = 'none';
-                }
-            });
-        } else {
-            console.warn('Nach-Oben-Button nicht gefunden');
+
+        // BewohnerButton-Modul initialisieren (für einheitliche Kartenbreite)
+        if (typeof BewohnerButton.initialisiere === 'function') {
+            BewohnerButton.initialisiere();
+            console.log('BewohnerButton-Modul initialisiert');
+        }
+
+        // FunktionenTabelle-Modul initialisieren (für Menüplan-Tabelle)
+        if (typeof FunktionenTabelle.initialisiere === 'function') {
+            FunktionenTabelle.initialisiere();
+            console.log('FunktionenTabelle-Modul initialisiert');
         }
         
-        // UI-Komponenten initialisieren
-        initBurgerMenu();
-        initSeitenwahl();
-        initScrollToTop();
-        
-        // Bewohnerbereich und Bewohnerkarten initialisieren
-        initialisiereBewohnerBereich();
-        
-        // Kalenderwochensteuerung initialisieren
-        if (typeof Kalenderwoche.initialisiere === 'function') {
-            Kalenderwoche.initialisiere();
+        // TabeleAdd-Modul initialisieren (für Hinzufügen von Kategorien)
+        if (typeof TabeleAdd.initialisiere === 'function') {
+            await TabeleAdd.initialisiere();
+            console.log('TabeleAdd-Modul initialisiert');
         }
         
-        // KomponentenEditor als letztes initialisieren
-        console.log('Initialisiere KomponentenEditor-Modul');
-        if (typeof KomponentenEditor !== 'undefined' && typeof KomponentenEditor.initialisiere === 'function') {
-            KomponentenEditor.initialisiere();
-            // Erneut global verfügbar machen für den Fall, dass es Probleme gab
-            window.KomponentenEditor = KomponentenEditor;
-            console.log('KomponentenEditor global neu zugewiesen');
-        } else {
-            console.error('KomponentenEditor-Modul konnte nicht initialisiert werden - nicht definiert oder keine initialisiere-Funktion');
-        }
-        
-        // Event-Listener für den Kategoriebutton hinzufügen
-        const addKategorieBtn = document.getElementById('add-kategorie-btn');
-        if (addKategorieBtn) {
-            console.log('Füge Event-Listener zum Kategorie-Button hinzu');
-            addKategorieBtn.addEventListener('click', () => {
-                if (TabeleAdd && typeof TabeleAdd.oeffneKategorieFormular === 'function') {
-                    console.log('Öffne Kategorieformular');
-                    TabeleAdd.oeffneKategorieFormular();
-                } else {
-                    console.error('TabeleAdd.oeffneKategorieFormular ist nicht verfügbar');
-                }
-            });
-        } else {
-            console.warn('Kategorie-Button nicht gefunden');
-        }
-        
-        // Initialisierung abgeschlossen 
-        console.log('Initialisierung abgeschlossen');
+        // BewohnerAuswahl-Modul initialisieren (für Essensauswahl)
+        BewohnerAuswahl.initialisiere();
+        console.log('BewohnerAuswahl-Modul initialisiert');
+
+        // KomponentenEditor-Modul initialisieren (für Komponenten-Editor)
+        KomponentenEditor.initialisiere();
+        console.log('KomponentenEditor-Modul initialisiert');
+
+        // Nach oben Button für mobile Ansicht initialisieren
+        initialisiereNachObenButton();
+        console.log('Nach oben Button initialisiert');
+
+        console.log('SoloMenü-Anwendung erfolgreich initialisiert');
     } catch (error) {
-        console.error('Fehler bei der Initialisierung:', error);
+        console.error('Fehler bei der Initialisierung der Anwendung:', error);
     }
 });
 
@@ -351,31 +355,172 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
 // Funktion global verfügbar machen
 window.zeigeAktivenBewohnerIndikator = zeigeAktivenBewohnerIndikator;
 
-/**
- * Initialisiert den Bewohnerbereich und fügt Event-Listener hinzu
- */
-function initialisiereBewohnerBereich() {
-    console.log('Initialisiere Bewohnerbereich');
-    
-    // Event-Listener für Bewohner-Karten hinzufügen
-    document.addEventListener('bewohnerCardClicked', async (event) => {
-        const { bewohner } = event.detail;
-        console.log(`Bewohner angeklickt: ${bewohner.firstName} ${bewohner.lastName}`);
+// Neuer Event-Listener für Klicks auf die Bewohnerkarte (ohne Button)
+document.addEventListener('bewohnerCardClicked', async (event) => {
+    try {
+        const bewohner = event.detail.bewohner;
+        const bewohnerCard = event.detail.cardElement;
+        console.log('Bewohner ausgewählt für Essensauswahl:', bewohner);
         
-        // Aktiven Bewohner in BewohnerAuswahl-Modul setzen und Auswahl laden
-        try {
-            const result = await BewohnerAuswahl.setzeAktuellenBewohner(bewohner);
-            
-            // Aktiven Bewohner Indikator anzeigen
-            zeigeAktivenBewohnerIndikator(bewohner, result.isExisting);
-            
-            // Bewohnerkarte visuell als aktiv markieren
-            BewohnerAuswahl.markiereBewohnerKarteAlsAktiv(bewohner);
-        } catch (error) {
-            console.error('Fehler beim Setzen des Bewohners:', error);
+        // Bewohner-ID für globalen Zugriff speichern (falls bewohnerDate.js diese Information benötigt)
+        if (window.BewohnerDate && typeof BewohnerDate.setzeGlobalAktivenBewohner === 'function') {
+            const bewohnerId = `${bewohner.firstName}_${bewohner.lastName}`.trim().toLowerCase().replace(/\s+/g, '_');
+            BewohnerDate.setzeGlobalAktivenBewohner(bewohnerId);
         }
-    });
-}
+        
+        // Alle Karten deaktivieren
+        const alleKarten = document.querySelectorAll('.bewohner-card');
+        alleKarten.forEach(karte => {
+            karte.classList.remove('active');
+            karte.style.backgroundColor = '';
+            karte.style.borderColor = '';
+            karte.style.borderWidth = '';
+            karte.style.borderStyle = '';
+            karte.style.boxShadow = '';
+            
+            // Info-Element ausblenden
+            const info = karte.querySelector('.bewohner-info');
+            if (info) info.style.display = 'none';
+        });
+        
+        // Diese Karte deutlich als aktiv markieren
+        bewohnerCard.classList.add('active');
+        bewohnerCard.style.backgroundColor = '#e3f2fd';
+        bewohnerCard.style.borderColor = '#2196F3';
+        bewohnerCard.style.borderWidth = '2px';
+        bewohnerCard.style.borderStyle = 'solid';
+        bewohnerCard.style.boxShadow = '0 4px 8px rgba(33, 150, 243, 0.3)';
+        
+        // Vor der Verarbeitung prüfen, ob es ein Bewohnerwechsel ist
+        const istBewohnerWechsel = aktuellerBewohner && 
+            (aktuellerBewohner.firstName !== bewohner.firstName || 
+             aktuellerBewohner.lastName !== bewohner.lastName);
+        
+        if (istBewohnerWechsel) {
+            console.log(`Bewohnerwechsel: von ${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName} zu ${bewohner.firstName} ${bewohner.lastName}`);
+        }
+        
+        // Aktuellen Bewohner speichern
+        aktuellerBewohner = bewohner;
+        window.aktuellerBewohner = bewohner; // Für globale Verfügbarkeit
+        
+        // Aktuellen Bewohner auch im BewohnerAuswahl-Modul speichern und Auswahl laden
+        console.log(`Lade Bewohnerauswahl für ${bewohner.firstName} ${bewohner.lastName}`);
+        let result;
+        
+        try {
+            // Das setzeAktuellenBewohner im Modul lädt automatisch die Auswahl
+            // Wichtig: Auf die Fertigstellung dieses Aufrufs warten
+            result = await BewohnerAuswahl.setzeAktuellenBewohner(bewohner);
+            console.log('Ergebnis von setzeAktuellenBewohner:', result);
+            
+            // Wenn keine Auswahl zurückgegeben wurde, manuell laden (Fallback)
+            if (!result || !result.auswahl) {
+                console.log('Keine Auswahl zurückgegeben, lade manuell');
+                // Aktuelle KW und Jahr ermitteln
+                let kw, jahr;
+                try {
+                    const kwDaten = document.querySelector('#current-week-display').textContent;
+                    const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
+                    if (match) {
+                        kw = parseInt(match[1]);
+                        jahr = parseInt(match[2]);
+                    }
+                } catch (error) {
+                    console.warn('Konnte KW/Jahr nicht aus der Anzeige lesen, verwende aktuelle Werte');
+                }
+                
+                result = await BewohnerAuswahl.ladeBewohnerAuswahl(bewohner, kw, jahr);
+                console.log('Manuell geladene Bewohnerauswahl:', result);
+            }
+        } catch (loadError) {
+            console.error('Fehler beim Laden der Bewohnerauswahl:', loadError);
+            
+            // Trotz Fehler mit einer lokalen Auswahl weitermachen
+            const localAuswahl = {
+                name: `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_'),
+                Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
+            };
+            
+            alert(`Es gab einen Fehler beim Laden der Bewohnerauswahl. Bitte prüfen Sie die Konsole für weitere Details. Wir arbeiten mit einer lokalen Version weiter, die möglicherweise nicht gespeichert werden kann.`);
+            
+            result = { auswahl: localAuswahl, isExisting: false };
+        }
+        
+        // Extrahiere Ergebnis
+        const auswahl = result.auswahl;
+        const isExisting = result.isExisting;
+        
+        // Menüplantabelle erstellen oder aktualisieren
+        if (!aktuelleMenueplanTabelle) {
+            console.log('Keine Menüplantabelle vorhanden, erstelle neue Tabelle');
+            // Wenn noch keine Tabelle existiert, eine neue erstellen
+            try {
+                aktuelleMenueplanTabelle = await FunktionenTabelle.erstelleMenueplanTabelle();
+            } catch (tableError) {
+                console.error('Fehler beim Erstellen der Menüplantabelle:', tableError);
+                alert(`Fehler beim Erstellen der Menüplantabelle: ${tableError.message}`);
+                return;
+            }
+            
+            // Tabelle in den Container einfügen
+            const container = document.querySelector('.menueplan-container') || document.createElement('div');
+            container.className = 'menueplan-container';
+            
+            if (container) {
+                container.innerHTML = '';
+                container.appendChild(aktuelleMenueplanTabelle);
+                
+                // Container zur Hauptseite hinzufügen, falls noch nicht vorhanden
+                if (!document.querySelector('.menueplan-container')) {
+                    const mainElement = document.querySelector('main');
+                    if (mainElement) {
+                        mainElement.appendChild(container);
+                    }
+                }
+            }
+        } else if (istBewohnerWechsel) {
+            // Bei Bewohnerwechsel alle Zellen zurücksetzen, um alte Markierungen zu entfernen
+            const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
+            alleZellen.forEach(zelle => {
+                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
+                zelle.style.backgroundColor = '';
+                zelle.style.color = '';
+                zelle.style.border = '';
+            });
+        }
+        
+        // Tabelle mit den Auswahlen des Bewohners aktualisieren
+        console.log('Aktualisiere Tabelle mit Bewohnerauswahl');
+        try {
+            BewohnerAuswahl.aktualisiereTabelle(aktuelleMenueplanTabelle);
+        } catch (updateError) {
+            console.error('Fehler beim Aktualisieren der Tabelle:', updateError);
+        }
+        
+        // Permanenten Indikator für aktiven Bewohner anzeigen
+        zeigeAktivenBewohnerIndikator(bewohner, isExisting);
+        
+        // Info innerhalb der Bewohnerkarte anzeigen
+        const infoElement = bewohnerCard.querySelector('.bewohner-info');
+        if (infoElement) {
+            // Anzeigen, ob eine bestehende Auswahl geladen wurde oder eine neue erstellt wurde
+            if (isExisting) {
+                infoElement.innerHTML = `<span>Essen für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
+                               <span class="auswahl-status">(Plan)</span>`;
+            } else {
+                infoElement.innerHTML = `<span>Essen für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
+                               <span class="auswahl-status">(Neue Auswahl erstellt)</span>`;
+            }
+            
+            // Info anzeigen
+            infoElement.style.display = 'flex';
+        }
+    } catch (error) {
+        console.error('Allgemeiner Fehler bei der Bewohnerauswahl:', error);
+        alert(`Ein unerwarteter Fehler ist aufgetreten: ${error.message}`);
+    }
+});
 
 // Event-Listener für die Aktualisierung der Menüplantabelle
 document.addEventListener('menuplanTabelleErstellt', (event) => {
@@ -419,91 +564,3 @@ document.getElementById('menueplan-container').addEventListener('click', functio
         }
     }
 });
-
-/**
- * Initialisiert das Burger-Menü für mobile Ansichten
- */
-function initBurgerMenu() {
-    const burgerButton = document.querySelector('.burger-menu-button');
-    const navigation = document.querySelector('nav');
-    
-    if (burgerButton && navigation) {
-        burgerButton.addEventListener('click', () => {
-            navigation.classList.toggle('active');
-            burgerButton.classList.toggle('active');
-        });
-        
-        // Klick außerhalb schließt das Menü
-        document.addEventListener('click', (event) => {
-            if (!navigation.contains(event.target) && !burgerButton.contains(event.target) && navigation.classList.contains('active')) {
-                navigation.classList.remove('active');
-                burgerButton.classList.remove('active');
-            }
-        });
-    }
-}
-
-/**
- * Initialisiert die Seitenwahl-Navigation
- */
-function initSeitenwahl() {
-    const navLinks = document.querySelectorAll('nav a');
-    
-    navLinks.forEach(link => {
-        link.addEventListener('click', (event) => {
-            // Aktiven Link markieren
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-            
-            // Bei mobiler Ansicht das Menü nach Klick schließen
-            const navigation = document.querySelector('nav');
-            const burgerButton = document.querySelector('.burger-menu-button');
-            
-            if (window.innerWidth <= 768 && navigation && burgerButton) {
-                navigation.classList.remove('active');
-                burgerButton.classList.remove('active');
-            }
-        });
-    });
-    
-    // Aktuellen Link basierend auf URL markieren
-    const currentPath = window.location.pathname;
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
-        }
-    });
-}
-
-/**
- * Initialisiert den "Zum Seitenanfang" Button
- */
-function initScrollToTop() {
-    // Button erstellen, falls nicht vorhanden
-    let scrollButton = document.querySelector('.scroll-to-top');
-    
-    if (!scrollButton) {
-        scrollButton = document.createElement('button');
-        scrollButton.className = 'scroll-to-top';
-        scrollButton.innerHTML = '<i class="fa fa-arrow-up"></i>';
-        scrollButton.style.display = 'none';
-        document.body.appendChild(scrollButton);
-    }
-    
-    // Scroll-Event für das Ein-/Ausblenden des Buttons
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-            scrollButton.style.display = 'block';
-        } else {
-            scrollButton.style.display = 'none';
-        }
-    });
-    
-    // Klick-Event zum Scrollen nach oben
-    scrollButton.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-}

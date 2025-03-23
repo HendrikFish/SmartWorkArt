@@ -799,32 +799,10 @@ function aktualisiereZellInMobileAnsicht(originaleZelle) {
             
             // Mit kurzer Verzögerung öffnen, um sicherzustellen, dass keine weiteren Events ausgelöst werden
             setTimeout(() => {
-                try {
-                    // Erste Variante: Window-Objekt verwenden
-                    if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                        window.KomponentenEditor.oeffneKomponentenEditor(originaleZelle, tag, kategorie);
-                    } 
-                    // Zweite Variante: Direkt auf das importierte Modul zugreifen
-                    else if (typeof KomponentenEditor !== 'undefined' && typeof KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                        KomponentenEditor.oeffneKomponentenEditor(originaleZelle, tag, kategorie);
-                    }
-                    // Fallback: Komponenteneditor importieren und verwenden
-                    else {
-                        console.warn('KomponentenEditor nicht im window-Objekt gefunden, versuche direkten Import');
-                        import('./komponententEditor.js').then(module => {
-                            if (typeof module.oeffneKomponentenEditor === 'function') {
-                                module.oeffneKomponentenEditor(originaleZelle, tag, kategorie);
-                            } else {
-                                console.error('oeffneKomponentenEditor Funktion nicht im importierten Modul gefunden');
-                            }
-                        }).catch(error => {
-                            console.error('Fehler beim dynamischen Import des KomponentenEditors:', error);
-                        });
-                    }
-                } catch (error) {
-                    console.error('Fehler beim Öffnen des Komponenten-Editors:', error);
+                if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                    window.KomponentenEditor.oeffneKomponentenEditor(originaleZelle, tag, kategorie);
                 }
-            }, 50); // Längere Verzögerung für stabilerere Ausführung
+            }, 10);
         };
         
         // Event-Listener hinzufügen (mit mehreren Methoden für maximale Kompatibilität)
