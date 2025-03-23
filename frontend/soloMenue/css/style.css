@@ -489,49 +489,75 @@ td.auswahl-25,
 
 /* Aktiver Bewohner Indikator */
 .aktiver-bewohner-indikator {
-    background-color: #e3f2fd;
-    border-left: 4px solid #1976D2;
-    margin: 0.5rem 0;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f0f7ff;
+    border: 2px solid #2196F3;
+    border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Animation für sanfte Übergänge */
+    opacity: 1;
+    transition: opacity 0.5s ease, transform 0.5s ease, max-height 0.5s ease;
+    transform: translateY(0);
+    max-height: 100px;
+    overflow: hidden;
 }
 
+/* Animation beim Entfernen des Indikators - wird über JavaScript-Klasse gesteuert */
+.aktiver-bewohner-indikator.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+}
+
+/* Animation beim Hinzufügen des Indikators */
+.aktiver-bewohner-indikator.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 100px;
+    }
+}
+
+/* Existierende Styles für den Indikator */
 .aktiver-bewohner-indikator .name {
-    font-size: 1.1rem;
-}
-
-.aktiver-bewohner-indikator .status {
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: normal;
+    font-weight: bold;
+    margin-right: 10px;
 }
 
 .aktiver-bewohner-indikator .station {
-    background-color: #bbdefb;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    margin-left: 0.5rem;
-    font-size: 0.85rem;
+    color: #666;
+    margin-right: 10px;
+}
+
+.aktiver-bewohner-indikator .status {
+    font-style: italic;
+    color: #2196F3;
 }
 
 .aktiver-bewohner-indikator .action-buttons {
     display: flex;
     gap: 10px;
-    margin-top: 10px;
 }
 
 .aktiver-bewohner-indikator .action-button {
-    background-color: #f5f5f5;
+    padding: 5px 10px;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 0.25rem 0.5rem;
+    background-color: #f5f5f5;
+    border-radius: 3px;
     cursor: pointer;
-    font-size: 0.9rem;
     transition: all 0.2s ease;
 }
 

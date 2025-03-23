@@ -34,105 +34,84 @@ let aktiverBewohner = null;
  * @returns {Promise<Object>} Die Bewohnerauswahl und ein Flag, ob sie bereits existierte
  */
 async function ladeBewohnerAuswahl(bewohner, kw, jahr) {
-    // Aktuelle Werte für KW und Jahr speichern
-    aktuelleKW = kw;
-    aktuellesJahr = jahr;
-    
-    // Aktuellen Bewohner setzen
-    aktuellerBewohner = bewohner;
-    
-    // Bestehende Auswahl zurücksetzen (wichtig bei Bewohnerwechsel!)
-    resetAuswahl();
-    
-    // Bewohnername für Datei zusammenstellen
-    const bewohnerName = `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_');
-    aktuelleBewohnerName = bewohnerName;
-    
-    // In der Konsole anzeigen, für welchen Bewohner wir prüfen
-    console.log(`Lade Bewohnerauswahl für ${bewohnerName} (KW${kw}/${jahr})`);
+    console.log(`Lade Bewohnerauswahl für ${bewohner.firstName} ${bewohner.lastName} (KW${kw}/${jahr})`);
     
     try {
-        // Versuchen, die vorhandene Auswahl zu laden
-        const response = await fetch(`/api/solomenue/bewohner-auswahl/${jahr}/KW${kw}/${bewohnerName}`);
+        // Format des Namens für die Datei: Vorname_Nachname
+        const bewohnerName = `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_');
         
-        if (response.ok) {
-            // Bestehende Auswahl gefunden
-            const auswahl = await response.json();
-            console.log(`Bestehende Auswahl gefunden und geladen für ${bewohnerName} (KW${kw}/${jahr})`);
-            
-            // Sicherstellen, dass alle Tage und Kategorien vorhanden sind
-            const tage = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
-            
-            // Prüfe, ob die Daten korrekt sind
-            if (!auswahl.name) {
-                auswahl.name = bewohnerName;
-            }
-            
-            // Stelle sicher, dass alle Tage existieren
-            tage.forEach(tag => {
-                if (!auswahl[tag]) {
-                    auswahl[tag] = {};
-                }
+        // URL für die API-Anfrage zusammenstellen
+        const url = `/api/solomenue/bewohner-auswahl/${jahr}/KW${kw}/${bewohnerName}`;
+        console.log(`Anfrage an: ${url}`);
+        
+        // Daten vom Server abrufen
+        const response = await fetch(url);
+        let isExistingSelection = true;
+        
+        // Prüfen, ob die Anfrage erfolgreich war
+        if (!response.ok) {
+            // Wenn die Datei nicht existiert (404), erstellen wir eine leere Auswahl
+            if (response.status === 404) {
+                console.log(`Keine bestehende Auswahl gefunden für ${bewohnerName} in KW${kw}/${jahr}, erstelle eine neue`);
+                isExistingSelection = false;
                 
-                // Für jede Kategorie in jedem Tag prüfen
-                Object.keys(auswahl[tag]).forEach(kategorie => {
-                    const auswahl_item = auswahl[tag][kategorie];
-                    
-                    // Wenn ein Portionsmaß vorhanden ist, aber selected nicht explizit gesetzt ist, selected auf true setzen
-                    if (auswahl_item && auswahl_item.portion && auswahl_item.selected === undefined) {
-                        auswahl_item.selected = true;
-                        console.log(`Fehlende selected-Eigenschaft für ${tag}, ${kategorie} ergänzt`);
-                    }
-                });
-            });
-            
-            // Debug-Ausgabe für geladene Auswahl
-            console.log('Geladene Bewohnerauswahl nach Korrektur:', JSON.stringify(auswahl, null, 2));
-            
-            // Bewohnerauswahl global speichern
-            aktuelleBewohnerAuswahl = auswahl;
-            
-            return { auswahl, isExisting: true };
-        } else if (response.status === 404) {
-            // Keine Auswahl gefunden, neue erstellen
-            console.log(`Keine bestehende Auswahl gefunden für ${bewohnerName} (KW${kw}/${jahr}), erstelle neue Auswahl`);
-            
-            // Neue leere Auswahl erstellen
-            const neueAuswahl = {
-                name: bewohnerName,
-                Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
-            };
-            
-            // Neue Auswahl global speichern
-            aktuelleBewohnerAuswahl = neueAuswahl;
-            
-            // Neue Auswahl sofort auf dem Server speichern
-            try {
-                await speichereBewohnerAuswahl();
-                console.log(`Neue leere Auswahl für ${bewohnerName} (KW${kw}/${jahr}) wurde gespeichert`);
-            } catch (saveError) {
-                console.warn(`Konnte neue Auswahl nicht sofort speichern: ${saveError.message}`);
-                // Weitermachen, auch wenn das Speichern fehlschlägt
+                // Leere Auswahl erstellen
+                aktuelleBewohnerAuswahl = {
+                    name: bewohnerName,
+                    // Leere Objekte für jeden Wochentag
+                    Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
+                };
+                
+                // Feld für Tracking des aktuellen Status
+                aktuelleBewohnerAuswahlStatus = {
+                    kw: kw,
+                    jahr: jahr,
+                    zuletzt_geladen: new Date().toISOString(),
+                    ist_gespeichert: false
+                };
+            } else {
+                // Bei anderen Fehlern werfen wir einen Fehler
+                throw new Error(`HTTP-Fehler: ${response.status} ${response.statusText}`);
             }
-            
-            return { auswahl: neueAuswahl, isExisting: false };
         } else {
-            // Ein anderer Fehler ist aufgetreten
-            throw new Error(`Fehler beim Laden der Bewohnerauswahl: ${response.status} ${response.statusText}`);
+            // Daten aus der Antwort extrahieren
+            const daten = await response.json();
+            console.log('Geladene Bewohnerauswahl:', daten);
+            
+            // Daten speichern
+            aktuelleBewohnerAuswahl = daten;
+            
+            // Status-Tracking
+            aktuelleBewohnerAuswahlStatus = {
+                kw: kw,
+                jahr: jahr,
+                zuletzt_geladen: new Date().toISOString(),
+                ist_gespeichert: true
+            };
         }
+        
+        // Globale Variablen aktualisieren
+        aktuelleKW = kw;
+        aktuellesJahr = jahr;
+        aktuelleBewohnerName = bewohnerName;
+        aktuellerBewohner = bewohner;
+        
+        // Bewohner-Indikator aktualisieren, falls die Funktion verfügbar ist
+        // WICHTIG: Dies stellt sicher, dass der Indikator nach dem Laden der Auswahl angezeigt wird
+        if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
+            console.log('Aktualisiere aktiven Bewohner-Indikator nach Laden der Auswahl');
+            window.zeigeAktivenBewohnerIndikator(bewohner, isExistingSelection);
+        } else if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
+            window.Script.zeigeAktivenBewohnerIndikator(bewohner, isExistingSelection);
+        }
+        
+        return {
+            auswahl: aktuelleBewohnerAuswahl,
+            isExistingSelection: isExistingSelection
+        };
     } catch (error) {
         console.error('Fehler beim Laden der Bewohnerauswahl:', error);
-        
-        // Im Fehlerfall eine leere Auswahl erstellen
-        const neueAuswahl = {
-            name: bewohnerName,
-            Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
-        };
-        
-        // Leere Auswahl global speichern
-        aktuelleBewohnerAuswahl = neueAuswahl;
-        
-        return { auswahl: neueAuswahl, isExisting: false };
+        throw error;
     }
 }
 
@@ -602,79 +581,91 @@ function aktualisiereTabelle(tabelle) {
 }
 
 /**
- * Fügt Klick-Handler zu den Tabellenzellen hinzu
- * @param {HTMLTableElement} tabelle - Die Menüplantabelle
- * @param {boolean} forceReattach - Ob bestehende Handler entfernt und neu hinzugefügt werden sollen
+ * Fügt Event-Listener für Klicks auf Tabellenzellen hinzu
+ * @param {HTMLElement} tabelle - Die Tabelle, deren Zellen mit Klick-Events versehen werden sollen
+ * @param {boolean} forceReattach - Erzwingt das erneute Hinzufügen, auch wenn bereits Event-Listener existieren
  */
 function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
-    if (!tabelle) {
-        console.error('Keine Tabelle für Klick-Handler vorhanden');
-        return;
-    }
+    if (!tabelle) return;
     
-    console.log('Füge Klick-Handler zu Tabellenzellen hinzu', forceReattach ? '(erzwinge Neuverknüpfung)' : '');
+    // Alle klickbaren Zellen finden
+    const klickbareZellen = tabelle.querySelectorAll('.menue-zelle');
     
-    // Alle Zellen mit einem Klick-Handler versehen
-    const zellen = tabelle.querySelectorAll('td[data-tag]');
-    console.log(`${zellen.length} Zellen gefunden für Klick-Handler`);
-    
-    zellen.forEach(zelle => {
-        // Wenn erzwungene Neuverknüpfung oder noch kein Handler existiert
-        if (forceReattach || zelle.dataset.hasClickHandler !== 'true') {
-            const tag = zelle.dataset.tag;
-            const kategorie = zelle.getAttribute('data-kategorie') || zelle.closest('tr')?.dataset.kategorie;
-            
-            if (!tag || !kategorie) {
-                console.warn('Zelle ohne Tag oder Kategorie gefunden, überspringe');
-                return;
-            }
-            
-            // Bei Neuverknüpfung den alten Event-Listener entfernen
-            if (forceReattach && zelle.dataset.hasClickHandler === 'true') {
-                console.log(`Erneuere Klick-Handler für ${tag}, ${kategorie}`);
-                // Alle bestehenden Klick-Listener entfernen durch Klonen des Elements
-                const oldZelle = zelle;
-                const newZelle = oldZelle.cloneNode(true);
-                oldZelle.parentNode.replaceChild(newZelle, oldZelle);
-                zelle = newZelle; // Referenz aktualisieren
-            }
-            
-            // Sicherstellen, dass die Zelle eine ID hat
+    // Für jede Zelle einen Event-Listener hinzufügen
+    klickbareZellen.forEach(zelle => {
+        // Prüfen, ob die Zelle bereits einen Event-Listener hat
+        if (zelle.dataset.hasClickListener && !forceReattach) {
+            return; // Diese Zelle hat bereits einen Event-Listener
+        }
+        
+        // Verbessertes ID-Attribut für die Zelle
+        const tag = zelle.dataset.tag;
+        const kategorie = zelle.dataset.kategorie;
+        
+        if (tag && kategorie) {
+            // Eindeutige ID für die Zelle setzen, falls noch nicht vorhanden
             if (!zelle.id) {
-                zelle.id = `zelle-${tag}-${kategorie}`;
+                zelle.id = `zelle-${tag}-${kategorie}`.replace(/\s+/g, '-');
             }
             
-            // Klasse für Hover-Effekt hinzufügen
+            // "klickbar"-Klasse hinzufügen, falls noch nicht vorhanden
             zelle.classList.add('klickbar');
             
-            // Klick-Event hinzufügen
-            zelle.addEventListener('click', async (event) => {
-                // Verhindern, dass das Ereignis mehrfach ausgelöst wird
-                event.stopPropagation();
-                
-                // Visuelles Feedback während der Verarbeitung
-                const originalBackground = zelle.style.backgroundColor;
-                zelle.style.backgroundColor = '#e0e0e0';
-                
-                try {
-                    await handleZellenKlick(zelle, event);
-                } catch (error) {
-                    console.error(`Fehler beim Behandeln des Zellenklicks für ${tag}, ${kategorie}:`, error);
-                    
-                    // Zurück zur ursprünglichen Farbe bei Fehler
-                    zelle.style.backgroundColor = originalBackground;
-                    
-                    // Fehlermeldung anzeigen
-                    alert(`Fehler beim Verarbeiten der Auswahl: ${error.message}`);
-                }
-            });
+            // Hover-Effekt für bessere UX
+            zelle.style.cursor = 'pointer';
             
-            // Markieren, dass Handler hinzugefügt wurde
-            zelle.dataset.hasClickHandler = 'true';
+            // Event-Handler für Klicks hinzufügen
+            // Wir verwenden hier keinen direkten Listener, sondern delegieren über die Tabelle
+            zelle.dataset.hasClickListener = 'true';
         }
     });
     
-    console.log('Alle Klick-Handler zu Tabellenzellen hinzugefügt');
+    // VERBESSERTER ANSATZ: Event-Delegation auf Tabellenebene anstatt einzelner Listener
+    // Dies verhindert Probleme mit mehrfachen Event-Handlern und ist effizienter
+    if (!tabelle.dataset.hasClickDelegation) {
+        tabelle.addEventListener('click', function(event) {
+            // Das geklickte Element finden
+            const target = event.target;
+            
+            // Zuerst überprüfen, ob ein Bearbeiten-Button geklickt wurde
+            const editButton = target.closest('.komponenten-bearbeiten-btn');
+            if (editButton) {
+                // Bearbeiten-Button wurde geklickt - diesen Event getrennt behandeln
+                const zelle = editButton.closest('.menue-zelle');
+                if (zelle && zelle.dataset.tag && zelle.dataset.kategorie) {
+                    console.log(`Delegierter Klick auf Bearbeiten-Button: ${zelle.dataset.tag}, ${zelle.dataset.kategorie}`);
+                    
+                    // Event stoppen
+                    event.stopPropagation();
+                    
+                    // Komponenten-Editor öffnen
+                    if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                        window.KomponentenEditor.oeffneKomponentenEditor(zelle, zelle.dataset.tag, zelle.dataset.kategorie);
+                    }
+                }
+                return; // Event-Bearbeitung hier beenden
+            }
+            
+            // Finde die nächste .menue-zelle im DOM-Baum nach oben
+            const zelle = target.closest('.menue-zelle');
+            if (zelle && zelle.dataset.tag && zelle.dataset.kategorie) {
+                // Prüfen, ob dieses Event von einem Button stammt
+                if (target.tagName === 'BUTTON' || target.closest('button')) {
+                    console.log('Klick auf Button innerhalb der Zelle - keine Aktion für die Zelle');
+                    return;
+                }
+                
+                // Nur weitermachen, wenn die Zelle klickbar ist
+                if (zelle.classList.contains('klickbar')) {
+                    // Event an unsere Hauptfunktion delegieren
+                    handleZellenKlick(zelle, event);
+                }
+            }
+        });
+        
+        tabelle.dataset.hasClickDelegation = 'true';
+        console.log('Event-Delegation für Tabellenklicks eingerichtet');
+    }
 }
 
 /**
@@ -1242,33 +1233,43 @@ async function handleZellenKlick(zelle, eventObj) {
         return;
     }
     
-    // Prüfen, ob gerade eine Zelle bearbeitet wird
-    if (window.istZelleInBearbeitung) {
-        console.log(`Klick ignoriert: Eine andere Zelle wird gerade bearbeitet (${tag}, ${kategorie})`);
-        return;
-    }
-    
-    console.log(`Zelle geklickt: ${tag}, ${kategorie}`);
-    
-    // Prüfen, ob der Klick vom Bearbeiten-Button kam
+    // WICHTIG: Zuerst prüfen, ob der Klick auf den Bearbeiten-Button erfolgte
+    // Diese Prüfung muss vor allen anderen Prüfungen erfolgen!
     if (eventObj && eventObj.target) {
-        // Prüfen, ob das geklickte Element oder eines seiner Elternelemente der Bearbeiten-Button ist
         const target = eventObj.target;
-        const isEditButtonClick = target.classList.contains('komponenten-bearbeiten-btn') || 
-                               target.closest('.komponenten-bearbeiten-btn');
         
-        if (isEditButtonClick) {
-            console.log('Klick kam vom Bearbeiten-Button, wird an KomponentenEditor weitergeleitet');
+        // Überprüfen, ob das geklickte Element selbst oder ein Elternelement der Bearbeiten-Button ist
+        const editButton = target.closest('.komponenten-bearbeiten-btn');
+        if (editButton) {
+            console.log('Klick auf Bearbeiten-Button erkannt - Öffne Komponenten-Editor');
             
-            // Event wird hier nicht mehr ignoriert, sondern direkt den KomponentenEditor öffnen
+            // Event stoppen, um zu verhindern, dass der Click auch die Zelle aktiviert
+            eventObj.stopPropagation();
+            eventObj.preventDefault();
+            
+            // Direkt den Komponenten-Editor öffnen
             if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
                 setTimeout(() => {
                     window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
                 }, 10);
             }
-            return;
+            return false; // Deutlich signalisieren, dass wir keinen Zellenklick verarbeiten sollen
+        }
+        
+        // Alternative Prüfung: Ist das geklickte Element ein Button oder innerhalb eines Buttons?
+        if (target.tagName === 'BUTTON' || target.closest('button')) {
+            console.log('Klick auf Button innerhalb der Zelle erkannt - ignoriere Zellenklick');
+            return false;
         }
     }
+    
+    // Prüfen, ob gerade eine Zelle bearbeitet wird
+    if (window.istZelleInBearbeitung) {
+        console.log(`Klick ignoriert: Eine andere Zelle wird gerade bearbeitet (${tag}, ${kategorie})`);
+        return false;
+    }
+    
+    console.log(`Zelle geklickt: ${tag}, ${kategorie}`);
     
     // Prüfen, ob der letzte Klick zu kurz her ist (Schutz vor ungewollten Doppelklicks)
     if (zelle.dataset.lastClickTime) {
@@ -1277,7 +1278,7 @@ async function handleZellenKlick(zelle, eventObj) {
         // Wenn der letzte Klick weniger als 300ms her ist, ignorieren (verhindert unbeabsichtigte Doppelklicks)
         if (now - lastClickTime < 300) {
             console.log(`Klicks zu schnell hintereinander, ignoriere diesen Klick (${tag}, ${kategorie})`);
-            return;
+            return false;
         }
     }
     
@@ -1732,6 +1733,18 @@ function setzeAktuellenBewohner(bewohner) {
                     // Sicherstellen, dass alle Klick-Handler aktiv sind
                     fuegeZellenKlickHinzu(tabelle, true);
                 }
+                
+                // Bewohner-Indikator prüfen - für den Fall, dass ladeBewohnerAuswahl den Indikator nicht gesetzt hat
+                // (als zusätzliche Sicherheit)
+                if (!document.querySelector('.aktiver-bewohner-indikator')) {
+                    console.log('Kein aktiver Bewohner-Indikator gefunden, versuche ihn zu erstellen');
+                    if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
+                        window.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
+                    } else if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
+                        window.Script.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
+                    }
+                }
+                
                 return result;
             });
     } else {
@@ -1757,6 +1770,17 @@ function setzeAktuellenBewohner(bewohner) {
                             // Sicherstellen, dass alle Klick-Handler aktiv sind
                             fuegeZellenKlickHinzu(tabelle, true);
                         }
+                        
+                        // Bewohner-Indikator prüfen - für den Fall, dass ladeBewohnerAuswahl den Indikator nicht gesetzt hat
+                        if (!document.querySelector('.aktiver-bewohner-indikator')) {
+                            console.log('Kein aktiver Bewohner-Indikator gefunden, versuche ihn zu erstellen');
+                            if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
+                                window.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
+                            } else if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
+                                window.Script.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
+                            }
+                        }
+                        
                         return result;
                     });
             }
@@ -1766,7 +1790,7 @@ function setzeAktuellenBewohner(bewohner) {
         
         // Wenn wir hier sind, konnten wir keine aktuelle KW/Jahr ermitteln
         console.log('Auswahl wird nicht automatisch geladen - keine KW/Jahr verfügbar');
-        return Promise.resolve({ auswahl: null, isExisting: false });
+        return Promise.resolve({ auswahl: null, isExistingSelection: false });
     }
 }
 
@@ -1792,7 +1816,21 @@ function initialisiere() {
                 resetAuswahl();
                 
                 // Neue Auswahl laden
-                await ladeBewohnerAuswahl(aktuellerBewohner, aktuelleKW, aktuellesJahr);
+                const result = await ladeBewohnerAuswahl(aktuellerBewohner, aktuelleKW, aktuellesJahr);
+                
+                // WICHTIG: Stelle sicher, dass der aktive Bewohner-Indikator angezeigt wird
+                // Prüfe, ob die Funktion im globalen Scope verfügbar ist
+                if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
+                    console.log('Aktualisiere aktiven Bewohner-Indikator nach Kalenderwochenwechsel');
+                    window.zeigeAktivenBewohnerIndikator(aktuellerBewohner, result && result.isExistingSelection);
+                } else {
+                    // Alternativ: Das Script-Modul explizit ansprechen, falls verfügbar
+                    if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
+                        window.Script.zeigeAktivenBewohnerIndikator(aktuellerBewohner, result && result.isExistingSelection);
+                    } else {
+                        console.warn('zeigeAktivenBewohnerIndikator-Funktion nicht gefunden, kann Indikator nicht aktualisieren');
+                    }
+                }
                 
                 // Tabelle aktualisieren, falls vorhanden
                 const tabelle = document.querySelector('.menueplan-tabelle');

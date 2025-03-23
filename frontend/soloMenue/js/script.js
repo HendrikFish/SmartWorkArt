@@ -190,13 +190,11 @@ document.addEventListener('bewohnerSelected', (event) => {
 });
 
 /**
- * Zeigt oder aktualisiert den aktiven Bewohner Indikator über der Tabelle
- * @param {Object} bewohner - Das Bewohnerobjekt
- * @param {boolean} isExisting - Flag, ob eine bestehende Auswahl geladen wurde
+ * Zeigt einen Indikator für den aktuell aktiven Bewohner an
+ * @param {Object} bewohner - Das Bewohner-Objekt
+ * @param {boolean} isExisting - Gibt an, ob eine bestehende Auswahl geladen wurde
  */
 function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
-    if (!bewohner) return;
-    
     // Container für die Menüplantabelle finden oder erstellen
     let container = document.querySelector('.menueplan-container');
     if (!container) {
@@ -208,15 +206,51 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
         }
     }
     
-    // Bestehenden Indikator entfernen, falls vorhanden
+    // Bestehenden Indikator finden
     const vorhandenerIndikator = document.querySelector('.aktiver-bewohner-indikator');
-    if (vorhandenerIndikator) {
-        vorhandenerIndikator.remove();
-    }
     
+    // Wenn es einen vorhandenen Indikator gibt, den wir ersetzen wollen
+    if (vorhandenerIndikator) {
+        // Prüfe, ob es sich um denselben Bewohner handelt
+        const nameElement = vorhandenerIndikator.querySelector('.name');
+        const aktuellerName = nameElement ? nameElement.textContent : '';
+        const neuerName = `Aktiver Bewohner: ${bewohner.firstName} ${bewohner.lastName}`;
+        
+        if (aktuellerName.includes(`${bewohner.firstName} ${bewohner.lastName}`)) {
+            // Es ist derselbe Bewohner, Status möglicherweise aktualisieren
+            const statusElement = vorhandenerIndikator.querySelector('.status');
+            if (statusElement) {
+                const statusText = isExisting ? 'Plan' : 'Neue Auswahl erstellt';
+                statusElement.textContent = `(${statusText})`;
+            }
+            return; // Keine weitere Aktion notwendig
+        }
+        
+        // Es ist ein anderer Bewohner, alte Anzeige ausblenden mit Animation
+        vorhandenerIndikator.classList.add('fade-out');
+        
+        // Nach der Animation entfernen
+        setTimeout(() => {
+            vorhandenerIndikator.remove();
+            // Neuen Indikator erstellen
+            erstelleNeuenIndikator(container, bewohner, isExisting);
+        }, 500); // Zeit entsprechend der CSS-Transition einstellen
+    } else {
+        // Kein vorhandener Indikator, direkt einen neuen erstellen
+        erstelleNeuenIndikator(container, bewohner, isExisting);
+    }
+}
+
+/**
+ * Erstellt einen neuen Bewohner-Indikator
+ * @param {HTMLElement} container - Der Container, in den der Indikator eingefügt wird
+ * @param {Object} bewohner - Das Bewohner-Objekt
+ * @param {boolean} isExisting - Gibt an, ob eine bestehende Auswahl geladen wurde
+ */
+function erstelleNeuenIndikator(container, bewohner, isExisting) {
     // Neuen Indikator erstellen
     const indikator = document.createElement('div');
-    indikator.className = 'aktiver-bewohner-indikator';
+    indikator.className = 'aktiver-bewohner-indikator fade-in';
     
     // Station/Bereich des Bewohners ermitteln
     const station = bewohner.areas && bewohner.areas['Wo wird das Essen eingetragen!'] 
@@ -244,35 +278,48 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
     
     // Event-Listener für den Reset-Button
     document.getElementById('reset-bewohner-button').addEventListener('click', () => {
-        // Bewohner zurücksetzen
-        aktuellerBewohner = null;
+        // Animation starten
+        indikator.classList.remove('fade-in');
+        indikator.classList.add('fade-out');
         
-        // BewohnerAuswahl zurücksetzen
-        BewohnerAuswahl.resetAuswahl();
-        
-        // Aktive Bewohnerkarte deaktivieren
-        const aktiveBewohnerCard = document.querySelector('.bewohner-card.active');
-        if (aktiveBewohnerCard) {
-            aktiveBewohnerCard.classList.remove('active');
-            const infoElement = aktiveBewohnerCard.querySelector('.bewohner-info');
-            if (infoElement) {
-                infoElement.style.display = 'none';
+        // Nach der Animation den Rest ausführen
+        setTimeout(() => {
+            // Bewohner zurücksetzen
+            aktuellerBewohner = null;
+            
+            // BewohnerAuswahl zurücksetzen
+            BewohnerAuswahl.resetAuswahl();
+            
+            // Aktive Bewohnerkarte deaktivieren
+            const aktiveBewohnerCard = document.querySelector('.bewohner-card.active');
+            if (aktiveBewohnerCard) {
+                aktiveBewohnerCard.classList.remove('active');
+                aktiveBewohnerCard.style.backgroundColor = '';
+                aktiveBewohnerCard.style.borderColor = '';
+                aktiveBewohnerCard.style.borderWidth = '';
+                aktiveBewohnerCard.style.borderStyle = '';
+                aktiveBewohnerCard.style.boxShadow = '';
+                
+                const infoElement = aktiveBewohnerCard.querySelector('.bewohner-info');
+                if (infoElement) {
+                    infoElement.style.display = 'none';
+                }
             }
-        }
-        
-        // Tabelle zurücksetzen - alle Zellen demarkieren
-        if (aktuelleMenueplanTabelle) {
-            const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
-            alleZellen.forEach(zelle => {
-                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
-                zelle.style.backgroundColor = '';
-                zelle.style.color = '';
-                zelle.style.border = '';
-            });
-        }
-        
-        // Indikator entfernen
-        indikator.remove();
+            
+            // Tabelle zurücksetzen - alle Zellen demarkieren
+            if (aktuelleMenueplanTabelle) {
+                const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
+                alleZellen.forEach(zelle => {
+                    zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
+                    zelle.style.backgroundColor = '';
+                    zelle.style.color = '';
+                    zelle.style.border = '';
+                });
+            }
+            
+            // Indikator entfernen
+            indikator.remove();
+        }, 500); // Zeit entsprechend der CSS-Transition
     });
     
     // Event-Listener für den "Plan leeren"-Button
@@ -311,6 +358,7 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
             // Schritt 2: Neue leere Bewohnerauswahl erstellen und speichern
             const leereAuswahl = {
                 name: bewohnerName,
+                // Leere Objekte für jeden Wochentag
                 Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
             };
             
@@ -352,8 +400,16 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
     });
 }
 
-// Funktion global verfügbar machen
+// Funktionen global verfügbar machen
 window.zeigeAktivenBewohnerIndikator = zeigeAktivenBewohnerIndikator;
+
+// Globales Script-Objekt erstellen, falls noch nicht vorhanden
+if (!window.Script) {
+    window.Script = {};
+}
+
+// Die Funktion auch im Script-Objekt verfügbar machen für bessere Modularität
+window.Script.zeigeAktivenBewohnerIndikator = zeigeAktivenBewohnerIndikator;
 
 // Neuer Event-Listener für Klicks auf die Bewohnerkarte (ohne Button)
 document.addEventListener('bewohnerCardClicked', async (event) => {
