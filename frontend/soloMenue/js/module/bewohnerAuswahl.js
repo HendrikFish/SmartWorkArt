@@ -588,59 +588,6 @@ function aktualisiereTabelle(tabelle) {
             // "Bearbeiten"-Button hinzufügen
             if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
                 window.KomponentenEditor.erstelleBearbeitenButton(zelle);
-            } else {
-                // Verbesserten Bearbeiten-Button erstellen, falls verfügbar
-                if (typeof erstelleVerbessertesBearbeitenButton === 'function') {
-                    if (neuePortion !== 'none') {
-                        const button = erstelleVerbessertesBearbeitenButton(zelle);
-                        if (button) {
-                            zelle.appendChild(button);
-                        }
-                    }
-                } else {
-                    // Fallback: Bearbeiten-Button manuell erstellen
-                    if (neuePortion !== 'none') {
-                        let button = document.createElement('button');
-                        button.className = 'komponenten-bearbeiten-btn';
-                        button.title = 'Komponenten bearbeiten';
-                        button.innerHTML = '✎'; // Pencil-Symbol
-                        button.id = `edit-btn-${tag}-${kategorie}`;
-                        button.dataset.tag = tag;
-                        button.dataset.kategorie = kategorie;
-                        
-                        // Wichtige Stile für bessere Clickability
-                        button.style.pointerEvents = 'auto';
-                        button.style.zIndex = '1000';
-                        button.style.position = 'absolute';
-                        button.style.right = '8px';
-                        button.style.display = 'flex';
-                        
-                        // Event-Listener für den Button
-                        button.addEventListener('click', function handleButtonClick(event) {
-                            // Event-Propagation stoppen
-                            event.stopPropagation();
-                            event.preventDefault();
-                            event.cancelBubble = true;
-                            
-                            // Zeitstempel zur Vermeidung von Doppelklicks
-                            const jetzt = Date.now();
-                            const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
-                            if (jetzt - letzterButtonKlick < 300) {
-                                console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
-                                return;
-                            }
-                            button.dataset.lastClickTime = jetzt.toString();
-                            
-                            // Editor öffnen
-                            console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
-                            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                                window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-                            }
-                        });
-                        
-                        zelle.appendChild(button);
-                    }
-                }
             }
         });
     });
@@ -655,92 +602,79 @@ function aktualisiereTabelle(tabelle) {
 }
 
 /**
- * Fügt Event-Listener für Klicks auf die Tabellenzellen hinzu
- * @param {HTMLElement} tabelle - Die Menüplan-Tabelle
- * @param {boolean} forceReattach - Ob Event-Listener neu hinzugefügt werden sollen, auch wenn bereits vorhanden
+ * Fügt Klick-Handler zu den Tabellenzellen hinzu
+ * @param {HTMLTableElement} tabelle - Die Menüplantabelle
+ * @param {boolean} forceReattach - Ob bestehende Handler entfernt und neu hinzugefügt werden sollen
  */
 function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
-    const zellen = tabelle.querySelectorAll('td.menue-zelle');
-    
-    zellen.forEach(zelle => {
-        // Die Zellenklasse bietet die eindeutige ID für diese Zelle
-        if (!zelle.id && zelle.classList.length > 0) {
-            // Erstellen einer eindeutigen ID aus den Klassen
-            const klassenString = Array.from(zelle.classList).join('-');
-            zelle.id = `zelle-${klassenString}`;
-        }
-        
-        // Tag-Information aus dem data-tag-Attribut oder aus der Spaltenüberschrift ermitteln
-        if (!zelle.dataset.tag) {
-            const spaltenIndex = Array.from(zelle.parentNode.children).indexOf(zelle);
-            const tag = tabelle.querySelector(`thead th:nth-child(${spaltenIndex + 1})`);
-            if (tag) {
-                zelle.dataset.tag = tag.textContent.trim();
-            }
-        }
-        
-        // Kategorie-Information aus dem data-kategorie-Attribut oder aus der Zeilenüberschrift ermitteln
-        if (!zelle.dataset.kategorie) {
-            const zeile = zelle.parentNode;
-            const kategorieZelle = zeile.querySelector('th, td:first-child');
-            if (kategorieZelle) {
-                const kategorieText = kategorieZelle.textContent.trim();
-                zelle.dataset.kategorie = kategorieText.toLowerCase().replace(/\s+/g, '');
-            }
-        }
-        
-        // Hover-Effekt für alle klickbaren Zellen
-        zelle.classList.add('klickbar');
-        
-        // Event-Listener nur hinzufügen, wenn noch nicht vorhanden oder Force-Reattach
-        if (forceReattach || !zelle.dataset.hasEventListener) {
-            // Alten Event-Listener entfernen, falls vorhanden
-            zelle.removeEventListener('click', handleZellenKlickWrapper);
-            
-            // Event-Listener hinzufügen
-            zelle.addEventListener('click', handleZellenKlickWrapper);
-            
-            // Markieren, dass ein Event-Listener hinzugefügt wurde
-            zelle.dataset.hasEventListener = 'true';
-        }
-    });
-}
-
-/**
- * Wrapper-Funktion für Event-Listener, um Event-Objekt zu übergeben
- * @param {Event} event - Das Event-Objekt
- */
-function handleZellenKlickWrapper(event) {
-    // Prüfe zunächst, ob der Klick auf einen Button oder dessen Kinder erfolgte
-    const target = event.target;
-    
-    // Verbesserte Prüfung für den Komponenten-Bearbeiten-Button
-    if (target.classList && target.classList.contains('komponenten-bearbeiten-btn') || 
-        target.closest('.komponenten-bearbeiten-btn') ||
-        target.textContent === '✎' || (target.parentNode && target.parentNode.textContent === '✎')) {
-        
-        console.log('Klick auf Bearbeiten-Button erkannt - wird separat behandelt');
-        
-        // Für den Button selbst sorgen wir dafür, dass das Event weitergeleitet wird
-        const zelle = event.currentTarget;
-        const tag = zelle.dataset.tag;
-        const kategorie = zelle.dataset.kategorie;
-        
-        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-            // Event-Propagation stoppen
-            event.stopPropagation();
-            event.preventDefault();
-            
-            setTimeout(() => {
-                window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-            }, 10);
-        }
-        
+    if (!tabelle) {
+        console.error('Keine Tabelle für Klick-Handler vorhanden');
         return;
     }
     
-    // Wenn es kein Button-Klick war, normal fortfahren
-    handleZellenKlick(event.currentTarget, event);
+    console.log('Füge Klick-Handler zu Tabellenzellen hinzu', forceReattach ? '(erzwinge Neuverknüpfung)' : '');
+    
+    // Alle Zellen mit einem Klick-Handler versehen
+    const zellen = tabelle.querySelectorAll('td[data-tag]');
+    console.log(`${zellen.length} Zellen gefunden für Klick-Handler`);
+    
+    zellen.forEach(zelle => {
+        // Wenn erzwungene Neuverknüpfung oder noch kein Handler existiert
+        if (forceReattach || zelle.dataset.hasClickHandler !== 'true') {
+            const tag = zelle.dataset.tag;
+            const kategorie = zelle.getAttribute('data-kategorie') || zelle.closest('tr')?.dataset.kategorie;
+            
+            if (!tag || !kategorie) {
+                console.warn('Zelle ohne Tag oder Kategorie gefunden, überspringe');
+                return;
+            }
+            
+            // Bei Neuverknüpfung den alten Event-Listener entfernen
+            if (forceReattach && zelle.dataset.hasClickHandler === 'true') {
+                console.log(`Erneuere Klick-Handler für ${tag}, ${kategorie}`);
+                // Alle bestehenden Klick-Listener entfernen durch Klonen des Elements
+                const oldZelle = zelle;
+                const newZelle = oldZelle.cloneNode(true);
+                oldZelle.parentNode.replaceChild(newZelle, oldZelle);
+                zelle = newZelle; // Referenz aktualisieren
+            }
+            
+            // Sicherstellen, dass die Zelle eine ID hat
+            if (!zelle.id) {
+                zelle.id = `zelle-${tag}-${kategorie}`;
+            }
+            
+            // Klasse für Hover-Effekt hinzufügen
+            zelle.classList.add('klickbar');
+            
+            // Klick-Event hinzufügen
+            zelle.addEventListener('click', async (event) => {
+                // Verhindern, dass das Ereignis mehrfach ausgelöst wird
+                event.stopPropagation();
+                
+                // Visuelles Feedback während der Verarbeitung
+                const originalBackground = zelle.style.backgroundColor;
+                zelle.style.backgroundColor = '#e0e0e0';
+                
+                try {
+                    await handleZellenKlick(zelle, event);
+                } catch (error) {
+                    console.error(`Fehler beim Behandeln des Zellenklicks für ${tag}, ${kategorie}:`, error);
+                    
+                    // Zurück zur ursprünglichen Farbe bei Fehler
+                    zelle.style.backgroundColor = originalBackground;
+                    
+                    // Fehlermeldung anzeigen
+                    alert(`Fehler beim Verarbeiten der Auswahl: ${error.message}`);
+                }
+            });
+            
+            // Markieren, dass Handler hinzugefügt wurde
+            zelle.dataset.hasClickHandler = 'true';
+        }
+    });
+    
+    console.log('Alle Klick-Handler zu Tabellenzellen hinzugefügt');
 }
 
 /**
@@ -936,297 +870,294 @@ function aktualisiereZellenInMobileAnsicht() {
  */
 async function rotierePortionsGroesse(zelle, tag, kategorie) {
     try {
-        // Prüfen, ob die Kategorie eine Extra-Kategorie ist
-        const isExtraKategorie = kategorie.startsWith('extra_');
-        let extraKategorieTitle = '';
-        
-        if (isExtraKategorie) {
-            // Versuche, den Anzeigenamen der Extra-Kategorie zu finden
-            const extraKategorieId = kategorie.substring(6); // "extra_" entfernen
-            if (window.TabeleAdd && window.TabeleAdd.extraKategorien) {
-                const extraKategorie = window.TabeleAdd.extraKategorien.find(k => k.id === extraKategorieId);
-                if (extraKategorie) {
-                    extraKategorieTitle = extraKategorie.displayKategorie;
-                }
-            }
-            console.log(`Extra-Kategorie erkannt: ${kategorie} (${extraKategorieTitle || extraKategorieId})`);
-        }
-        
-        // Aktuelle Portion ermitteln
-        let aktuellePortion = 'none';
-        if (aktuelleBewohnerAuswahl && aktuelleBewohnerAuswahl[tag] && aktuelleBewohnerAuswahl[tag][kategorie]) {
-            aktuellePortion = aktuelleBewohnerAuswahl[tag][kategorie].portion || 'none';
-        }
-        
-        console.log(`Aktuelle Portion für ${tag}, ${kategorie}: ${aktuellePortion}`);
-        
-        // Neue Portion bestimmen basierend auf der Kategorie-Art
-        let neuePortion;
-        
-        if (isExtraKategorie) {
-            // Für Extra-Kategorien nur zwischen 100% und 'none' wechseln
-            neuePortion = aktuellePortion === '100%' ? 'none' : '100%';
-        } else {
-            // Normale Rotation für Standard-Kategorien
-            switch (aktuellePortion) {
-                case '100%':
-                    neuePortion = '50%';
-                    break;
-                case '50%':
-                    neuePortion = '25%';
-                    break;
-                case '25%':
-                    neuePortion = 'none';
-                    break;
-                default:
-                    neuePortion = '100%';
-                    break;
+    // Prüfen, ob die Kategorie eine Extra-Kategorie ist
+    const isExtraKategorie = kategorie.startsWith('extra_');
+    let extraKategorieTitle = '';
+    
+    if (isExtraKategorie) {
+        // Versuche, den Anzeigenamen der Extra-Kategorie zu finden
+        const extraKategorieId = kategorie.substring(6); // "extra_" entfernen
+        if (window.TabeleAdd && window.TabeleAdd.extraKategorien) {
+            const extraKategorie = window.TabeleAdd.extraKategorien.find(k => k.id === extraKategorieId);
+            if (extraKategorie) {
+                extraKategorieTitle = extraKategorie.displayKategorie;
             }
         }
-        
-        console.log(`Neue Portion für ${tag}, ${kategorie}: ${neuePortion}`);
-        
-        // Mahlzeiten aus der Zelle extrahieren
-        const mahlzeiten = [];
-        const mahlzeitElemente = zelle.querySelectorAll('.menue-komponente');
-        mahlzeitElemente.forEach(element => {
-            if (element.dataset.rezeptId) {
-                mahlzeiten.push({
-                    rezeptId: element.dataset.rezeptId,
-                    name: element.textContent.trim()
-                });
-            }
-        });
-        
-        // Wenn keine Mahlzeiten über Menü-Komponenten gefunden wurden und es eine Extra-Kategorie ist,
-        // den Text der Zelle als Mahlzeit verwenden
-        if (mahlzeiten.length === 0 && isExtraKategorie) {
+        console.log(`Extra-Kategorie erkannt: ${kategorie} (${extraKategorieTitle || extraKategorieId})`);
+    }
+    
+    // Aktuelle Portion ermitteln
+    let aktuellePortion = 'none';
+    if (aktuelleBewohnerAuswahl && aktuelleBewohnerAuswahl[tag] && aktuelleBewohnerAuswahl[tag][kategorie]) {
+        aktuellePortion = aktuelleBewohnerAuswahl[tag][kategorie].portion || 'none';
+    }
+    
+    console.log(`Aktuelle Portion für ${tag}, ${kategorie}: ${aktuellePortion}`);
+    
+    // Neue Portion bestimmen basierend auf der Kategorie-Art
+    let neuePortion;
+    
+    if (isExtraKategorie) {
+        // Für Extra-Kategorien nur zwischen 100% und 'none' wechseln
+        neuePortion = aktuellePortion === '100%' ? 'none' : '100%';
+    } else {
+        // Normale Rotation für Standard-Kategorien
+        switch (aktuellePortion) {
+            case '100%':
+                neuePortion = '50%';
+                break;
+            case '50%':
+                neuePortion = '25%';
+                break;
+            case '25%':
+                neuePortion = 'none';
+                break;
+            default:
+                neuePortion = '100%';
+                break;
+        }
+    }
+    
+    console.log(`Neue Portion für ${tag}, ${kategorie}: ${neuePortion}`);
+    
+    // Mahlzeiten aus der Zelle extrahieren
+    const mahlzeiten = [];
+    const mahlzeitElemente = zelle.querySelectorAll('.menue-komponente');
+    mahlzeitElemente.forEach(element => {
+        if (element.dataset.rezeptId) {
             mahlzeiten.push({
-                name: zelle.textContent.replace('✎', '').trim(),
-                isExtraKategorie: true,
-                extraKategorieTitle: extraKategorieTitle
+                rezeptId: element.dataset.rezeptId,
+                name: element.textContent.trim()
             });
         }
+    });
+    
+    // Wenn keine Mahlzeiten über Menü-Komponenten gefunden wurden und es eine Extra-Kategorie ist,
+    // den Text der Zelle als Mahlzeit verwenden
+    if (mahlzeiten.length === 0 && isExtraKategorie) {
+        mahlzeiten.push({
+            name: zelle.textContent.replace('✎', '').trim(),
+            isExtraKategorie: true,
+            extraKategorieTitle: extraKategorieTitle
+        });
+    }
+    
+    // Menüauswahl aktualisieren und sofort auf dem Server speichern
+    const erfolg = await aktualisiereMenueAuswahl(tag, kategorie, neuePortion, mahlzeiten);
+    
+    if (erfolg) {
+        // WICHTIG: Bestehenden Bearbeiten-Button vor der Änderung sichern
+        const existingButton = zelle.querySelector('.komponenten-bearbeiten-btn');
         
-        // Menüauswahl aktualisieren und sofort auf dem Server speichern
-        const erfolg = await aktualisiereMenueAuswahl(tag, kategorie, neuePortion, mahlzeiten);
-        
-        if (erfolg) {
-            // WICHTIG: Bestehenden Bearbeiten-Button vor der Änderung sichern
-            const existingButton = zelle.querySelector('.komponenten-bearbeiten-btn');
+        // Visuelles Feedback - Prozentzahl kurz einblenden
+        if (neuePortion !== 'none') {
+            // Hintergrundfarbe je nach Portionsgröße
+            let feedbackColor;
+            if (neuePortion === '100%') {
+                feedbackColor = '#4CAF50'; // Grün
+            } else if (neuePortion === '50%') {
+                feedbackColor = '#FF9800'; // Orange
+            } else if (neuePortion === '25%') {
+                feedbackColor = '#90CAF9'; // Hellblau
+            }
             
-            // Visuelles Feedback - Prozentzahl kurz einblenden
-            if (neuePortion !== 'none') {
-                // Hintergrundfarbe je nach Portionsgröße
-                let feedbackColor;
-                if (neuePortion === '100%') {
-                    feedbackColor = '#4CAF50'; // Grün
-                } else if (neuePortion === '50%') {
-                    feedbackColor = '#FF9800'; // Orange
-                } else if (neuePortion === '25%') {
-                    feedbackColor = '#90CAF9'; // Hellblau
+            // Original-Inhalt der Zelle speichern (vor der Änderung)
+            const originalHtml = zelle.innerHTML;
+            
+            // Den Button entfernen, bevor wir das Feedback anzeigen
+            if (existingButton) {
+                existingButton.remove();
+            }
+            
+            // Zelle mit Feedback-Element aktualisieren (Prozentsatz anzeigen)
+            // Wir positionieren das Feedback-Element absolutiert über dem Originaltext
+            zelle.style.position = 'relative';
+            // Der ursprüngliche Inhalt wird auf 0.1 Opazität gesetzt, nicht ganz versteckt
+            zelle.innerHTML = `
+                <div style="opacity: 0.1;">${originalHtml}</div>
+                <div class="portion-feedback" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: ${feedbackColor};
+                    color: ${neuePortion === '25%' ? 'black' : 'white'};
+                    z-index: 10;
+                ">${neuePortion}</div>
+            `;
+            
+            // Nach kurzer Zeit den Feedback-Effekt entfernen und Zellzustand neu aufbauen
+            setTimeout(() => {
+                // Feedback-Element entfernen und zur normalen Position zurückkehren
+                zelle.style.position = '';
+                
+                // Originalinhalt wiederherstellen
+                zelle.innerHTML = originalHtml;
+                
+                // CSS-Klassen für die Portion setzen
+                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
+                
+                // Neue Klasse hinzufügen
+                if (neuePortion !== 'none') {
+                    zelle.classList.add(`auswahl-${neuePortion.replace('%', '')}`);
                 }
                 
-                // Original-Inhalt der Zelle speichern (vor der Änderung)
-                const originalHtml = zelle.innerHTML;
-                
-                // Den Button entfernen, bevor wir das Feedback anzeigen
-                if (existingButton) {
-                    existingButton.remove();
-                }
-                
-                // Zelle mit Feedback-Element aktualisieren (Prozentsatz anzeigen)
-                // Wir positionieren das Feedback-Element absolutiert über dem Originaltext
-                zelle.style.position = 'relative';
-                // Der ursprüngliche Inhalt wird auf 0.1 Opazität gesetzt, nicht ganz versteckt
-                zelle.innerHTML = `
-                    <div style="opacity: 0.1;">${originalHtml}</div>
-                    <div class="portion-feedback" style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        background-color: ${feedbackColor};
-                        color: ${neuePortion === '25%' ? 'black' : 'white'};
-                        z-index: 10;
-                    ">${neuePortion}</div>
-                `;
-                
-                // Nach kurzer Zeit den Feedback-Effekt entfernen und Zellzustand neu aufbauen
-                setTimeout(() => {
-                    // Feedback-Element entfernen und zur normalen Position zurückkehren
-                    zelle.style.position = '';
-                    
-                    // Originalinhalt wiederherstellen
-                    zelle.innerHTML = originalHtml;
-                    
-                    // CSS-Klassen für die Portion setzen
-                    zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
-                    
-                    // Neue Klasse hinzufügen
-                    if (neuePortion !== 'none') {
-                        zelle.classList.add(`auswahl-${neuePortion.replace('%', '')}`);
-                    }
-                    
-                    // Bei Extra-Kategorien oder ausgeschlossenen Komponenten besondere Behandlung
-                    if (isExtraKategorie) {
-                        // Prüfen, ob diese Extra-Kategorie ausgeschlossen ist
-                        let isAusgeschlossen = false;
-                        if (aktuelleBewohnerAuswahl[tag] && 
-                            aktuelleBewohnerAuswahl[tag][kategorie] && 
-                            aktuelleBewohnerAuswahl[tag][kategorie].ausgeschlosseneKomponenten) {
-                            
-                            const ausgeschlosseneKomponenten = aktuelleBewohnerAuswahl[tag][kategorie].ausgeschlosseneKomponenten;
-                            const extraText = mahlzeiten.length > 0 ? mahlzeiten[0].name : '';
-                            isAusgeschlossen = ausgeschlosseneKomponenten.includes(extraText);
-                        }
+                // Bei Extra-Kategorien oder ausgeschlossenen Komponenten besondere Behandlung
+                if (isExtraKategorie) {
+                    // Prüfen, ob diese Extra-Kategorie ausgeschlossen ist
+                    let isAusgeschlossen = false;
+                    if (aktuelleBewohnerAuswahl[tag] && 
+                        aktuelleBewohnerAuswahl[tag][kategorie] && 
+                        aktuelleBewohnerAuswahl[tag][kategorie].ausgeschlosseneKomponenten) {
                         
-                        // Ausgeschlossen-Klasse bei Bedarf hinzufügen oder entfernen
-                        if (isAusgeschlossen) {
-                            zelle.classList.add('ausgeschlossen');
-                        } else {
-                            zelle.classList.remove('ausgeschlossen');
-                        }
+                        const ausgeschlosseneKomponenten = aktuelleBewohnerAuswahl[tag][kategorie].ausgeschlosseneKomponenten;
+                        const extraText = mahlzeiten.length > 0 ? mahlzeiten[0].name : '';
+                        isAusgeschlossen = ausgeschlosseneKomponenten.includes(extraText);
                     }
                     
-                    // Direkte Farbgebung als zusätzliche Sicherheit (falls CSS nicht korrekt geladen)
-                    zelle.style.backgroundColor = '';
-                    zelle.style.color = '';
-                    zelle.style.border = '';
-                    
-                    if (neuePortion === '100%') {
-                        zelle.style.backgroundColor = '#4CAF50';
-                        zelle.style.color = 'white';
-                        zelle.style.border = '2px solid #2E7D32';
-                    } else if (neuePortion === '50%') {
-                        zelle.style.backgroundColor = '#FF9800';
-                        zelle.style.color = 'white';
-                        zelle.style.border = '2px solid #EF6C00';
-                    } else if (neuePortion === '25%') {
-                        zelle.style.backgroundColor = '#90CAF9';
-                        zelle.style.color = 'black';
-                        zelle.style.border = '2px solid #1976D2';
-                    }
-                    
-                    // Bearbeiten-Button neu erstellen
-                    if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
-                        window.KomponentenEditor.erstelleBearbeitenButton(zelle);
+                    // Ausgeschlossen-Klasse bei Bedarf hinzufügen oder entfernen
+                    if (isAusgeschlossen) {
+                        zelle.classList.add('ausgeschlossen');
                     } else {
-                        // Verbesserten Bearbeiten-Button erstellen, falls verfügbar
-                        if (typeof erstelleVerbessertesBearbeitenButton === 'function') {
-                            if (neuePortion !== 'none') {
-                                const button = erstelleVerbessertesBearbeitenButton(zelle);
-                                if (button) {
-                                    zelle.appendChild(button);
-                                }
-                            }
-                        } else {
-                            // Fallback: Bearbeiten-Button manuell erstellen
-                            if (neuePortion !== 'none') {
-                                let button = document.createElement('button');
-                                button.className = 'komponenten-bearbeiten-btn';
-                                button.title = 'Komponenten bearbeiten';
-                                button.innerHTML = '✎'; // Pencil-Symbol
-                                button.id = `edit-btn-${tag}-${kategorie}`;
-                                button.dataset.tag = tag;
-                                button.dataset.kategorie = kategorie;
-                                
-                                // Wichtige Stile für bessere Clickability
-                                button.style.pointerEvents = 'auto';
-                                button.style.zIndex = '1000';
-                                button.style.position = 'absolute';
-                                button.style.right = '8px';
-                                button.style.display = 'flex';
-                                
-                                // Event-Listener für den Button
-                                button.addEventListener('click', function handleButtonClick(event) {
-                                    // Event-Propagation stoppen
-                                    event.stopPropagation();
-                                    event.preventDefault();
-                                    event.cancelBubble = true;
-                                    
-                                    // Zeitstempel zur Vermeidung von Doppelklicks
-                                    const jetzt = Date.now();
-                                    const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
-                                    if (jetzt - letzterButtonKlick < 300) {
-                                        console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
-                                        return;
-                                    }
-                                    button.dataset.lastClickTime = jetzt.toString();
-                                    
-                                    // Editor öffnen
-                                    console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
-                                    if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                                        window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-                                    }
-                                });
-                                
-                                zelle.appendChild(button);
-                            }
-                        }
+                        zelle.classList.remove('ausgeschlossen');
                     }
-                    
-                    // Mobile Ansicht aktualisieren, falls nötig
-                    aktualisiereZellInMobileAnsicht(zelle);
-                }, 600); // Ende des Timeouts für das Feedback
-            } else {
-                // Wenn keine Portion ausgewählt wurde (none)
-                // Formatierung zurücksetzen
-                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
+                }
+                
+                // Direkte Farbgebung als zusätzliche Sicherheit (falls CSS nicht korrekt geladen)
                 zelle.style.backgroundColor = '';
                 zelle.style.color = '';
                 zelle.style.border = '';
                 
-                // Entferne den Bearbeiten-Button
-                if (existingButton) {
-                    existingButton.remove();
+                if (neuePortion === '100%') {
+                    zelle.style.backgroundColor = '#4CAF50';
+                    zelle.style.color = 'white';
+                    zelle.style.border = '2px solid #2E7D32';
+                } else if (neuePortion === '50%') {
+                    zelle.style.backgroundColor = '#FF9800';
+                    zelle.style.color = 'white';
+                    zelle.style.border = '2px solid #EF6C00';
+                } else if (neuePortion === '25%') {
+                    zelle.style.backgroundColor = '#90CAF9';
+                    zelle.style.color = 'black';
+                    zelle.style.border = '2px solid #1976D2';
                 }
                 
-                // Entferne alle Extra-Hinweise
-                const extraHinweise = zelle.querySelector('.extra-hinweise');
-                if (extraHinweise) {
-                    extraHinweise.remove();
-                }
-                
-                // Entferne alle (ohne) Kennzeichnungen
-                const komponentenElemente = zelle.querySelectorAll('.menue-komponente');
-                komponentenElemente.forEach(element => {
-                    element.classList.remove('ausgeschlossen');
-                    element.textContent = element.textContent.replace(' (ohne)', '');
-                });
-                
-                // Mobile Ansicht aktualisieren
-                aktualisiereZellInMobileAnsicht(zelle);
-                
-                // Zusätzlich auch die mobile Zelle direkt bereinigen
-                const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
-                if (mobilAnsicht) {
-                    const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
-                    if (mobilZelle) {
-                        // CSS-Klassen zurücksetzen
-                        mobilZelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
-                        mobilZelle.style.backgroundColor = '';
-                        mobilZelle.style.color = '';
-                        mobilZelle.style.border = '';
+                // Bearbeiten-Button neu erstellen
+                if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
+                    window.KomponentenEditor.erstelleBearbeitenButton(zelle);
+                } else {
+                    // Fallback: Bearbeiten-Button manuell erstellen
+                    let button = document.createElement('button');
+                    button.className = 'komponenten-bearbeiten-btn';
+                    button.title = 'Komponenten bearbeiten';
+                    button.innerHTML = '✎'; // Pencil-Symbol
+                    button.id = `edit-btn-${tag}-${kategorie}`;
+                    button.dataset.tag = tag;
+                    button.dataset.kategorie = kategorie;
+                    
+                    // Wichtige Stile für bessere Clickability
+                    button.style.pointerEvents = 'auto';
+                    button.style.zIndex = '1000';
+                    button.style.position = 'absolute';
+                    button.style.right = '8px';
+                    button.style.display = 'flex';
+                    
+                    // Event-Listener für den Button
+                    button.addEventListener('click', function handleButtonClick(event) {
+                        // Event-Propagation stoppen
+                        event.stopPropagation();
+                        event.preventDefault();
+                        event.cancelBubble = true;
                         
-                        // Extra-Hinweise entfernen
-                        const mobilExtraHinweise = mobilZelle.querySelector('.extra-hinweise');
-                        if (mobilExtraHinweise) {
-                            mobilExtraHinweise.remove();
+                        // Zeitstempel zur Vermeidung von Doppelklicks
+                        const jetzt = Date.now();
+                        const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
+                        if (jetzt - letzterButtonKlick < 300) {
+                            console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
+                            return;
                         }
+                        button.dataset.lastClickTime = jetzt.toString();
                         
-                        // (ohne) Kennzeichnungen entfernen
-                        const mobilText = mobilZelle.textContent.replace('✎', '').replace(' (ohne)', '').trim();
-                        mobilZelle.textContent = mobilText;
-                    }
+                        // Editor öffnen
+                        console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
+                        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                        }
+                    });
+                    
+                    // Zusätzlicher Event-Listener für Touch-Geräte
+                    button.addEventListener('touchend', function(event) {
+                        event.stopPropagation();
+                        event.preventDefault();
+                        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                        }
+                    });
+                    
+                    zelle.appendChild(button);
                 }
+                
+                // Mobile Ansicht aktualisieren, falls nötig
+                aktualisiereZellInMobileAnsicht(zelle);
+            }, 600); // Ende des Timeouts für das Feedback
+        } else {
+            // Wenn keine Portion ausgewählt wurde (none)
+            // Formatierung zurücksetzen
+            zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
+            zelle.style.backgroundColor = '';
+            zelle.style.color = '';
+            zelle.style.border = '';
+            
+            // Entferne den Bearbeiten-Button
+            if (existingButton) {
+                existingButton.remove();
             }
             
-            return true;
+            // Entferne alle Extra-Hinweise
+            const extraHinweise = zelle.querySelector('.extra-hinweise');
+            if (extraHinweise) {
+                extraHinweise.remove();
+            }
+            
+            // Entferne alle (ohne) Kennzeichnungen
+            const komponentenElemente = zelle.querySelectorAll('.menue-komponente');
+            komponentenElemente.forEach(element => {
+                element.classList.remove('ausgeschlossen');
+                element.textContent = element.textContent.replace(' (ohne)', '');
+            });
+            
+            // Mobile Ansicht aktualisieren
+            aktualisiereZellInMobileAnsicht(zelle);
+            
+            // Zusätzlich auch die mobile Zelle direkt bereinigen
+            const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
+            if (mobilAnsicht) {
+                const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
+                if (mobilZelle) {
+                    // CSS-Klassen zurücksetzen
+                    mobilZelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
+                    mobilZelle.style.backgroundColor = '';
+                    mobilZelle.style.color = '';
+                    mobilZelle.style.border = '';
+                    
+                    // Extra-Hinweise entfernen
+                    const mobilExtraHinweise = mobilZelle.querySelector('.extra-hinweise');
+                    if (mobilExtraHinweise) {
+                        mobilExtraHinweise.remove();
+                    }
+                    
+                    // (ohne) Kennzeichnungen entfernen
+                    const mobilText = mobilZelle.textContent.replace('✎', '').replace(' (ohne)', '').trim();
+                    mobilZelle.textContent = mobilText;
+                }
+            }
+        }
+        
+        return true;
         } else {
             console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
             return false;
@@ -1288,7 +1219,7 @@ async function verarbeitePortionsGroesse(zelle, tag, kategorie) {
             return true;
         } else {
             console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
-            return false;
+    return false;
         }
     } catch (error) {
         console.error(`Fehler beim Ändern der Portionsgröße für ${tag}, ${kategorie}:`, error);
@@ -1302,57 +1233,417 @@ async function verarbeitePortionsGroesse(zelle, tag, kategorie) {
  * @param {Event|null} eventObj - Das Event-Objekt (optional)
  */
 async function handleZellenKlick(zelle, eventObj) {
+    // Tag und Kategorie aus den Datenattributen der Zelle extrahieren
+    const tag = zelle.dataset.tag;
+    const kategorie = zelle.dataset.kategorie;
+    
+    if (!tag || !kategorie) {
+        console.error('Zelle hat keine Tag oder Kategorie Attribute');
+        return;
+    }
+    
+    // Prüfen, ob gerade eine Zelle bearbeitet wird
+    if (window.istZelleInBearbeitung) {
+        console.log(`Klick ignoriert: Eine andere Zelle wird gerade bearbeitet (${tag}, ${kategorie})`);
+        return;
+    }
+    
+    console.log(`Zelle geklickt: ${tag}, ${kategorie}`);
+    
+    // Prüfen, ob der Klick vom Bearbeiten-Button kam
+    if (eventObj && eventObj.target) {
+        // Prüfen, ob das geklickte Element oder eines seiner Elternelemente der Bearbeiten-Button ist
+        const target = eventObj.target;
+        const isEditButtonClick = target.classList.contains('komponenten-bearbeiten-btn') || 
+                               target.closest('.komponenten-bearbeiten-btn');
+        
+        if (isEditButtonClick) {
+            console.log('Klick kam vom Bearbeiten-Button, wird an KomponentenEditor weitergeleitet');
+            
+            // Event wird hier nicht mehr ignoriert, sondern direkt den KomponentenEditor öffnen
+            if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                setTimeout(() => {
+                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                }, 10);
+            }
+            return;
+        }
+    }
+    
+    // Prüfen, ob der letzte Klick zu kurz her ist (Schutz vor ungewollten Doppelklicks)
+    if (zelle.dataset.lastClickTime) {
+        const lastClickTime = parseInt(zelle.dataset.lastClickTime);
+        const now = Date.now();
+        // Wenn der letzte Klick weniger als 300ms her ist, ignorieren (verhindert unbeabsichtigte Doppelklicks)
+        if (now - lastClickTime < 300) {
+            console.log(`Klicks zu schnell hintereinander, ignoriere diesen Klick (${tag}, ${kategorie})`);
+            return;
+        }
+    }
+    
+    // Aktuelle Zeit für den Klick speichern
+    zelle.dataset.lastClickTime = Date.now().toString();
+    
+    // Die Verarbeitung starten und die Zelle als "in Bearbeitung" markieren
+    window.istZelleInBearbeitung = true;
+    zelle.classList.add('zelle-in-bearbeitung');
+    
     try {
-        // Tag und Kategorie aus den Datenattributen der Zelle extrahieren
-        const tag = zelle.dataset.tag;
-        const kategorie = zelle.dataset.kategorie;
-        
-        if (!tag || !kategorie) {
-            console.error('Zelle hat keine Tag oder Kategorie Attribute');
-            return;
-        }
-        
-        // Prüfen, ob gerade eine Zelle bearbeitet wird
-        if (window.istZelleInBearbeitung) {
-            console.log(`Klick ignoriert: Eine andere Zelle wird gerade bearbeitet (${tag}, ${kategorie})`);
-            return;
-        }
-        
-        // Sicherheits-Timeout einrichten, der die Bearbeitung nach 5 Sekunden abbricht
-        const sicherheitsTimeout = setTimeout(() => {
-            if (window.istZelleInBearbeitung) {
-                console.warn(`Sicherheitsabbruch für Zellenbearbeitung nach Timeout (${tag}, ${kategorie})`);
-                window.istZelleInBearbeitung = false;
+    // Prüfen, ob ein Bewohner ausgewählt ist
+    if (!aktuellerBewohner) {
+        console.warn('Kein Bewohner ausgewählt, bitte wählen Sie zuerst einen Bewohner aus');
+        alert('Bitte wählen Sie zuerst einen Bewohner aus, bevor Sie eine Essensauswahl treffen.');
+            window.istZelleInBearbeitung = false;
+            zelle.classList.remove('zelle-in-bearbeitung');
+        return;
+    }
+    
+    // Sicherstellen, dass wir die aktuellen Daten haben
+    if (!aktuelleBewohnerAuswahl || !aktuelleBewohnerAuswahl.name) {
+        try {
+            // Versuche, aktuelle Auswahl zu laden oder zu erstellen
+            const kalenderWoche = document.querySelector('#current-week-display').textContent;
+            const match = kalenderWoche.match(/KW\s*(\d+)\/(\d+)/);
+            
+            if (match) {
+                const kw = parseInt(match[1]);
+                const jahr = parseInt(match[2]);
                 
-                // Visuellen Bearbeitungsstatus entfernen
-                try {
+                    console.log(`Aktualisierte Bewohnerinformationen werden geladen vor dem Zellenklick (${tag}, ${kategorie})`);
+                await ladeBewohnerAuswahl(aktuellerBewohner, kw, jahr);
+            } else {
+                console.error('Konnte aktuelle Kalenderwoche nicht ermitteln');
+                alert('Ein Fehler ist aufgetreten beim Ermitteln der aktuellen Kalenderwoche. Bitte aktualisieren Sie die Seite.');
+                    window.istZelleInBearbeitung = false;
                     zelle.classList.remove('zelle-in-bearbeitung');
-                    document.querySelectorAll('.zelle-in-bearbeitung').forEach(element => {
-                        element.classList.remove('zelle-in-bearbeitung');
-                    });
-                } catch (e) {
-                    console.error('Fehler beim Entfernen des visuellen Bearbeitungsstatus:', e);
+                return;
+            }
+        } catch (error) {
+                console.error(`Fehler beim Laden der aktuellen Auswahl für ${tag}, ${kategorie}:`, error);
+                window.istZelleInBearbeitung = false;
+                zelle.classList.remove('zelle-in-bearbeitung');
+            alert('Ein Fehler ist aufgetreten. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.');
+            return;
+        }
+    }
+    
+        // Aktuelle Portion ermitteln
+        let aktuellePortion = 'none';
+        if (aktuelleBewohnerAuswahl && aktuelleBewohnerAuswahl[tag] && aktuelleBewohnerAuswahl[tag][kategorie]) {
+            aktuellePortion = aktuelleBewohnerAuswahl[tag][kategorie].portion || 'none';
+        }
+        
+        console.log(`Aktuelle Portion für ${tag}, ${kategorie}: ${aktuellePortion}`);
+        
+        // Neue Portion bestimmen
+        let neuePortion;
+        const isExtraKategorie = kategorie.startsWith('extra_');
+        
+        if (isExtraKategorie) {
+            // Für Extra-Kategorien nur zwischen 100% und 'none' wechseln
+            neuePortion = aktuellePortion === '100%' ? 'none' : '100%';
+        } else {
+            // Normale Rotation für Standard-Kategorien
+            switch (aktuellePortion) {
+                case '100%':
+                    neuePortion = '50%';
+                    break;
+                case '50%':
+                    neuePortion = '25%';
+                    break;
+                case '25%':
+                    neuePortion = 'none';
+                    break;
+                default:
+                    neuePortion = '100%';
+                    break;
+            }
+        }
+        
+        console.log(`Neue Portion für ${tag}, ${kategorie}: ${neuePortion}`);
+        
+        // Mahlzeiten aus der Zelle extrahieren
+        const mahlzeiten = [];
+        const mahlzeitElemente = zelle.querySelectorAll('.menue-komponente');
+        mahlzeitElemente.forEach(element => {
+            if (element.dataset.rezeptId) {
+                mahlzeiten.push({
+                    rezeptId: element.dataset.rezeptId,
+                    name: element.textContent.trim()
+                });
+            }
+        });
+        
+        // Wenn keine Mahlzeiten über Menü-Komponenten gefunden wurden und es eine Extra-Kategorie ist,
+        // den Text der Zelle als Mahlzeit verwenden
+        if (mahlzeiten.length === 0 && isExtraKategorie) {
+            let extraKategorieTitle = '';
+            // Versuche, den Anzeigenamen der Extra-Kategorie zu finden
+            const extraKategorieId = kategorie.substring(6); // "extra_" entfernen
+            if (window.TabeleAdd && window.TabeleAdd.extraKategorien) {
+                const extraKategorie = window.TabeleAdd.extraKategorien.find(k => k.id === extraKategorieId);
+                if (extraKategorie) {
+                    extraKategorieTitle = extraKategorie.displayKategorie;
                 }
             }
-        }, 5000); // 5 Sekunden Timeout
-        
-        // ... Rest des Codes ...
-        
-        // Am Ende der Funktion sicherstellen, dass der Timeout gelöscht wird
-        clearTimeout(sicherheitsTimeout);
-    } catch (outerError) {
-        // Äußerster Fehlerhandler, um sicherzustellen, dass der Bearbeitungsstatus immer zurückgesetzt wird
-        console.error('Schwerwiegender Fehler bei der Zellenverarbeitung:', outerError);
-        window.istZelleInBearbeitung = false;
-        
-        try {
-            // Alle Zellen zurücksetzen, falls irgendwelche noch in Bearbeitung sind
-            document.querySelectorAll('.zelle-in-bearbeitung').forEach(element => {
-                element.classList.remove('zelle-in-bearbeitung');
+            
+            mahlzeiten.push({
+                name: zelle.textContent.replace('✎', '').trim(),
+                isExtraKategorie: true,
+                extraKategorieTitle: extraKategorieTitle
             });
-        } catch (e) {
-            console.error('Fehler beim Entfernen des visuellen Bearbeitungsstatus:', e);
         }
+        
+        // Menüauswahl aktualisieren und auf dem Server speichern
+        const erfolg = await aktualisiereMenueAuswahl(tag, kategorie, neuePortion, mahlzeiten);
+        
+        if (erfolg) {
+            // WICHTIG: Vor dem Start der Animation die Bearbeitungsmarkierung entfernen!
+            window.istZelleInBearbeitung = false;
+            
+            // WICHTIG: Bestehenden Bearbeiten-Button vor der Änderung sichern
+            const existingButton = zelle.querySelector('.komponenten-bearbeiten-btn');
+            
+            // Visuelles Feedback - Prozentzahl kurz einblenden
+            if (neuePortion !== 'none') {
+                // Bearbeitungsklasse entfernen
+                zelle.classList.remove('zelle-in-bearbeitung');
+                
+                // Hintergrundfarbe je nach Portionsgröße
+                let feedbackColor;
+                if (neuePortion === '100%') {
+                    feedbackColor = '#4CAF50'; // Grün
+                } else if (neuePortion === '50%') {
+                    feedbackColor = '#FF9800'; // Orange
+                } else if (neuePortion === '25%') {
+                    feedbackColor = '#90CAF9'; // Hellblau
+                }
+                
+                // Original-Inhalt der Zelle speichern (vor der Änderung)
+                const originalHtml = zelle.innerHTML;
+                
+                // Den Button entfernen, bevor wir das Feedback anzeigen
+                if (existingButton) {
+                    existingButton.remove();
+                }
+                
+                // Zelle mit Feedback-Element aktualisieren (Prozentsatz anzeigen)
+                zelle.style.position = 'relative';
+                // Der ursprüngliche Inhalt wird auf 0.1 Opazität gesetzt, nicht ganz versteckt
+                zelle.innerHTML = `
+                    <div style="opacity: 0.1;">${originalHtml}</div>
+                    <div class="portion-feedback" style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: ${feedbackColor};
+                        color: ${neuePortion === '25%' ? 'black' : 'white'};
+                        z-index: 10;
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                    ">${neuePortion}</div>
+                `;
+                
+                // Nach kurzer Zeit den Feedback-Effekt entfernen und Zellzustand neu aufbauen
+                setTimeout(() => {
+                    // Feedback-Element entfernen und zur normalen Position zurückkehren
+                    zelle.style.position = '';
+                    
+                    // Originalinhalt wiederherstellen
+                    zelle.innerHTML = originalHtml;
+                    
+                    // CSS-Klassen für die Portion setzen
+                    zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
+                    
+                    // Neue Klasse hinzufügen
+                    if (neuePortion !== 'none') {
+                        zelle.classList.add(`auswahl-${neuePortion.replace('%', '')}`);
+                    }
+                    
+                    // Bei Extra-Kategorien oder ausgeschlossenen Komponenten besondere Behandlung
+                    if (isExtraKategorie) {
+                        // Prüfen, ob diese Extra-Kategorie ausgeschlossen ist
+                        let isAusgeschlossen = false;
+                        if (aktuelleBewohnerAuswahl[tag] && 
+                            aktuelleBewohnerAuswahl[tag][kategorie] && 
+                            aktuelleBewohnerAuswahl[tag][kategorie].ausgeschlosseneKomponenten) {
+                            
+                            const ausgeschlosseneKomponenten = aktuelleBewohnerAuswahl[tag][kategorie].ausgeschlosseneKomponenten;
+                            const extraText = mahlzeiten.length > 0 ? mahlzeiten[0].name : '';
+                            isAusgeschlossen = ausgeschlosseneKomponenten.includes(extraText);
+                        }
+                        
+                        // Ausgeschlossen-Klasse bei Bedarf hinzufügen oder entfernen
+                        if (isAusgeschlossen) {
+                            zelle.classList.add('ausgeschlossen');
+                        } else {
+                            zelle.classList.remove('ausgeschlossen');
+                        }
+                    }
+                    
+                    // Direkte Farbgebung als zusätzliche Sicherheit (falls CSS nicht korrekt geladen)
+                    if (neuePortion === '100%') {
+                        zelle.style.backgroundColor = '#4CAF50';
+                        zelle.style.color = 'white';
+                        zelle.style.border = '2px solid #2E7D32';
+                    } else if (neuePortion === '50%') {
+                        zelle.style.backgroundColor = '#FF9800';
+                        zelle.style.color = 'white';
+                        zelle.style.border = '2px solid #EF6C00';
+                    } else if (neuePortion === '25%') {
+                        zelle.style.backgroundColor = '#90CAF9';
+                        zelle.style.color = 'black';
+                        zelle.style.border = '2px solid #1976D2';
+                    }
+                    
+                    // Bearbeiten-Button neu erstellen
+                    if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
+                        window.KomponentenEditor.erstelleBearbeitenButton(zelle);
+                    } else {
+                        // Fallback: Bearbeiten-Button manuell erstellen
+                        if (neuePortion !== 'none') {
+                            let button = document.createElement('button');
+                            button.className = 'komponenten-bearbeiten-btn';
+                            button.title = 'Komponenten bearbeiten';
+                            button.innerHTML = '✎'; // Pencil-Symbol
+                            button.id = `edit-btn-${tag}-${kategorie}`;
+                            button.dataset.tag = tag;
+                            button.dataset.kategorie = kategorie;
+                            
+                            // Wichtige Stile für bessere Clickability
+                            button.style.pointerEvents = 'auto';
+                            button.style.zIndex = '1000';
+                            button.style.position = 'absolute';
+                            button.style.right = '8px';
+                            button.style.display = 'flex';
+                            
+                            // Event-Listener für den Button
+                            button.addEventListener('click', function handleButtonClick(event) {
+                                // Event-Propagation stoppen
+                                event.stopPropagation();
+                                event.preventDefault();
+                                event.cancelBubble = true;
+                                
+                                // Zeitstempel zur Vermeidung von Doppelklicks
+                                const jetzt = Date.now();
+                                const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
+                                if (jetzt - letzterButtonKlick < 300) {
+                                    console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
+                                    return;
+                                }
+                                button.dataset.lastClickTime = jetzt.toString();
+                                
+                                // Editor öffnen
+                                console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
+                                if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
+                                    window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
+                                }
+                            });
+                            
+                            zelle.appendChild(button);
+                        }
+                    }
+                    
+                    // Mobile Ansicht aktualisieren, falls nötig
+                    aktualisiereZellInMobileAnsicht(zelle);
+                }, 600); // Ende des Timeouts für das Feedback
+            } else {
+                // Bearbeitungsklasse entfernen
+                zelle.classList.remove('zelle-in-bearbeitung');
+                
+                // Wenn keine Portion ausgewählt wurde (none)
+                // Formatierung zurücksetzen
+                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
+                zelle.style.backgroundColor = '';
+                zelle.style.color = '';
+                zelle.style.border = '';
+                
+                // Entferne den Bearbeiten-Button
+                if (existingButton) {
+                    existingButton.remove();
+                }
+                
+                // Entferne alle Extra-Hinweise
+                const extraHinweise = zelle.querySelector('.extra-hinweise');
+                if (extraHinweise) {
+                    extraHinweise.remove();
+                }
+                
+                // Entferne alle (ohne) Kennzeichnungen
+                const komponentenElemente = zelle.querySelectorAll('.menue-komponente');
+                komponentenElemente.forEach(element => {
+                    element.classList.remove('ausgeschlossen');
+                    element.textContent = element.textContent.replace(' (ohne)', '');
+                });
+                
+                // Mobile Ansicht aktualisieren
+                aktualisiereZellInMobileAnsicht(zelle);
+            }
+            
+            // NEUE FUNKTION: Animation für die mobile Ansicht
+            const mobilAnsicht = document.querySelector('.mobile-menueplan-container');
+            if (mobilAnsicht) {
+                const mobilZelle = mobilAnsicht.querySelector(`.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`);
+                
+                if (mobilZelle) {
+                    // Extra-Animation für die mobile Ansicht
+                    if (neuePortion !== 'none') {
+                        // Originalinhalt der Mobilzelle speichern
+                        const originalMobilHTML = mobilZelle.innerHTML;
+                        
+                        // Hintergrundfarbe je nach Portionsgröße
+                        let feedbackColor;
+                        if (neuePortion === '100%') {
+                            feedbackColor = '#4CAF50'; // Grün
+                        } else if (neuePortion === '50%') {
+                            feedbackColor = '#FF9800'; // Orange
+                        } else if (neuePortion === '25%') {
+                            feedbackColor = '#90CAF9'; // Hellblau
+                        }
+                        
+                        // Zelle leeren und Prozentzahl anzeigen
+                        mobilZelle.innerHTML = `<div class="portion-feedback" style="background-color: ${feedbackColor}; color: ${neuePortion === '25%' ? 'black' : 'white'}">${neuePortion}</div>`;
+                        
+                        // Nach kurzer Zeit den ursprünglichen Inhalt wiederherstellen
+                        setTimeout(() => {
+                            mobilZelle.innerHTML = originalMobilHTML;
+                            // Sicherstellen, dass die Mobil-Zelle korrekt aktualisiert wird
+                            aktualisiereZellInMobileAnsicht(zelle);
+                        }, 600);
+                    } else {
+                        // Formatierung zurücksetzen
+                        mobilZelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen');
+                        mobilZelle.style.backgroundColor = '';
+                        mobilZelle.style.color = '';
+                        mobilZelle.style.border = '';
+                        
+                        // Aktualisieren der Mobil-Zelle
+                        aktualisiereZellInMobileAnsicht(zelle);
+                    }
+                }
+            }
+            
+            // Hier loggen wir den Status, um zu überprüfen, ob alles funktioniert
+            console.log(`Zellstatus nach der Verarbeitung: ${tag}, ${kategorie}, Portion: ${neuePortion}, Bearbeitung: ${window.istZelleInBearbeitung ? 'Ja' : 'Nein'}`);
+        } else {
+            // Wenn das Speichern fehlschlägt, Bearbeitungsstatus zurücksetzen
+            window.istZelleInBearbeitung = false;
+            zelle.classList.remove('zelle-in-bearbeitung');
+            console.error(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}`);
+            alert(`Fehler beim Speichern der Auswahl für ${tag}, ${kategorie}. Bitte versuchen Sie es erneut.`);
+        }
+    } catch (error) {
+        console.error(`Fehler beim Verarbeiten des Zellenklicks für ${tag}, ${kategorie}:`, error);
+        alert(`Fehler beim Verarbeiten der Auswahl: ${error.message}`);
+        
+        // Bei einem Fehler immer den Bearbeitungsstatus zurücksetzen!
+        window.istZelleInBearbeitung = false;
+        zelle.classList.remove('zelle-in-bearbeitung');
     }
 }
 
@@ -1376,9 +1667,6 @@ function resetAuswahl() {
     console.log('Bewohnerauswahl wird vollständig zurückgesetzt');
     aktuelleBewohnerAuswahl = null;
     aktuelleBewohnerName = null;
-    
-    // WICHTIG: Sicherstellen, dass der Bearbeitungsstatus zurückgesetzt wird
-    window.istZelleInBearbeitung = false;
     
     // Zusätzlich auch alle visuellen Elemente zurücksetzen
     try {
@@ -1419,9 +1707,6 @@ function resetAuswahl() {
  */
 function setzeAktuellenBewohner(bewohner) {
     console.log(`Bewohner wird gesetzt: ${bewohner.firstName} ${bewohner.lastName}`);
-    
-    // WICHTIG: Bearbeitungsstatus immer zurücksetzen, wenn ein Bewohner gewechselt wird
-    window.istZelleInBearbeitung = false;
     
     // Alten Bewohner vollständig zurücksetzen
     if (aktuellerBewohner && (aktuellerBewohner.firstName !== bewohner.firstName || aktuellerBewohner.lastName !== bewohner.lastName)) {
@@ -1625,114 +1910,6 @@ function findeTabellenZelle(tabelle, tag, kategorie) {
     return zelle;
 }
 
-/**
- * Verbessert den Komponenten-Bearbeiten-Button visuell und funktional
- * @param {HTMLElement} zelle - Die Zelle, für die der Button erstellt wird
- * @returns {HTMLElement} - Der erstellte Button
- */
-function erstelleVerbessertesBearbeitenButton(zelle) {
-    const tag = zelle.dataset.tag;
-    const kategorie = zelle.dataset.kategorie;
-    
-    if (!tag || !kategorie) {
-        console.warn('Keine Tag/Kategorie-Info für Button verfügbar');
-        return null;
-    }
-    
-    // Alten Button entfernen, falls vorhanden
-    const oldButton = zelle.querySelector('.komponenten-bearbeiten-btn');
-    if (oldButton) {
-        oldButton.remove();
-    }
-    
-    // Neuen Button erstellen
-    const button = document.createElement('button');
-    button.className = 'komponenten-bearbeiten-btn';
-    button.title = 'Komponenten bearbeiten';
-    button.innerHTML = '<span class="pencil-icon">✎</span>'; // Pencil-Symbol in einem Span für besseres Styling
-    button.id = `edit-btn-${tag}-${kategorie}`;
-    button.dataset.tag = tag;
-    button.dataset.kategorie = kategorie;
-    
-    // Wichtige Stile für bessere Klickbarkeit direkt anwenden
-    button.style.position = 'absolute';
-    button.style.right = '5px';
-    button.style.top = '5px';
-    button.style.width = '26px';
-    button.style.height = '26px';
-    button.style.padding = '2px';
-    button.style.border = '1px solid #ccc';
-    button.style.borderRadius = '4px';
-    button.style.backgroundColor = 'white';
-    button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-    button.style.cursor = 'pointer';
-    button.style.display = 'flex';
-    button.style.alignItems = 'center';
-    button.style.justifyContent = 'center';
-    button.style.zIndex = '1000';
-    button.style.pointerEvents = 'auto'; // Wichtig für korrekte Klick-Erkennung
-    
-    // Spezielle Stile für den Button-Inhalt
-    const pencilIcon = button.querySelector('.pencil-icon');
-    if (pencilIcon) {
-        pencilIcon.style.fontSize = '16px';
-        pencilIcon.style.pointerEvents = 'none'; // Verhindert, dass das Icon selbst Klicks abfängt
-    }
-    
-    // Ereignisse stoppen, damit sie nicht an die Zelle weitergegeben werden
-    button.addEventListener('click', (event) => {
-        console.log('Direkter Klick auf Bearbeiten-Button registriert');
-        event.stopPropagation();
-        event.preventDefault();
-        
-        // Zeitstempel zur Vermeidung von Doppelklicks
-        const jetzt = Date.now();
-        const letzterButtonKlick = parseInt(button.dataset.lastClickTime || '0');
-        if (jetzt - letzterButtonKlick < 300) {
-            console.log('Klick auf Bearbeiten-Button zu schnell nach vorherigem Klick - ignoriert');
-            return;
-        }
-        button.dataset.lastClickTime = jetzt.toString();
-        
-        // Editor öffnen
-        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-        }
-    });
-    
-    // Auch für Touch-Geräte funktioniert der Button
-    button.addEventListener('touchstart', (event) => {
-        event.stopPropagation();
-    });
-    
-    button.addEventListener('touchend', (event) => {
-        console.log('Touch-Ende auf Bearbeiten-Button registriert');
-        event.stopPropagation();
-        event.preventDefault();
-        
-        // Zeitstempel zur Vermeidung von Doppelklicks
-        const jetzt = Date.now();
-        const letzterButtonKlick = parseInt(button.dataset.lastTouchTime || '0');
-        if (jetzt - letzterButtonKlick < 300) {
-            console.log('Touch auf Bearbeiten-Button zu schnell nach vorherigem Touch - ignoriert');
-            return;
-        }
-        button.dataset.lastTouchTime = jetzt.toString();
-        
-        // Editor öffnen
-        if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-            window.KomponentenEditor.oeffneKomponentenEditor(zelle, tag, kategorie);
-        }
-    });
-    
-    // Damit der Button in relativen Containern korrekt positioniert wird
-    if (window.getComputedStyle(zelle).position === 'static') {
-        zelle.style.position = 'relative';
-    }
-    
-    return button;
-}
-
 // Module exportieren
 export {
     initialisiere,
@@ -1746,6 +1923,5 @@ export {
     aktualisiereZellInMobileAnsicht,
     aktualisiereZellenInMobileAnsicht,
     handleZellenKlick,
-    ladeBewohnerAuswahl,
-    erstelleVerbessertesBearbeitenButton
+    ladeBewohnerAuswahl
 }; 
