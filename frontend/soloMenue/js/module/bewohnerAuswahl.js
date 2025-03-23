@@ -1965,5 +1965,6 @@ export {
     initialisiere,
     setzeAktuellenBewohner,
     markiereBewohnerKarteAlsAktiv,
-    resetAuswahl
+    resetAuswahl,
+    getAktuelleBewohnerAuswahl
 }; 
