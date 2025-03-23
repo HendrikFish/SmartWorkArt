@@ -4,14 +4,14 @@
  */
 
 // Module importieren
-import * as Kalenderwoche from './module/kalenderwoche.js';
+import * as FunktionenTabelle from './module/funktionenTabelle.js';
 import * as BewohnerDate from './module/bewohnerDate.js';
 import * as BearbeitungsPanel from './module/bearbeitungsPanel.js';
 import * as BewohnerButton from './module/bewohnerButton.js';
-import * as FunktionenTabelle from './module/funktionenTabelle.js';
 import * as TabeleAdd from './module/tabeleAdd.js';
 import * as BewohnerAuswahl from './module/bewohnerAuswahl.js';
 import * as KomponentenEditor from './module/komponententEditor.js';
+import * as Kalenderwoche from './module/kalenderwoche.js';
 
 // Aktuell ausgewählter Bewohner für die Menüplanung
 let aktuellerBewohner = null;
@@ -100,83 +100,36 @@ function scrollMitEffekt(zielPosition, dauer) {
     requestAnimationFrame(animation);
 }
 
-// Warten, bis das DOM vollständig geladen ist
+// Initialisierung, wenn DOMContent geladen ist
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOMContentLoaded - Initialisierung der Anwendung');
+    
+    // Module initialisieren
     try {
-        console.log('Initialisiere SoloMenü-Anwendung...');
-
-        // Spezielles Debugging für Kalenderwochenänderungen
-        console.log("Debug: Füge direkten Event-Listener für Button-Klicks hinzu");
-        const nextWeekBtn = document.getElementById('next-week-btn');
-        const prevWeekBtn = document.getElementById('prev-week-btn');
-        
-        if (nextWeekBtn) {
-            nextWeekBtn.addEventListener('click', () => {
-                console.log("[DEBUG] Direkt-Event: Next-Week-Button wurde geklickt");
-            });
-        }
-        
-        if (prevWeekBtn) {
-            prevWeekBtn.addEventListener('click', () => {
-                console.log("[DEBUG] Direkt-Event: Prev-Week-Button wurde geklickt");
-            });
-        }
-        
-        // Event-Listener für kalenderwocheChanged-Event
-        document.addEventListener('kalenderwocheChanged', (debugEvent) => {
-            console.log('[DEBUG] kalenderwocheChanged-Event empfangen:', 
-                        `KW${debugEvent.detail.kw}/${debugEvent.detail.jahr}`,
-                        'Aktueller Bewohner:', aktuellerBewohner ? 
-                        `${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName}` : 'Keiner');
-        });
-
-        // Kalenderwochen-Funktionalität initialisieren
-        Kalenderwoche.initialisiere();
-        console.log('Kalenderwoche-Modul initialisiert');
-
-        // Bewohnerdaten initialisieren
         await BewohnerDate.initialisiere();
-        console.log('BewohnerDate-Modul initialisiert');
-
-        // Bearbeitungspanel initialisieren (falls vorhanden)
+        BewohnerAuswahl.initialisiere();
         if (typeof BearbeitungsPanel.initialisiere === 'function') {
             BearbeitungsPanel.initialisiere();
-            console.log('BearbeitungsPanel-Modul initialisiert');
         }
-
-        // BewohnerButton-Modul initialisieren (für einheitliche Kartenbreite)
-        if (typeof BewohnerButton.initialisiere === 'function') {
-            BewohnerButton.initialisiere();
-            console.log('BewohnerButton-Modul initialisiert');
-        }
-
-        // FunktionenTabelle-Modul initialisieren (für Menüplan-Tabelle)
-        if (typeof FunktionenTabelle.initialisiere === 'function') {
-            FunktionenTabelle.initialisiere();
-            console.log('FunktionenTabelle-Modul initialisiert');
+        BewohnerButton.initialisiere();
+        
+        // UI-Komponenten initialisieren
+        initBurgerMenu();
+        initSeitenwahl();
+        initScrollToTop();
+        
+        // Bewohnerbereich und Bewohnerkarten initialisieren
+        initialisiereBewohnerBereich();
+        
+        // Kalenderwochensteuerung initialisieren
+        if (typeof Kalenderwoche.initialisiere === 'function') {
+            Kalenderwoche.initialisiere();
         }
         
-        // TabeleAdd-Modul initialisieren (für Hinzufügen von Kategorien)
-        if (typeof TabeleAdd.initialisiere === 'function') {
-            await TabeleAdd.initialisiere();
-            console.log('TabeleAdd-Modul initialisiert');
-        }
-        
-        // BewohnerAuswahl-Modul initialisieren (für Essensauswahl)
-        BewohnerAuswahl.initialisiere();
-        console.log('BewohnerAuswahl-Modul initialisiert');
-
-        // KomponentenEditor-Modul initialisieren (für Komponenten-Editor)
-        KomponentenEditor.initialisiere();
-        console.log('KomponentenEditor-Modul initialisiert');
-
-        // Nach oben Button für mobile Ansicht initialisieren
-        initialisiereNachObenButton();
-        console.log('Nach oben Button initialisiert');
-
-        console.log('SoloMenü-Anwendung erfolgreich initialisiert');
+        // Initialisierung abgeschlossen 
+        console.log('Initialisierung abgeschlossen');
     } catch (error) {
-        console.error('Fehler bei der Initialisierung der Anwendung:', error);
+        console.error('Fehler bei der Initialisierung:', error);
     }
 });
 
@@ -190,11 +143,13 @@ document.addEventListener('bewohnerSelected', (event) => {
 });
 
 /**
- * Zeigt einen Indikator für den aktuell aktiven Bewohner an
- * @param {Object} bewohner - Das Bewohner-Objekt
- * @param {boolean} isExisting - Gibt an, ob eine bestehende Auswahl geladen wurde
+ * Zeigt oder aktualisiert den aktiven Bewohner Indikator über der Tabelle
+ * @param {Object} bewohner - Das Bewohnerobjekt
+ * @param {boolean} isExisting - Flag, ob eine bestehende Auswahl geladen wurde
  */
 function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
+    if (!bewohner) return;
+    
     // Container für die Menüplantabelle finden oder erstellen
     let container = document.querySelector('.menueplan-container');
     if (!container) {
@@ -206,51 +161,15 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
         }
     }
     
-    // Bestehenden Indikator finden
+    // Bestehenden Indikator entfernen, falls vorhanden
     const vorhandenerIndikator = document.querySelector('.aktiver-bewohner-indikator');
-    
-    // Wenn es einen vorhandenen Indikator gibt, den wir ersetzen wollen
     if (vorhandenerIndikator) {
-        // Prüfe, ob es sich um denselben Bewohner handelt
-        const nameElement = vorhandenerIndikator.querySelector('.name');
-        const aktuellerName = nameElement ? nameElement.textContent : '';
-        const neuerName = `Aktiver Bewohner: ${bewohner.firstName} ${bewohner.lastName}`;
-        
-        if (aktuellerName.includes(`${bewohner.firstName} ${bewohner.lastName}`)) {
-            // Es ist derselbe Bewohner, Status möglicherweise aktualisieren
-            const statusElement = vorhandenerIndikator.querySelector('.status');
-            if (statusElement) {
-                const statusText = isExisting ? 'Plan' : 'Neue Auswahl erstellt';
-                statusElement.textContent = `(${statusText})`;
-            }
-            return; // Keine weitere Aktion notwendig
-        }
-        
-        // Es ist ein anderer Bewohner, alte Anzeige ausblenden mit Animation
-        vorhandenerIndikator.classList.add('fade-out');
-        
-        // Nach der Animation entfernen
-        setTimeout(() => {
-            vorhandenerIndikator.remove();
-            // Neuen Indikator erstellen
-            erstelleNeuenIndikator(container, bewohner, isExisting);
-        }, 500); // Zeit entsprechend der CSS-Transition einstellen
-    } else {
-        // Kein vorhandener Indikator, direkt einen neuen erstellen
-        erstelleNeuenIndikator(container, bewohner, isExisting);
+        vorhandenerIndikator.remove();
     }
-}
-
-/**
- * Erstellt einen neuen Bewohner-Indikator
- * @param {HTMLElement} container - Der Container, in den der Indikator eingefügt wird
- * @param {Object} bewohner - Das Bewohner-Objekt
- * @param {boolean} isExisting - Gibt an, ob eine bestehende Auswahl geladen wurde
- */
-function erstelleNeuenIndikator(container, bewohner, isExisting) {
+    
     // Neuen Indikator erstellen
     const indikator = document.createElement('div');
-    indikator.className = 'aktiver-bewohner-indikator fade-in';
+    indikator.className = 'aktiver-bewohner-indikator';
     
     // Station/Bereich des Bewohners ermitteln
     const station = bewohner.areas && bewohner.areas['Wo wird das Essen eingetragen!'] 
@@ -278,48 +197,35 @@ function erstelleNeuenIndikator(container, bewohner, isExisting) {
     
     // Event-Listener für den Reset-Button
     document.getElementById('reset-bewohner-button').addEventListener('click', () => {
-        // Animation starten
-        indikator.classList.remove('fade-in');
-        indikator.classList.add('fade-out');
+        // Bewohner zurücksetzen
+        aktuellerBewohner = null;
         
-        // Nach der Animation den Rest ausführen
-        setTimeout(() => {
-            // Bewohner zurücksetzen
-            aktuellerBewohner = null;
-            
-            // BewohnerAuswahl zurücksetzen
-            BewohnerAuswahl.resetAuswahl();
-            
-            // Aktive Bewohnerkarte deaktivieren
-            const aktiveBewohnerCard = document.querySelector('.bewohner-card.active');
-            if (aktiveBewohnerCard) {
-                aktiveBewohnerCard.classList.remove('active');
-                aktiveBewohnerCard.style.backgroundColor = '';
-                aktiveBewohnerCard.style.borderColor = '';
-                aktiveBewohnerCard.style.borderWidth = '';
-                aktiveBewohnerCard.style.borderStyle = '';
-                aktiveBewohnerCard.style.boxShadow = '';
-                
-                const infoElement = aktiveBewohnerCard.querySelector('.bewohner-info');
-                if (infoElement) {
-                    infoElement.style.display = 'none';
-                }
+        // BewohnerAuswahl zurücksetzen
+        BewohnerAuswahl.resetAuswahl();
+        
+        // Aktive Bewohnerkarte deaktivieren
+        const aktiveBewohnerCard = document.querySelector('.bewohner-card.active');
+        if (aktiveBewohnerCard) {
+            aktiveBewohnerCard.classList.remove('active');
+            const infoElement = aktiveBewohnerCard.querySelector('.bewohner-info');
+            if (infoElement) {
+                infoElement.style.display = 'none';
             }
-            
-            // Tabelle zurücksetzen - alle Zellen demarkieren
-            if (aktuelleMenueplanTabelle) {
-                const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
-                alleZellen.forEach(zelle => {
-                    zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
-                    zelle.style.backgroundColor = '';
-                    zelle.style.color = '';
-                    zelle.style.border = '';
-                });
-            }
-            
-            // Indikator entfernen
-            indikator.remove();
-        }, 500); // Zeit entsprechend der CSS-Transition
+        }
+        
+        // Tabelle zurücksetzen - alle Zellen demarkieren
+        if (aktuelleMenueplanTabelle) {
+            const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
+            alleZellen.forEach(zelle => {
+                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
+                zelle.style.backgroundColor = '';
+                zelle.style.color = '';
+                zelle.style.border = '';
+            });
+        }
+        
+        // Indikator entfernen
+        indikator.remove();
     });
     
     // Event-Listener für den "Plan leeren"-Button
@@ -358,7 +264,6 @@ function erstelleNeuenIndikator(container, bewohner, isExisting) {
             // Schritt 2: Neue leere Bewohnerauswahl erstellen und speichern
             const leereAuswahl = {
                 name: bewohnerName,
-                // Leere Objekte für jeden Wochentag
                 Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
             };
             
@@ -400,183 +305,34 @@ function erstelleNeuenIndikator(container, bewohner, isExisting) {
     });
 }
 
-// Funktionen global verfügbar machen
+// Funktion global verfügbar machen
 window.zeigeAktivenBewohnerIndikator = zeigeAktivenBewohnerIndikator;
 
-// Globales Script-Objekt erstellen, falls noch nicht vorhanden
-if (!window.Script) {
-    window.Script = {};
+/**
+ * Initialisiert den Bewohnerbereich und fügt Event-Listener hinzu
+ */
+function initialisiereBewohnerBereich() {
+    console.log('Initialisiere Bewohnerbereich');
+    
+    // Event-Listener für Bewohner-Karten hinzufügen
+    document.addEventListener('bewohnerCardClicked', async (event) => {
+        const { bewohner } = event.detail;
+        console.log(`Bewohner angeklickt: ${bewohner.firstName} ${bewohner.lastName}`);
+        
+        // Aktiven Bewohner in BewohnerAuswahl-Modul setzen und Auswahl laden
+        try {
+            const result = await BewohnerAuswahl.setzeAktuellenBewohner(bewohner);
+            
+            // Aktiven Bewohner Indikator anzeigen
+            zeigeAktivenBewohnerIndikator(bewohner, result.isExisting);
+            
+            // Bewohnerkarte visuell als aktiv markieren
+            BewohnerAuswahl.markiereBewohnerKarteAlsAktiv(bewohner);
+        } catch (error) {
+            console.error('Fehler beim Setzen des Bewohners:', error);
+        }
+    });
 }
-
-// Die Funktion auch im Script-Objekt verfügbar machen für bessere Modularität
-window.Script.zeigeAktivenBewohnerIndikator = zeigeAktivenBewohnerIndikator;
-
-// Neuer Event-Listener für Klicks auf die Bewohnerkarte (ohne Button)
-document.addEventListener('bewohnerCardClicked', async (event) => {
-    try {
-        const bewohner = event.detail.bewohner;
-        const bewohnerCard = event.detail.cardElement;
-        console.log('Bewohner ausgewählt für Essensauswahl:', bewohner);
-        
-        // Bewohner-ID für globalen Zugriff speichern (falls bewohnerDate.js diese Information benötigt)
-        if (window.BewohnerDate && typeof BewohnerDate.setzeGlobalAktivenBewohner === 'function') {
-            const bewohnerId = `${bewohner.firstName}_${bewohner.lastName}`.trim().toLowerCase().replace(/\s+/g, '_');
-            BewohnerDate.setzeGlobalAktivenBewohner(bewohnerId);
-        }
-        
-        // Alle Karten deaktivieren
-        const alleKarten = document.querySelectorAll('.bewohner-card');
-        alleKarten.forEach(karte => {
-            karte.classList.remove('active');
-            karte.style.backgroundColor = '';
-            karte.style.borderColor = '';
-            karte.style.borderWidth = '';
-            karte.style.borderStyle = '';
-            karte.style.boxShadow = '';
-            
-            // Info-Element ausblenden
-            const info = karte.querySelector('.bewohner-info');
-            if (info) info.style.display = 'none';
-        });
-        
-        // Diese Karte deutlich als aktiv markieren
-        bewohnerCard.classList.add('active');
-        bewohnerCard.style.backgroundColor = '#e3f2fd';
-        bewohnerCard.style.borderColor = '#2196F3';
-        bewohnerCard.style.borderWidth = '2px';
-        bewohnerCard.style.borderStyle = 'solid';
-        bewohnerCard.style.boxShadow = '0 4px 8px rgba(33, 150, 243, 0.3)';
-        
-        // Vor der Verarbeitung prüfen, ob es ein Bewohnerwechsel ist
-        const istBewohnerWechsel = aktuellerBewohner && 
-            (aktuellerBewohner.firstName !== bewohner.firstName || 
-             aktuellerBewohner.lastName !== bewohner.lastName);
-        
-        if (istBewohnerWechsel) {
-            console.log(`Bewohnerwechsel: von ${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName} zu ${bewohner.firstName} ${bewohner.lastName}`);
-        }
-        
-        // Aktuellen Bewohner speichern
-        aktuellerBewohner = bewohner;
-        window.aktuellerBewohner = bewohner; // Für globale Verfügbarkeit
-        
-        // Aktuellen Bewohner auch im BewohnerAuswahl-Modul speichern und Auswahl laden
-        console.log(`Lade Bewohnerauswahl für ${bewohner.firstName} ${bewohner.lastName}`);
-        let result;
-        
-        try {
-            // Das setzeAktuellenBewohner im Modul lädt automatisch die Auswahl
-            // Wichtig: Auf die Fertigstellung dieses Aufrufs warten
-            result = await BewohnerAuswahl.setzeAktuellenBewohner(bewohner);
-            console.log('Ergebnis von setzeAktuellenBewohner:', result);
-            
-            // Wenn keine Auswahl zurückgegeben wurde, manuell laden (Fallback)
-            if (!result || !result.auswahl) {
-                console.log('Keine Auswahl zurückgegeben, lade manuell');
-                // Aktuelle KW und Jahr ermitteln
-                let kw, jahr;
-                try {
-                    const kwDaten = document.querySelector('#current-week-display').textContent;
-                    const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
-                    if (match) {
-                        kw = parseInt(match[1]);
-                        jahr = parseInt(match[2]);
-                    }
-                } catch (error) {
-                    console.warn('Konnte KW/Jahr nicht aus der Anzeige lesen, verwende aktuelle Werte');
-                }
-                
-                result = await BewohnerAuswahl.ladeBewohnerAuswahl(bewohner, kw, jahr);
-                console.log('Manuell geladene Bewohnerauswahl:', result);
-            }
-        } catch (loadError) {
-            console.error('Fehler beim Laden der Bewohnerauswahl:', loadError);
-            
-            // Trotz Fehler mit einer lokalen Auswahl weitermachen
-            const localAuswahl = {
-                name: `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_'),
-                Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
-            };
-            
-            alert(`Es gab einen Fehler beim Laden der Bewohnerauswahl. Bitte prüfen Sie die Konsole für weitere Details. Wir arbeiten mit einer lokalen Version weiter, die möglicherweise nicht gespeichert werden kann.`);
-            
-            result = { auswahl: localAuswahl, isExisting: false };
-        }
-        
-        // Extrahiere Ergebnis
-        const auswahl = result.auswahl;
-        const isExisting = result.isExisting;
-        
-        // Menüplantabelle erstellen oder aktualisieren
-        if (!aktuelleMenueplanTabelle) {
-            console.log('Keine Menüplantabelle vorhanden, erstelle neue Tabelle');
-            // Wenn noch keine Tabelle existiert, eine neue erstellen
-            try {
-                aktuelleMenueplanTabelle = await FunktionenTabelle.erstelleMenueplanTabelle();
-            } catch (tableError) {
-                console.error('Fehler beim Erstellen der Menüplantabelle:', tableError);
-                alert(`Fehler beim Erstellen der Menüplantabelle: ${tableError.message}`);
-                return;
-            }
-            
-            // Tabelle in den Container einfügen
-            const container = document.querySelector('.menueplan-container') || document.createElement('div');
-            container.className = 'menueplan-container';
-            
-            if (container) {
-                container.innerHTML = '';
-                container.appendChild(aktuelleMenueplanTabelle);
-                
-                // Container zur Hauptseite hinzufügen, falls noch nicht vorhanden
-                if (!document.querySelector('.menueplan-container')) {
-                    const mainElement = document.querySelector('main');
-                    if (mainElement) {
-                        mainElement.appendChild(container);
-                    }
-                }
-            }
-        } else if (istBewohnerWechsel) {
-            // Bei Bewohnerwechsel alle Zellen zurücksetzen, um alte Markierungen zu entfernen
-            const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
-            alleZellen.forEach(zelle => {
-                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
-                zelle.style.backgroundColor = '';
-                zelle.style.color = '';
-                zelle.style.border = '';
-            });
-        }
-        
-        // Tabelle mit den Auswahlen des Bewohners aktualisieren
-        console.log('Aktualisiere Tabelle mit Bewohnerauswahl');
-        try {
-            BewohnerAuswahl.aktualisiereTabelle(aktuelleMenueplanTabelle);
-        } catch (updateError) {
-            console.error('Fehler beim Aktualisieren der Tabelle:', updateError);
-        }
-        
-        // Permanenten Indikator für aktiven Bewohner anzeigen
-        zeigeAktivenBewohnerIndikator(bewohner, isExisting);
-        
-        // Info innerhalb der Bewohnerkarte anzeigen
-        const infoElement = bewohnerCard.querySelector('.bewohner-info');
-        if (infoElement) {
-            // Anzeigen, ob eine bestehende Auswahl geladen wurde oder eine neue erstellt wurde
-            if (isExisting) {
-                infoElement.innerHTML = `<span>Essen für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
-                               <span class="auswahl-status">(Plan)</span>`;
-            } else {
-                infoElement.innerHTML = `<span>Essen für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
-                               <span class="auswahl-status">(Neue Auswahl erstellt)</span>`;
-            }
-            
-            // Info anzeigen
-            infoElement.style.display = 'flex';
-        }
-    } catch (error) {
-        console.error('Allgemeiner Fehler bei der Bewohnerauswahl:', error);
-        alert(`Ein unerwarteter Fehler ist aufgetreten: ${error.message}`);
-    }
-});
 
 // Event-Listener für die Aktualisierung der Menüplantabelle
 document.addEventListener('menuplanTabelleErstellt', (event) => {
@@ -620,3 +376,91 @@ document.getElementById('menueplan-container').addEventListener('click', functio
         }
     }
 });
+
+/**
+ * Initialisiert das Burger-Menü für mobile Ansichten
+ */
+function initBurgerMenu() {
+    const burgerButton = document.querySelector('.burger-menu-button');
+    const navigation = document.querySelector('nav');
+    
+    if (burgerButton && navigation) {
+        burgerButton.addEventListener('click', () => {
+            navigation.classList.toggle('active');
+            burgerButton.classList.toggle('active');
+        });
+        
+        // Klick außerhalb schließt das Menü
+        document.addEventListener('click', (event) => {
+            if (!navigation.contains(event.target) && !burgerButton.contains(event.target) && navigation.classList.contains('active')) {
+                navigation.classList.remove('active');
+                burgerButton.classList.remove('active');
+            }
+        });
+    }
+}
+
+/**
+ * Initialisiert die Seitenwahl-Navigation
+ */
+function initSeitenwahl() {
+    const navLinks = document.querySelectorAll('nav a');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            // Aktiven Link markieren
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            // Bei mobiler Ansicht das Menü nach Klick schließen
+            const navigation = document.querySelector('nav');
+            const burgerButton = document.querySelector('.burger-menu-button');
+            
+            if (window.innerWidth <= 768 && navigation && burgerButton) {
+                navigation.classList.remove('active');
+                burgerButton.classList.remove('active');
+            }
+        });
+    });
+    
+    // Aktuellen Link basierend auf URL markieren
+    const currentPath = window.location.pathname;
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+}
+
+/**
+ * Initialisiert den "Zum Seitenanfang" Button
+ */
+function initScrollToTop() {
+    // Button erstellen, falls nicht vorhanden
+    let scrollButton = document.querySelector('.scroll-to-top');
+    
+    if (!scrollButton) {
+        scrollButton = document.createElement('button');
+        scrollButton.className = 'scroll-to-top';
+        scrollButton.innerHTML = '<i class="fa fa-arrow-up"></i>';
+        scrollButton.style.display = 'none';
+        document.body.appendChild(scrollButton);
+    }
+    
+    // Scroll-Event für das Ein-/Ausblenden des Buttons
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollButton.style.display = 'block';
+        } else {
+            scrollButton.style.display = 'none';
+        }
+    });
+    
+    // Klick-Event zum Scrollen nach oben
+    scrollButton.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}

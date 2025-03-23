@@ -34,84 +34,105 @@ let aktiverBewohner = null;
  * @returns {Promise<Object>} Die Bewohnerauswahl und ein Flag, ob sie bereits existierte
  */
 async function ladeBewohnerAuswahl(bewohner, kw, jahr) {
-    console.log(`Lade Bewohnerauswahl für ${bewohner.firstName} ${bewohner.lastName} (KW${kw}/${jahr})`);
+    // Aktuelle Werte für KW und Jahr speichern
+    aktuelleKW = kw;
+    aktuellesJahr = jahr;
+    
+    // Aktuellen Bewohner setzen
+    aktuellerBewohner = bewohner;
+    
+    // Bestehende Auswahl zurücksetzen (wichtig bei Bewohnerwechsel!)
+    resetAuswahl();
+    
+    // Bewohnername für Datei zusammenstellen
+    const bewohnerName = `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_');
+    aktuelleBewohnerName = bewohnerName;
+    
+    // In der Konsole anzeigen, für welchen Bewohner wir prüfen
+    console.log(`Lade Bewohnerauswahl für ${bewohnerName} (KW${kw}/${jahr})`);
     
     try {
-        // Format des Namens für die Datei: Vorname_Nachname
-        const bewohnerName = `${bewohner.firstName}_${bewohner.lastName}`.trim().replace(/\s+/g, '_');
+        // Versuchen, die vorhandene Auswahl zu laden
+        const response = await fetch(`/api/solomenue/bewohner-auswahl/${jahr}/KW${kw}/${bewohnerName}`);
         
-        // URL für die API-Anfrage zusammenstellen
-        const url = `/api/solomenue/bewohner-auswahl/${jahr}/KW${kw}/${bewohnerName}`;
-        console.log(`Anfrage an: ${url}`);
-        
-        // Daten vom Server abrufen
-        const response = await fetch(url);
-        let isExistingSelection = true;
-        
-        // Prüfen, ob die Anfrage erfolgreich war
-        if (!response.ok) {
-            // Wenn die Datei nicht existiert (404), erstellen wir eine leere Auswahl
-            if (response.status === 404) {
-                console.log(`Keine bestehende Auswahl gefunden für ${bewohnerName} in KW${kw}/${jahr}, erstelle eine neue`);
-                isExistingSelection = false;
-                
-                // Leere Auswahl erstellen
-                aktuelleBewohnerAuswahl = {
-                    name: bewohnerName,
-                    // Leere Objekte für jeden Wochentag
-                    Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
-                };
-                
-                // Feld für Tracking des aktuellen Status
-                aktuelleBewohnerAuswahlStatus = {
-                    kw: kw,
-                    jahr: jahr,
-                    zuletzt_geladen: new Date().toISOString(),
-                    ist_gespeichert: false
-                };
-            } else {
-                // Bei anderen Fehlern werfen wir einen Fehler
-                throw new Error(`HTTP-Fehler: ${response.status} ${response.statusText}`);
+        if (response.ok) {
+            // Bestehende Auswahl gefunden
+            const auswahl = await response.json();
+            console.log(`Bestehende Auswahl gefunden und geladen für ${bewohnerName} (KW${kw}/${jahr})`);
+            
+            // Sicherstellen, dass alle Tage und Kategorien vorhanden sind
+            const tage = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+            
+            // Prüfe, ob die Daten korrekt sind
+            if (!auswahl.name) {
+                auswahl.name = bewohnerName;
             }
-        } else {
-            // Daten aus der Antwort extrahieren
-            const daten = await response.json();
-            console.log('Geladene Bewohnerauswahl:', daten);
             
-            // Daten speichern
-            aktuelleBewohnerAuswahl = daten;
+            // Stelle sicher, dass alle Tage existieren
+            tage.forEach(tag => {
+                if (!auswahl[tag]) {
+                    auswahl[tag] = {};
+                }
+                
+                // Für jede Kategorie in jedem Tag prüfen
+                Object.keys(auswahl[tag]).forEach(kategorie => {
+                    const auswahl_item = auswahl[tag][kategorie];
+                    
+                    // Wenn ein Portionsmaß vorhanden ist, aber selected nicht explizit gesetzt ist, selected auf true setzen
+                    if (auswahl_item && auswahl_item.portion && auswahl_item.selected === undefined) {
+                        auswahl_item.selected = true;
+                        console.log(`Fehlende selected-Eigenschaft für ${tag}, ${kategorie} ergänzt`);
+                    }
+                });
+            });
             
-            // Status-Tracking
-            aktuelleBewohnerAuswahlStatus = {
-                kw: kw,
-                jahr: jahr,
-                zuletzt_geladen: new Date().toISOString(),
-                ist_gespeichert: true
+            // Debug-Ausgabe für geladene Auswahl
+            console.log('Geladene Bewohnerauswahl nach Korrektur:', JSON.stringify(auswahl, null, 2));
+            
+            // Bewohnerauswahl global speichern
+            aktuelleBewohnerAuswahl = auswahl;
+            
+            return { auswahl, isExisting: true };
+        } else if (response.status === 404) {
+            // Keine Auswahl gefunden, neue erstellen
+            console.log(`Keine bestehende Auswahl gefunden für ${bewohnerName} (KW${kw}/${jahr}), erstelle neue Auswahl`);
+            
+            // Neue leere Auswahl erstellen
+            const neueAuswahl = {
+                name: bewohnerName,
+                Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
             };
+            
+            // Neue Auswahl global speichern
+            aktuelleBewohnerAuswahl = neueAuswahl;
+            
+            // Neue Auswahl sofort auf dem Server speichern
+            try {
+                await speichereBewohnerAuswahl();
+                console.log(`Neue leere Auswahl für ${bewohnerName} (KW${kw}/${jahr}) wurde gespeichert`);
+            } catch (saveError) {
+                console.warn(`Konnte neue Auswahl nicht sofort speichern: ${saveError.message}`);
+                // Weitermachen, auch wenn das Speichern fehlschlägt
+            }
+            
+            return { auswahl: neueAuswahl, isExisting: false };
+        } else {
+            // Ein anderer Fehler ist aufgetreten
+            throw new Error(`Fehler beim Laden der Bewohnerauswahl: ${response.status} ${response.statusText}`);
         }
-        
-        // Globale Variablen aktualisieren
-        aktuelleKW = kw;
-        aktuellesJahr = jahr;
-        aktuelleBewohnerName = bewohnerName;
-        aktuellerBewohner = bewohner;
-        
-        // Bewohner-Indikator aktualisieren, falls die Funktion verfügbar ist
-        // WICHTIG: Dies stellt sicher, dass der Indikator nach dem Laden der Auswahl angezeigt wird
-        if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
-            console.log('Aktualisiere aktiven Bewohner-Indikator nach Laden der Auswahl');
-            window.zeigeAktivenBewohnerIndikator(bewohner, isExistingSelection);
-        } else if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
-            window.Script.zeigeAktivenBewohnerIndikator(bewohner, isExistingSelection);
-        }
-        
-        return {
-            auswahl: aktuelleBewohnerAuswahl,
-            isExistingSelection: isExistingSelection
-        };
     } catch (error) {
         console.error('Fehler beim Laden der Bewohnerauswahl:', error);
-        throw error;
+        
+        // Im Fehlerfall eine leere Auswahl erstellen
+        const neueAuswahl = {
+            name: bewohnerName,
+            Montag: {}, Dienstag: {}, Mittwoch: {}, Donnerstag: {}, Freitag: {}, Samstag: {}, Sonntag: {}
+        };
+        
+        // Leere Auswahl global speichern
+        aktuelleBewohnerAuswahl = neueAuswahl;
+        
+        return { auswahl: neueAuswahl, isExisting: false };
     }
 }
 
@@ -599,7 +620,7 @@ function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
         }
         
         // Verbessertes ID-Attribut für die Zelle
-        const tag = zelle.dataset.tag;
+            const tag = zelle.dataset.tag;
         const kategorie = zelle.dataset.kategorie;
         
         if (tag && kategorie) {
@@ -1733,18 +1754,6 @@ function setzeAktuellenBewohner(bewohner) {
                     // Sicherstellen, dass alle Klick-Handler aktiv sind
                     fuegeZellenKlickHinzu(tabelle, true);
                 }
-                
-                // Bewohner-Indikator prüfen - für den Fall, dass ladeBewohnerAuswahl den Indikator nicht gesetzt hat
-                // (als zusätzliche Sicherheit)
-                if (!document.querySelector('.aktiver-bewohner-indikator')) {
-                    console.log('Kein aktiver Bewohner-Indikator gefunden, versuche ihn zu erstellen');
-                    if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
-                        window.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
-                    } else if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
-                        window.Script.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
-                    }
-                }
-                
                 return result;
             });
     } else {
@@ -1770,17 +1779,6 @@ function setzeAktuellenBewohner(bewohner) {
                             // Sicherstellen, dass alle Klick-Handler aktiv sind
                             fuegeZellenKlickHinzu(tabelle, true);
                         }
-                        
-                        // Bewohner-Indikator prüfen - für den Fall, dass ladeBewohnerAuswahl den Indikator nicht gesetzt hat
-                        if (!document.querySelector('.aktiver-bewohner-indikator')) {
-                            console.log('Kein aktiver Bewohner-Indikator gefunden, versuche ihn zu erstellen');
-                            if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
-                                window.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
-                            } else if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
-                                window.Script.zeigeAktivenBewohnerIndikator(bewohner, result.isExistingSelection);
-                            }
-                        }
-                        
                         return result;
                     });
             }
@@ -1790,7 +1788,7 @@ function setzeAktuellenBewohner(bewohner) {
         
         // Wenn wir hier sind, konnten wir keine aktuelle KW/Jahr ermitteln
         console.log('Auswahl wird nicht automatisch geladen - keine KW/Jahr verfügbar');
-        return Promise.resolve({ auswahl: null, isExistingSelection: false });
+        return Promise.resolve({ auswahl: null, isExisting: false });
     }
 }
 
@@ -1812,25 +1810,11 @@ function initialisiere() {
         if (aktuellerBewohner) {
             console.log(`Lade Bewohnerauswahl für ${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName} nach Kalenderwochenwechsel`);
             try {
-                // Bestehende Auswahl zurücksetzen
+                // Bestehende Auswahl zurücksetzen, aber Bewohner behalten
                 resetAuswahl();
                 
                 // Neue Auswahl laden
                 const result = await ladeBewohnerAuswahl(aktuellerBewohner, aktuelleKW, aktuellesJahr);
-                
-                // WICHTIG: Stelle sicher, dass der aktive Bewohner-Indikator angezeigt wird
-                // Prüfe, ob die Funktion im globalen Scope verfügbar ist
-                if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
-                    console.log('Aktualisiere aktiven Bewohner-Indikator nach Kalenderwochenwechsel');
-                    window.zeigeAktivenBewohnerIndikator(aktuellerBewohner, result && result.isExistingSelection);
-                } else {
-                    // Alternativ: Das Script-Modul explizit ansprechen, falls verfügbar
-                    if (window.Script && typeof window.Script.zeigeAktivenBewohnerIndikator === 'function') {
-                        window.Script.zeigeAktivenBewohnerIndikator(aktuellerBewohner, result && result.isExistingSelection);
-                    } else {
-                        console.warn('zeigeAktivenBewohnerIndikator-Funktion nicht gefunden, kann Indikator nicht aktualisieren');
-                    }
-                }
                 
                 // Tabelle aktualisieren, falls vorhanden
                 const tabelle = document.querySelector('.menueplan-tabelle');
@@ -1841,6 +1825,15 @@ function initialisiere() {
                     console.log('Füge Klick-Handler nach Kalenderwochenwechsel hinzu');
                     fuegeZellenKlickHinzu(tabelle, true);
                 }
+                
+                // NEUER CODE: Aktiver Bewohner Indikator aktualisieren und neu anzeigen
+                if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
+                    console.log('Aktualisiere Bewohner-Indikator nach Kalenderwochenwechsel');
+                    window.zeigeAktivenBewohnerIndikator(aktuellerBewohner, result.isExisting);
+                }
+                
+                // Sicherstellen, dass die Bewohner-Karte weiterhin aktiv ist
+                markiereBewohnerKarteAlsAktiv(aktuellerBewohner);
             } catch (error) {
                 console.error('Fehler beim Laden der Bewohnerauswahl nach Kalenderwochenwechsel:', error);
             }
@@ -1858,6 +1851,12 @@ function initialisiere() {
         if (aktuelleBewohnerAuswahl && aktuellerBewohner) {
             console.log('Aktualisiere neue Tabelle mit bestehender Bewohnerauswahl');
             aktualisiereTabelle(tabelle);
+            
+            // Sicherstellen, dass auch der Bewohner-Indikator angezeigt wird
+            if (typeof window.zeigeAktivenBewohnerIndikator === 'function') {
+                const isExisting = aktuelleBewohnerAuswahl && Object.keys(aktuelleBewohnerAuswahl).length > 1;
+                window.zeigeAktivenBewohnerIndikator(aktuellerBewohner, isExisting);
+            }
         } else {
             // Ansonsten einfach Klick-Handler hinzufügen
             fuegeZellenKlickHinzu(tabelle, true);
@@ -1893,6 +1892,29 @@ function initialisiere() {
     }
     
     console.log('BewohnerAuswahl-Modul vollständig initialisiert');
+}
+
+/**
+ * Hilfsfunktion, um die Bewohnerkarte visuell als aktiv zu markieren
+ * @param {Object} bewohner - Der Bewohner, dessen Karte markiert werden soll
+ */
+function markiereBewohnerKarteAlsAktiv(bewohner) {
+    if (!bewohner) return;
+    
+    const bewohnerId = `${bewohner.firstName.trim()}_${bewohner.lastName.trim()}`;
+    
+    // Alle bestehenden aktiven Karten zurücksetzen
+    const aktiveKarten = document.querySelectorAll('.bewohner-card.active');
+    aktiveKarten.forEach(karte => karte.classList.remove('active'));
+    
+    // Karte des aktuellen Bewohners aktivieren
+    const bewohnerKarte = document.querySelector(`.bewohner-card[data-bewohner-id="${bewohnerId}"]`);
+    if (bewohnerKarte) {
+        bewohnerKarte.classList.add('active');
+        console.log(`Bewohnerkarte für ${bewohner.firstName} ${bewohner.lastName} als aktiv markiert`);
+    } else {
+        console.warn(`Konnte keine Bewohnerkarte für ID ${bewohnerId} finden`);
+    }
 }
 
 /**
@@ -1948,18 +1970,71 @@ function findeTabellenZelle(tabelle, tag, kategorie) {
     return zelle;
 }
 
+/**
+ * Setzt den aktuellen Bewohner und lädt seine Auswahl
+ * @param {Object} bewohner - Der Bewohner, der gesetzt werden soll
+ * @returns {Promise<Object>} - Ein Promise, das mit der geladenen Auswahl resolved
+ */
+async function setzeAktuellenBewohner(bewohner) {
+    // Zurücksetzen des vorherigen Bewohners, falls ein neuer ausgewählt wird
+    if (aktuellerBewohner !== bewohner) {
+        resetAuswahl();
+        aktuellerBewohner = bewohner;
+        console.log(`Bewohner gesetzt: ${bewohner.firstName} ${bewohner.lastName}`);
+    }
+
+    // Wenn KW und Jahr bekannt sind, Auswahl laden
+    if (aktuelleKW && aktuellesJahr) {
+        console.log(`Lade Auswahl für ${bewohner.firstName} ${bewohner.lastName} in KW${aktuelleKW}/${aktuellesJahr}`);
+        try {
+            const result = await ladeBewohnerAuswahl(bewohner, aktuelleKW, aktuellesJahr);
+            
+            // Tabelle aktualisieren, falls vorhanden
+            const tabelle = document.querySelector('.menueplan-tabelle');
+            if (tabelle) {
+                aktualisiereTabelle(tabelle);
+            }
+            
+            // Bewohnerkarte als aktiv markieren
+            markiereBewohnerKarteAlsAktiv(bewohner);
+            
+            return result;
+        } catch (error) {
+            console.error('Fehler beim Laden der Bewohnerauswahl:', error);
+            return { isExisting: false, data: null };
+        }
+    } else {
+        // Wenn KW und Jahr nicht bekannt sind, versuchen wir es aus der Anzeige zu lesen
+        console.log('KW und Jahr unbekannt, versuche aus der Anzeige zu lesen...');
+        
+        try {
+            const kwDaten = document.querySelector('#current-week-display').textContent;
+            const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
+            
+            if (match) {
+                aktuelleKW = parseInt(match[1]);
+                aktuellesJahr = parseInt(match[2]);
+                console.log(`KW${aktuelleKW}/${aktuellesJahr} aus der Anzeige geladen, versuche erneut Auswahl zu laden`);
+                
+                // Erneut versuchen mit den gelesenen Werten
+                return setzeAktuellenBewohner(bewohner);
+            } else {
+                console.warn('Format der KW-Anzeige konnte nicht erkannt werden');
+                return { isExisting: false, data: null };
+            }
+        } catch (error) {
+            console.error('Fehler beim Lesen von KW/Jahr aus der Anzeige:', error);
+            return { isExisting: false, data: null };
+        }
+    }
+}
+
 // Module exportieren
 export {
     initialisiere,
-    getAktuelleBewohnerAuswahl,
-    aktualisiereTabelle,
-    speichereBewohnerAuswahl,
-    resetAuswahl,
+    setzeGlobalAktivenBewohner,
+    wechsleKategorie,
     setzeAktuellenBewohner,
-    aktualisiereMenueAuswahl,
-    findeTabellenZelle,
-    aktualisiereZellInMobileAnsicht,
-    aktualisiereZellenInMobileAnsicht,
-    handleZellenKlick,
-    ladeBewohnerAuswahl
+    markiereBewohnerKarteAlsAktiv,
+    resetAuswahl
 }; 
