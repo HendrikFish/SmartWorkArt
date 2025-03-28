@@ -22,7 +22,7 @@ export const UploadManager = {
                 this.stopCamera(this.currentStream);
             }
 
-            // Konfiguriere Kamera mit aktueller Ausrichtung
+            // Konfiguriere Kamera mit aktueller Ausrichtung und höchster verfügbarer Auflösung
             const constraints = { 
                 video: { 
                     facingMode: this.currentFacingMode,
@@ -49,8 +49,8 @@ export const UploadManager = {
             // Speichere Stream für spätere Referenz
             this.currentStream = stream;
             
-            // Passe die UI für Smartphones an
-            this.adjustCameraUIForMobile();
+            // Optimiere Vollbildmodus auf Mobilgeräten
+            this.optimizeForMobile();
             
             console.log(`Kamera initialisiert mit Modus: ${this.currentFacingMode}`);
             return stream;
@@ -61,34 +61,40 @@ export const UploadManager = {
         }
     },
 
-    adjustCameraUIForMobile() {
+    optimizeForMobile() {
         if (this.isMobileDevice()) {
-            // Verstärke den Rahmen und die Anleitung für Mobilgeräte
-            const frame = document.querySelector('.ocr-frame');
-            const container = document.querySelector('.camera-container');
-            
-            // Füge Hinweistext hinzu
-            if (container && !document.querySelector('.camera-hint')) {
-                const hint = document.createElement('div');
-                hint.className = 'camera-hint';
-                hint.textContent = 'Dokument innerhalb des Rahmens positionieren';
-                container.appendChild(hint);
-            }
-            
-            // Verbesserte visuelle Hilfe bei der Rahmenerkennung
-            if (frame) {
-                frame.classList.add('mobile-frame');
+            // Vollbild für Kamera-Vorschau aktivieren
+            try {
+                const modal = document.getElementById('cameraModal');
                 
-                // Eckpunkte für bessere visuelle Orientierung
-                const corners = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+                // Überlappende Elemente in der Navbar und Footer vermeiden
+                const metaViewport = document.querySelector('meta[name="viewport"]');
+                if (metaViewport) {
+                    metaViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
                 
-                corners.forEach(corner => {
-                    if (!document.querySelector(`.corner-${corner}`)) {
-                        const cornerElement = document.createElement('div');
-                        cornerElement.className = `corner corner-${corner}`;
-                        frame.appendChild(cornerElement);
+                // Füge Überschrift hinzu, falls noch nicht vorhanden
+                if (!document.querySelector('.camera-hint')) {
+                    const hint = document.createElement('div');
+                    hint.className = 'camera-hint';
+                    hint.textContent = 'Dokument fotografieren';
+                    
+                    const container = document.querySelector('.camera-container');
+                    if (container) {
+                        container.appendChild(hint);
                     }
-                });
+                }
+                
+                // Hinweis nach 3 Sekunden ausblenden (zur Sicherheit, falls CSS-Animation nicht funktioniert)
+                setTimeout(() => {
+                    const hint = document.querySelector('.camera-hint');
+                    if (hint) {
+                        hint.style.opacity = '0';
+                        hint.style.visibility = 'hidden';
+                    }
+                }, 3000);
+            } catch (error) {
+                console.error('Fehler bei der Mobile-Optimierung:', error);
             }
         }
     },
@@ -108,7 +114,7 @@ export const UploadManager = {
             // Initialisiere Kamera neu mit neuer Ausrichtung
             await this.initializeCamera();
             
-            Toast.show(`Kamera gewechselt zu ${this.currentFacingMode === 'user' ? 'Frontkamera' : 'Rückkamera'}`, 'info');
+            Toast.show(`Kamera gewechselt`, 'info', 1000);
         } catch (error) {
             console.error('Fehler beim Wechseln der Kamera:', error);
             Toast.show('Fehler beim Wechseln der Kamera', 'error');
@@ -127,6 +133,9 @@ export const UploadManager = {
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0);
             
+            // Optimiere das Bild - erhöhe Kontrast und Helligkeit
+            this.optimizeImage(canvas);
+            
             // Zeige Lade-Overlay an
             this.showLoadingOverlay();
             
@@ -138,6 +147,46 @@ export const UploadManager = {
             Toast.show('Fehler beim Erfassen des Bildes', 'error');
             this.hideLoadingOverlay();
             return null;
+        }
+    },
+    
+    optimizeImage(canvas) {
+        try {
+            const context = canvas.getContext('2d');
+            
+            // Lade die Pixel-Daten
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Parameter für die Optimierung
+            const contrast = 1.3; // Höherer Wert = mehr Kontrast (1.0 = keine Änderung)
+            const brightness = 15; // Wertebereich -255 bis 255
+            
+            // Anwenden von Kontrast und Helligkeit
+            for (let i = 0; i < data.length; i += 4) {
+                // Rot, Grün, Blau Kanäle
+                for (let j = 0; j < 3; j++) {
+                    // Kontrast anwenden
+                    let value = data[i + j];
+                    value = ((value / 255 - 0.5) * contrast + 0.5) * 255;
+                    
+                    // Helligkeit anwenden
+                    value += brightness;
+                    
+                    // Werte auf 0-255 begrenzen
+                    data[i + j] = Math.max(0, Math.min(255, value));
+                }
+                // Alpha-Kanal (i+3) bleibt unverändert
+            }
+            
+            // Aktualisierte Daten zurück ins Canvas schreiben
+            context.putImageData(imageData, 0, 0);
+            
+            console.log('Bild wurde optimiert: Kontrast und Helligkeit angepasst');
+            return true;
+        } catch (error) {
+            console.error('Fehler bei der Bildoptimierung:', error);
+            return false;
         }
     },
 
@@ -229,24 +278,37 @@ export const UploadManager = {
         }
     },
 
-    // Hook, um den OCR-Prozess nach dem Aufnahme-Button zu starten
+    // Verarbeitung des aufgenommenen Bildes - jetzt identisch zur Desktop-Version
     async processImageFromCamera() {
-        const imageBlob = await this.captureImage();
-        if (imageBlob) {
-            try {
-                // Verstecke Kamera-Modal erst nachdem OCR abgeschlossen ist
-                Modal.hide('cameraModal');
-                
-                // Verarbeite das Bild mit OCRManager (Overlay bereits angezeigt)
-                await OCRManager.processImage(imageBlob);
-                
-                // Verstecke Lade-Overlay
-                this.hideLoadingOverlay();
-            } catch (error) {
-                console.error('Fehler bei der OCR-Verarbeitung:', error);
-                Toast.show('Fehler bei der OCR-Verarbeitung', 'error');
-                this.hideLoadingOverlay();
+        try {
+            // Bild aufnehmen
+            const imageBlob = await this.captureImage();
+            if (!imageBlob) {
+                Toast.show('Fehler beim Aufnehmen des Bildes', 'error');
+                return;
             }
+            
+            // Modal schließen, da die Aufnahme erfolgreich war
+            Modal.hide('cameraModal');
+            
+            // Erstelle einen File-Objekt aus dem Blob für eine einheitliche Verarbeitung
+            const imageFile = new File([imageBlob], "kamera_aufnahme.jpg", {
+                type: "image/jpeg",
+                lastModified: new Date().getTime()
+            });
+            
+            console.log('Bild erfolgreich aufgenommen und als File-Objekt formatiert');
+            
+            // Verarbeite das Bild genau wie in der Desktop-Version
+            await OCRManager.processImage(imageFile);
+            
+            // Verstecke Lade-Overlay
+            this.hideLoadingOverlay();
+            
+        } catch (error) {
+            console.error('Fehler bei der OCR-Verarbeitung:', error);
+            Toast.show('Fehler bei der OCR-Verarbeitung', 'error');
+            this.hideLoadingOverlay();
         }
     }
 }; 

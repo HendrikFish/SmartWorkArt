@@ -143,14 +143,16 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Dokument scannen</h2>
-                    <button type="button" class="icon-btn close-modal"></button>
+                    <button type="button" class="icon-btn close-modal">×</button>
                 </div>
-                <div class="camera-container">
-                    <video id="cameraPreview" autoplay playsinline></video>
-                    <div class="ocr-frame"></div>
+                <div class="camera-wrapper">
+                    <div class="camera-container">
+                        <video id="cameraPreview" autoplay playsinline></video>
+                        <div class="camera-hint">Dokument im Rahmen positionieren <br>und <br> Foto aufnehmen</div>
+                    </div>
                     <div class="camera-controls">
-                        <button type="button" class="primary-btn" id="captureBtn">Aufnehmen</button>
-                        <button type="button" class="secondary-btn" id="switchCameraBtn">Kamera wechseln</button>
+                        <button type="button" id="captureBtn"></button>
+                        <button type="button" id="switchCameraBtn"></button>
                     </div>
                 </div>
             </div>

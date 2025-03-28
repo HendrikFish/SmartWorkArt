@@ -520,10 +520,42 @@
 
 /* Kamera-Modal-spezifische Styles */
 #cameraModal .modal-content {
-    max-width: 800px;
-    height: 80vh;
+    max-width: 100%;
+    height: 100vh;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    padding: 0;
+    border-radius: 0;
+}
+
+#cameraModal .modal-header {
+    padding: 5px 10px;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-bottom: none;
+    height: 40px;
+    min-height: 40px;
+    z-index: 30;
+}
+
+#cameraModal .modal-header h2 {
+    font-size: 16px;
+    color: white;
+}
+
+#cameraModal .icon-btn.close-modal {
+    color: white;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+}
+
+.camera-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
 }
 
 .camera-container {
@@ -535,28 +567,17 @@
     align-items: center;
     justify-content: center;
     background-color: #000;
-    border-radius: 4px;
-    margin-bottom: 10px;
 }
 
 #cameraPreview {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .ocr-frame {
-    position: absolute;
-    width: 70%;
-    height: 80%;
-    border: 3px solid #26ae61;
-    border-radius: 8px;
-    box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.3);
-    pointer-events: none;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
+    display: none; /* Ausgeblendet wie gewünscht */
 }
 
 .camera-controls {
@@ -564,21 +585,162 @@
     justify-content: space-between;
     width: 100%;
     padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 0 0 4px 4px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: relative;
+    z-index: 20;
+    gap: 15px;
 }
 
 /* Für mobile Geräte im Hochformat optimiert */
 @media (max-width: 767px) {
-    #cameraModal .modal-content {
-        width: 95%;
-        height: 90vh;
+    #cameraModal {
+        padding: 0;
     }
     
+    #cameraModal .modal-content {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .camera-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .camera-container {
+        flex: 1;
+        margin: 0;
+        position: relative;
+    }
+    
+    #cameraPreview {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Ausgeblendeter OCR-Rahmen */
     .ocr-frame {
-        width: 85%;
-        height: 70%;
-        aspect-ratio: 3/4; /* Hochformat für Dokumenten-Scan */
+        display: none;
+    }
+    
+    /* Deutlichere Hinweise, nur kurz angezeigt (Animation hinzugefügt) */
+    .camera-hint {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 15;
+        border-radius: 30px;
+        margin: 0;
+        width: 90%;
+        max-width: 400px;
+        animation: fadeOut 3s forwards;
+    }
+    
+    @keyframes fadeOut {
+        0% { opacity: 1; }
+        70% { opacity: 1; }
+        100% { opacity: 0; visibility: hidden; }
+    }
+    
+    /* Verbesserte Buttons nur mit Icons */
+    .camera-controls {
+        display: flex;
+        gap: 15px;
+        padding: 15px;
+        background-color: rgba(0, 0, 0, 0.7);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+    }
+    
+    #captureBtn {
+        flex: 2;
+        background-color: #26ae61;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0; /* Text ausblenden */
+        font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    #captureBtn::before {
+        content: '📷';
+        font-size: 30px;
+    }
+    
+    #switchCameraBtn {
+        flex: 1;
+        background-color: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0; /* Text ausblenden */
+    }
+    
+    #switchCameraBtn::before {
+        content: '🔄';
+        font-size: 30px;
+    }
+}
+
+/* Für größere Bildschirme den Hinweis ebenfalls mittig positionieren */
+.camera-hint {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 15;
+    border-radius: 30px;
+    margin: 0;
+    width: 90%;
+    max-width: 400px;
+    animation: fadeOut 3s forwards;
+}
+
+/* Animierter Rahmen für bessere visuelle Führung */
+.mobile-frame {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(38, 174, 97, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(38, 174, 97, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(38, 174, 97, 0);
     }
 }
 
@@ -845,17 +1007,4 @@
     right: -2px;
     border-bottom-width: 4px;
     border-right-width: 4px;
-}
-
-.camera-hint {
-    position: absolute;
-    bottom: 60px;
-    left: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 10px;
-    text-align: center;
-    font-size: 14px;
-    z-index: 15;
 }
