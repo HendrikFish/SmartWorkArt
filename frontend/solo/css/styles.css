@@ -168,7 +168,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.5rem;
+    
     border-bottom: 1px solid var(--gray-200);
     background: white;
     border-radius: 0.75rem 0.75rem 0 0;
@@ -557,7 +557,6 @@ select.form-input {
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: flex;
-    flex-direction: column;
     gap: 0.5rem;
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -618,7 +617,7 @@ select.form-input {
 #ocrResultsModal .modal-content {
     display: flex;
     flex-direction: column;
-    height: 90vh;
+    height: 95vh;
     max-height: 90vh;
 }
 

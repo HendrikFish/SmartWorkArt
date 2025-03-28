@@ -21,9 +21,9 @@
 
 .modal-content {
     background-color: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
-    width: 90%;
+    width: 95%;
     max-width: 600px;
     max-height: 90vh;
     display: flex;
@@ -765,6 +765,7 @@
     max-height: 300px;
     overflow-y: auto;
     font-size: 14px;
+    min-height: 300px;
 }
 
 .name-selection-form {
@@ -784,70 +785,121 @@
 
 /* Auswahl-Dialog Styles */
 .selection-dialog-container {
-    z-index: 1100;
     position: absolute;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    padding: 10px;
+    z-index: 9999;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     max-width: 300px;
+    overflow: hidden;
+}
+
+.selection-dialog {
+    padding: 10px;
 }
 
 .selection-dialog p {
     margin: 0 0 10px 0;
-    font-size: 14px;
+    font-size: 13px;
+    color: #333;
+    word-break: break-word;
 }
 
 .selection-buttons {
     display: flex;
-    gap: 8px;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 5px;
 }
 
-.btn {
-    padding: 5px 10px;
+.selection-buttons button {
+    flex: 1;
+    padding: 6px 10px;
     border-radius: 4px;
-    border: 1px solid #ddd;
-    background: #f8f9fa;
+    border: none;
+    background-color: #f8f9fa;
     cursor: pointer;
     font-size: 12px;
-    transition: all 0.2s;
+    transition: background-color 0.2s;
 }
 
-.btn:hover {
-    background: #e9ecef;
-    border-color: #ced4da;
+.selection-buttons button:hover {
+    background-color: #e9ecef;
 }
 
 #setFirstNameBtn {
     background-color: #e3f2fd;
     color: #0d47a1;
-    border-color: #bbdefb;
-}
-
-#setFirstNameBtn:hover {
-    background-color: #bbdefb;
 }
 
 #setLastNameBtn {
     background-color: #e8f5e9;
     color: #1b5e20;
-    border-color: #c8e6c9;
-}
-
-#setLastNameBtn:hover {
-    background-color: #c8e6c9;
 }
 
 #cancelSelectionBtn {
-    background-color: #ffebee;
-    color: #b71c1c;
-    border-color: #ffcdd2;
+    background-color: #f8f9fa;
+    color: #495057;
 }
 
-#cancelSelectionBtn:hover {
-    background-color: #ffcdd2;
+/* Textselektionsbereich für manuelle Auswahl */
+.ocr-text-content {
+    padding: 15px;
+    max-height: 50vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ocr-full-text {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.6;
+    cursor: text;
+}
+
+.name-selection-form {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+}
+
+.name-selection-form h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #2d3748;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
 }
 
 /* Smartphone Options Modal */
@@ -1078,14 +1130,54 @@
     border-right-width: 4px;
 }
 
-/* Modals und Footer Styles */
+/* Modals und Footer Styles - kompakteres Design */
 .modal-footer {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 15px;
     padding-top: 10px;
     border-top: 1px solid #eee;
+}
+
+.modal-footer button {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 8px 8px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Besonders kompakte Anpassung für schmale Bildschirme */
+@media (max-width: 480px) {
+    .modal-footer {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
+    
+    /* Speziell für OCR-Results-Modal */
+    #ocrResultsModal .modal-footer {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    #ocrResultsModal .modal-footer button {
+        flex: 1 1 calc(50% - 5px);
+        font-size: 12px;
+        padding: 6px 5px;
+    }
+    
+    #confirmOcrResults {
+        order: -1; /* Wichtigster Button zuerst */
+        flex: 1 1 100% !important; 
+    }
 }
 
 /* Restore einige wichtige ausversehen gelöschte Styles */
@@ -1104,4 +1196,118 @@
     color: #e53e3e;
     font-size: 12px;
     margin-top: 5px;
+}
+
+/* Neue Struktur für OCR-Textmodal */
+#ocrResultsModal .modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    overflow: hidden;
+    transform: none !important;
+    max-width: 95%;
+    width: 95%;
+    position: relative;
+}
+
+#ocrResultsModal .modal-header {
+    flex: 0 0 auto;
+}
+
+.ocr-scroll-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 200px;
+    padding: 0 10px 0 0;
+}
+
+.ocr-full-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    line-height: 2.0;
+    touch-action: manipulation;
+    padding: 15px !important;
+    font-size: 16px !important;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    white-space: pre-wrap;
+    cursor: text;
+    margin-bottom: 0;
+}
+
+.name-selection-form {
+    flex: 0 0 auto;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+}
+
+#ocrResultsModal .modal-footer {
+    flex: 0 0 auto;
+    margin-top: 5px;
+}
+
+/* Verbesserte OCR-Textanzeige für Touch-Geräte */
+.ocr-full-text b, 
+.ocr-full-text strong,
+.ocr-full-text span {
+    background-color: rgba(225, 241, 255, 0.5);
+    border-radius: 3px;
+    padding: 2px 0;
+}
+
+/* Touch-Hinweis-Styling */
+.touch-hint {
+    display: none; /* Standardmäßig ausgeblendet */
+    background-color: #fffde7;
+    color: #795548;
+    padding: 8px 12px;
+    margin: 0 0 15px 0;
+    border-radius: 4px;
+    border-left: 4px solid #ffd54f;
+    font-size: 14px;
+}
+
+/* Zeige Touch-Hinweis nur auf Touch-Geräten */
+@media (pointer: coarse) {
+    .touch-hint {
+        display: block;
+    }
+    
+    .ocr-full-text {
+        font-size: 16px !important;
+    }
+}
+
+/* Mobile Anpassungen für OCR Modal */
+@media (max-width: 767px) {
+    #ocrResultsModal .modal-content {
+        height: 95vh;
+        width: 98%;
+        max-width: 98%;
+    }
+    
+    .ocr-scroll-container {
+        min-height: 150px;
+    }
+    
+    .name-selection-form {
+        padding: 10px;
+    }
+    
+    .name-selection-form h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .touch-hint {
+        font-size: 12px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+    }
 }

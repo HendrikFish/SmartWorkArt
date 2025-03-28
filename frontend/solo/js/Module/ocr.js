@@ -1,6 +1,7 @@
 import { Toast } from './module.js';
 import { Modal } from './modal.js';
 import { OCRModalManager } from './ocr-modal.js';
+import { UploadManager } from './upload.js';
 
 export const OCRManager = {
     async processImage(imageFile) {
@@ -29,6 +30,12 @@ export const OCRManager = {
                 throw new Error('Kein Text erkannt');
             }
 
+            // Ladekreisel ausblenden, nachdem Text erkannt wurde
+            UploadManager.hideLoadingOverlay();
+            
+            // Speichere den erkannten Text für die manuelle Auswahl
+            OCRModalManager.lastRecognizedText = result.text;
+
             // Extrahiere Namen aus dem erkannten Text
             const names = this.extractNames(result.text);
             
@@ -41,58 +48,22 @@ export const OCRManager = {
                 await OCRModalManager.showResults(names, duplicates);
             } else {
                 // Wenn keine Namen erkannt wurden, zeige den vollständigen Text an
-                this.showFullTextModal(result.text);
+                OCRModalManager.showFullTextModal(result.text);
                 Toast.show('Keine Namen automatisch erkannt. Bitte markieren Sie die Namen manuell.', 'info');
             }
             
             return names;
         } catch (error) {
             console.error('Fehler bei der OCR-Verarbeitung:', error);
+            // Stelle sicher, dass der Ladekreisel auch bei Fehlern ausgeblendet wird
+            UploadManager.hideLoadingOverlay();
             Toast.show(error.message || 'Fehler bei der Texterkennung', 'error');
             return [];
         }
     },
 
     showFullTextModal(text) {
-        const modal = document.getElementById('ocrResultsModal');
-        const content = modal.querySelector('.modal-content');
-        
-        // Formatiere den Text für bessere Lesbarkeit
-        const formattedText = text.replace(/\n/g, '<br>');
-        
-        content.innerHTML = `
-            <div class="modal-header">
-                <h2>Erkannter Text</h2>
-                <div class="header-actions">
-                    <button type="button" class="icon-btn close-modal">×</button>
-                </div>
-            </div>
-            <div class="ocr-text-content">
-                <div class="ocr-full-text">${formattedText}</div>
-                <div class="name-selection-form">
-                    <h3>Bitte markieren Sie Vor- und Nachnamen</h3>
-                    <div class="form-group">
-                        <label for="firstName">Vorname</label>
-                        <input type="text" id="firstName" class="form-control" placeholder="Vorname eingeben">
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Nachname</label>
-                        <input type="text" id="lastName" class="form-control" placeholder="Nachname eingeben">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="secondary-btn" id="extractMoreBtn">Weitere Namen</button>
-                <button type="button" class="primary-btn" id="confirmNameBtn">Namen übernehmen</button>
-                <button type="button" class="danger-btn" id="cancelOcrBtn">Abbrechen</button>
-            </div>
-        `;
-
-        // Event-Listener hinzufügen
-        this.attachTextModalEventListeners(content, text);
-        
-        // Modal anzeigen
-        Modal.show('ocrResultsModal');
+        OCRModalManager.showFullTextModal(text);
     },
 
     attachTextModalEventListeners(content, text) {

@@ -177,5 +177,41 @@ export const SaveManager = {
             Toast.show('Fehler bei der Wiederherstellung des Bewohners: ' + error.message, 'error');
             return false;
         }
+    },
+
+    /**
+     * Erstellt einen neuen Bewohner mit den angegebenen Daten
+     * @param {Object} residentData - Daten des Bewohners (mindestens firstName und lastName)
+     * @returns {Promise<Object>} Der erstellte Bewohner oder Fehlerobjekt
+     */
+    async createResident(residentData) {
+        try {
+            if (!residentData.firstName || !residentData.lastName) {
+                throw new Error('Vorname und Nachname sind erforderlich');
+            }
+
+            const response = await fetch('/api/solo/resident', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...residentData,
+                    createdAt: new Date().toISOString()
+                })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Fehler beim Erstellen des Bewohners');
+            }
+
+            const result = await response.json();
+            console.log('Bewohner erfolgreich erstellt:', result);
+            return result;
+        } catch (error) {
+            console.error('Fehler beim Erstellen des Bewohners:', error);
+            throw error;
+        }
     }
 }; 

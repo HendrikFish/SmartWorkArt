@@ -305,45 +305,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         Modal.init();
         await ResidentManager.init();
 
-        // Upload Button
-        const uploadBtn = document.getElementById('uploadBtn');
-        if (uploadBtn) {
-            uploadBtn.addEventListener('click', async () => {
-                if (UploadManager.isMobileDevice()) {
-                    // Auf mobilen Geräten: Kamera-Modal anzeigen
-                    Modal.show('cameraModal');
-                    const stream = await UploadManager.initializeCamera();
-                    
-                    // Event Listener für den Aufnehmen-Button
-                    const captureBtn = document.getElementById('captureBtn');
-                    if (captureBtn) {
-                        // Clone und ersetze Button, um alte Listener zu entfernen
-                        const newCaptureBtn = captureBtn.cloneNode(true);
-                        captureBtn.parentNode.replaceChild(newCaptureBtn, captureBtn);
-                        
-                        // Füge neuen Listener hinzu
-                        newCaptureBtn.addEventListener('click', async () => {
-                            // Verwende die neue Methode für die Bildverarbeitung
-                            await UploadManager.processImageFromCamera();
-                        });
-                    }
-                    
-                    // Event Listener für den Kamerawechsel-Button
-                    const switchCameraBtn = document.getElementById('switchCameraBtn');
-                    if (switchCameraBtn) {
-                        // Clone und ersetze Button, um alte Listener zu entfernen
-                        const newSwitchBtn = switchCameraBtn.cloneNode(true);
-                        switchCameraBtn.parentNode.replaceChild(newSwitchBtn, switchCameraBtn);
-                        
-                        // Füge neuen Listener hinzu
-                        newSwitchBtn.addEventListener('click', async () => {
-                            await UploadManager.switchCamera();
-                        });
-                    }
-                } else {
-                    // Auf Desktop: Datei-Dialog öffnen
-                    await UploadManager.openFileDialog();
-                }
+        // Upload Button - dieser Code ist veraltet und wird durch UploadManager.init() ersetzt,
+        // der bereits in der Initialisierung aufgerufen wird
+
+        // Kamera-Steuerungselementen Listeners hinzufügen
+        const captureBtn = document.getElementById('captureBtn');
+        if (captureBtn) {
+            // Event Listener für den Aufnehmen-Button
+            captureBtn.addEventListener('click', async () => {
+                await UploadManager.processImageFromCamera();
+            });
+        }
+        
+        const switchCameraBtn = document.getElementById('switchCameraBtn');
+        if (switchCameraBtn) {
+            // Event Listener für den Kamerawechsel-Button
+            switchCameraBtn.addEventListener('click', async () => {
+                await UploadManager.switchCamera();
             });
         }
 

@@ -29,22 +29,39 @@ export const UploadManager = {
     
     // Richtet die Event-Listener für die mobilen Auswahloptionen ein
     setupMobileOptions() {
+        // Entferne bestehende Event-Listener, um doppelte zu vermeiden
         const cameraBtn = document.getElementById('openCameraBtn');
         const galleryBtn = document.getElementById('openGalleryBtn');
         
         if (cameraBtn) {
-            cameraBtn.addEventListener('click', () => {
+            // Alten Event-Listener entfernen durch Klonen des Elements
+            const newCameraBtn = cameraBtn.cloneNode(true);
+            cameraBtn.parentNode.replaceChild(newCameraBtn, cameraBtn);
+            
+            // Neuen Event-Listener hinzufügen
+            newCameraBtn.addEventListener('click', async () => {
                 Modal.hide('smartphoneOptionsModal');
-                Modal.show('cameraModal');
-                this.initializeCamera();
-            }, { once: true });
+                // Kurze Verzögerung, damit das Modal vollständig geschlossen ist
+                setTimeout(async () => {
+                    Modal.show('cameraModal');
+                    await this.initializeCamera();
+                }, 100);
+            });
         }
         
         if (galleryBtn) {
-            galleryBtn.addEventListener('click', () => {
+            // Alten Event-Listener entfernen durch Klonen des Elements
+            const newGalleryBtn = galleryBtn.cloneNode(true);
+            galleryBtn.parentNode.replaceChild(newGalleryBtn, galleryBtn);
+            
+            // Neuen Event-Listener hinzufügen
+            newGalleryBtn.addEventListener('click', () => {
                 Modal.hide('smartphoneOptionsModal');
-                this.openFileDialog();
-            }, { once: true });
+                // Kurze Verzögerung, damit das Modal vollständig geschlossen ist
+                setTimeout(() => {
+                    this.openFileDialog();
+                }, 100);
+            });
         }
     },
 
@@ -247,12 +264,21 @@ export const UploadManager = {
         
         // Zeige das Overlay an
         overlay.style.display = 'flex';
+        console.log('Lade-Overlay angezeigt');
     },
     
     hideLoadingOverlay() {
         const overlay = document.getElementById('loadingOverlay');
         if (overlay) {
-            overlay.style.display = 'none';
+            // Entferne das Overlay vollständig, statt es nur auszublenden
+            try {
+                overlay.remove();
+                console.log('Lade-Overlay entfernt');
+            } catch (error) {
+                console.error('Fehler beim Entfernen des Lade-Overlays:', error);
+                // Fallback: Ausblenden
+                overlay.style.display = 'none';
+            }
         }
     },
 
@@ -319,9 +345,15 @@ export const UploadManager = {
         }
     },
 
-    // Verarbeitung des aufgenommenen Bildes - jetzt identisch zur Desktop-Version
+    // Verarbeitung des aufgenommenen Bildes
     async processImageFromCamera() {
         try {
+            // Stoppe die Kamera und räume auf
+            if (this.currentStream) {
+                this.stopCamera(this.currentStream);
+                this.currentStream = null;
+            }
+            
             // Bild aufnehmen
             const imageBlob = await this.captureImage();
             if (!imageBlob) {
