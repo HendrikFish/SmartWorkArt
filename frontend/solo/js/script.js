@@ -315,23 +315,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const stream = await UploadManager.initializeCamera();
                     
                     // Event Listener für den Aufnehmen-Button
-                    document.getElementById('captureBtn').addEventListener('click', async () => {
-                        const imageBlob = await UploadManager.captureImage();
-                        if (imageBlob) {
-                            // Verstecke Kamera-Modal erst nachdem das Bild aufgenommen wurde
-                            Modal.hide('cameraModal');
-                            // Verarbeite das Bild und zeige den erkannten Text an
-                            await OCRManager.processImage(imageBlob);
-                        }
-                    });
+                    const captureBtn = document.getElementById('captureBtn');
+                    if (captureBtn) {
+                        // Clone und ersetze Button, um alte Listener zu entfernen
+                        const newCaptureBtn = captureBtn.cloneNode(true);
+                        captureBtn.parentNode.replaceChild(newCaptureBtn, captureBtn);
+                        
+                        // Füge neuen Listener hinzu
+                        newCaptureBtn.addEventListener('click', async () => {
+                            // Verwende die neue Methode für die Bildverarbeitung
+                            await UploadManager.processImageFromCamera();
+                        });
+                    }
                     
                     // Event Listener für den Kamerawechsel-Button
-                    document.getElementById('switchCameraBtn').addEventListener('click', async () => {
-                        await UploadManager.switchCamera();
-                    });
+                    const switchCameraBtn = document.getElementById('switchCameraBtn');
+                    if (switchCameraBtn) {
+                        // Clone und ersetze Button, um alte Listener zu entfernen
+                        const newSwitchBtn = switchCameraBtn.cloneNode(true);
+                        switchCameraBtn.parentNode.replaceChild(newSwitchBtn, switchCameraBtn);
+                        
+                        // Füge neuen Listener hinzu
+                        newSwitchBtn.addEventListener('click', async () => {
+                            await UploadManager.switchCamera();
+                        });
+                    }
                 } else {
                     // Auf Desktop: Datei-Dialog öffnen
-                    UploadManager.openFileDialog();
+                    await UploadManager.openFileDialog();
                 }
             });
         }
