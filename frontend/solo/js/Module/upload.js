@@ -7,6 +7,47 @@ export const UploadManager = {
     currentStream: null,
     currentFacingMode: 'environment', // 'user' für Frontkamera, 'environment' für Rückkamera (Standardeinstellung für Dokumente)
 
+    // Initialisierung der Upload-Funktionen
+    init() {
+        // Button-Listener für mobilen Upload initialisieren
+        const uploadBtn = document.getElementById('uploadBtn');
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', () => {
+                if (this.isMobileDevice()) {
+                    // Auf Mobilgeräten: Auswahl zwischen Kamera und Galerie anzeigen
+                    Modal.show('smartphoneOptionsModal');
+                    
+                    // Event-Listener für Optionen einrichten
+                    this.setupMobileOptions();
+                } else {
+                    // Auf Desktop: Direkt Datei-Dialog öffnen
+                    this.openFileDialog();
+                }
+            });
+        }
+    },
+    
+    // Richtet die Event-Listener für die mobilen Auswahloptionen ein
+    setupMobileOptions() {
+        const cameraBtn = document.getElementById('openCameraBtn');
+        const galleryBtn = document.getElementById('openGalleryBtn');
+        
+        if (cameraBtn) {
+            cameraBtn.addEventListener('click', () => {
+                Modal.hide('smartphoneOptionsModal');
+                Modal.show('cameraModal');
+                this.initializeCamera();
+            }, { once: true });
+        }
+        
+        if (galleryBtn) {
+            galleryBtn.addEventListener('click', () => {
+                Modal.hide('smartphoneOptionsModal');
+                this.openFileDialog();
+            }, { once: true });
+        }
+    },
+
     isMobileDevice() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     },

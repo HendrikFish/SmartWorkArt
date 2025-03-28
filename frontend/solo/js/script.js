@@ -491,6 +491,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             console.error('resurrectionBtn nicht gefunden');
         }
+
+        // Upload-Manager initialisieren
+        UploadManager.init();
     } catch (error) {
         console.error('Fehler beim Initialisieren:', error);
         Toast.show('Fehler beim Initialisieren der Anwendung', 'error');

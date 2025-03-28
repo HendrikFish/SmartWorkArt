@@ -850,11 +850,63 @@
     background-color: #ffcdd2;
 }
 
-/* OCR Ergebnisliste Styles */
+/* Smartphone Options Modal */
+.option-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 20px 20px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background-color: #e9ecef;
+}
+
+.option-icon {
+    font-size: 24px;
+    margin-right: 15px;
+}
+
+.option-text {
+    font-weight: 500;
+}
+
+#openCameraBtn {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+}
+
+#openCameraBtn:hover {
+    background-color: #bbdefb;
+}
+
+#openGalleryBtn {
+    background-color: #e8f5e9;
+    color: #1b5e20;
+}
+
+#openGalleryBtn:hover {
+    background-color: #c8e6c9;
+}
+
+/* Optimierte OCR Ergebnisliste */
 .ocr-results-list {
-    max-height: 50vh;
+    max-height: 60vh;
     overflow-y: auto;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background-color: #f8fafc;
@@ -863,7 +915,7 @@
 .ocr-result-item {
     display: flex;
     align-items: center;
-    padding: 12px 15px;
+    padding: 8px 10px;
     border-bottom: 1px solid #e2e8f0;
     transition: background-color 0.2s;
 }
@@ -876,31 +928,25 @@
     background-color: #edf2f7;
 }
 
-.ocr-result-item.duplicate {
-    background-color: #fff5f5;
-    opacity: 0.7;
-}
-
 .ocr-result-checkbox {
-    flex: 0 0 30px;
+    flex: 0 0 20px;
+    margin-right: 5px;
 }
 
 .ocr-result-name {
     flex: 1;
-    margin: 0 15px;
 }
 
 .ocr-name-fields {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
 
 .ocr-name-input {
-    padding: 8px;
+    padding: 6px;
     border: 1px solid #cbd5e0;
     border-radius: 4px;
-    font-size: 14px;
-    transition: border-color 0.2s;
+    font-size: 13px;
 }
 
 .firstName {
@@ -911,24 +957,47 @@
     flex: 0.6;
 }
 
-.ocr-name-input:focus {
-    outline: none;
-    border-color: #4299e1;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
-}
-
 .ocr-result-confidence {
-    flex: 0 0 60px;
+    flex: 0 0 40px;
     text-align: center;
     color: #4a5568;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
 }
 
-.ocr-duplicate-warning {
-    color: #e53e3e;
-    font-size: 12px;
-    margin-top: 5px;
+/* Mobile Styles für OCR Resultate */
+@media (max-width: 767px) {
+    .ocr-name-fields {
+        gap: 3px;
+    }
+    
+    .ocr-name-input {
+        padding: 5px;
+        font-size: 12px;
+    }
+    
+    .ocr-result-confidence {
+        flex: 0 0 30px;
+        font-size: 11px;
+    }
+    
+    .ocr-result-item {
+        padding: 6px 8px;
+    }
+    
+    /* Kleinere Modal-Footer Buttons auf Mobilgeräten */
+    .modal-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+    
+    .modal-footer button {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
 }
 
 /* Loading Overlay Styles */
@@ -1007,4 +1076,32 @@
     right: -2px;
     border-bottom-width: 4px;
     border-right-width: 4px;
+}
+
+/* Modals und Footer Styles */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+/* Restore einige wichtige ausversehen gelöschte Styles */
+.ocr-name-input:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.ocr-result-item.duplicate {
+    background-color: #fff5f5;
+    opacity: 0.7;
+}
+
+.ocr-duplicate-warning {
+    color: #e53e3e;
+    font-size: 12px;
+    margin-top: 5px;
 }
