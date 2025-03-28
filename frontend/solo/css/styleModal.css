@@ -517,3 +517,254 @@
 .filter-option {
     transition: opacity 0.3s ease;
 }
+
+/* Kamera-Modal-spezifische Styles */
+#cameraModal .modal-content {
+    max-width: 800px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.camera-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+#cameraPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ocr-frame {
+    position: absolute;
+    width: 70%;
+    height: 80%;
+    border: 3px solid #26ae61;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.camera-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 0 0 4px 4px;
+}
+
+/* Für mobile Geräte im Hochformat optimiert */
+@media (max-width: 767px) {
+    #cameraModal .modal-content {
+        width: 95%;
+        height: 90vh;
+    }
+    
+    .ocr-frame {
+        width: 85%;
+        height: 70%;
+        aspect-ratio: 3/4; /* Hochformat für Dokumenten-Scan */
+    }
+}
+
+/* OCR Text Modal Styles */
+.ocr-text-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.ocr-full-text {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-family: monospace;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+}
+
+.name-selection-form {
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+}
+
+.name-selection-form h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #4a5568;
+}
+
+/* Auswahl-Dialog Styles */
+.selection-dialog-container {
+    z-index: 1100;
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 10px;
+    max-width: 300px;
+}
+
+.selection-dialog p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+}
+
+.selection-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: #e9ecef;
+    border-color: #ced4da;
+}
+
+#setFirstNameBtn {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border-color: #bbdefb;
+}
+
+#setFirstNameBtn:hover {
+    background-color: #bbdefb;
+}
+
+#setLastNameBtn {
+    background-color: #e8f5e9;
+    color: #1b5e20;
+    border-color: #c8e6c9;
+}
+
+#setLastNameBtn:hover {
+    background-color: #c8e6c9;
+}
+
+#cancelSelectionBtn {
+    background-color: #ffebee;
+    color: #b71c1c;
+    border-color: #ffcdd2;
+}
+
+#cancelSelectionBtn:hover {
+    background-color: #ffcdd2;
+}
+
+/* OCR Ergebnisliste Styles */
+.ocr-results-list {
+    max-height: 50vh;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+}
+
+.ocr-result-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s;
+}
+
+.ocr-result-item:last-child {
+    border-bottom: none;
+}
+
+.ocr-result-item:hover {
+    background-color: #edf2f7;
+}
+
+.ocr-result-item.duplicate {
+    background-color: #fff5f5;
+    opacity: 0.7;
+}
+
+.ocr-result-checkbox {
+    flex: 0 0 30px;
+}
+
+.ocr-result-name {
+    flex: 1;
+    margin: 0 15px;
+}
+
+.ocr-name-fields {
+    display: flex;
+    gap: 10px;
+}
+
+.ocr-name-input {
+    padding: 8px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.firstName {
+    flex: 0.4;
+}
+
+.lastName {
+    flex: 0.6;
+}
+
+.ocr-name-input:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.ocr-result-confidence {
+    flex: 0 0 60px;
+    text-align: center;
+    color: #4a5568;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ocr-duplicate-warning {
+    color: #e53e3e;
+    font-size: 12px;
+    margin-top: 5px;
+}

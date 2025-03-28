@@ -21,6 +21,7 @@ export const OCRModalManager = {
             <div class="modal-footer">
                 <button type="button" class="secondary-btn" id="selectAllBtn">Alle auswählen</button>
                 <button type="button" class="primary-btn" id="confirmOcrResults">Als Bewohner speichern</button>
+                <button type="button" class="secondary-btn" id="manualSelectBtn">Manuell auswählen</button>
                 <button type="button" class="danger-btn" id="cancelOcrResults">Abbrechen</button>
             </div>
         `;
@@ -35,14 +36,21 @@ export const OCRModalManager = {
                 <div class="ocr-result-checkbox">
                     <input type="checkbox" 
                            id="name_${index}" 
-                           ${duplicates.includes(index) ? 'disabled' : ''}>
+                           ${duplicates.includes(index) ? 'disabled' : 'checked'}>
                 </div>
                 <div class="ocr-result-name">
-                    <input type="text" 
-                           class="ocr-name-input" 
-                           data-index="${index}"
-                           value="${name.firstName} ${name.lastName}"
-                           ${duplicates.includes(index) ? 'readonly' : ''}>
+                    <div class="ocr-name-fields">
+                        <input type="text" 
+                               class="ocr-name-input firstName" 
+                               data-index="${index}"
+                               value="${name.firstName}"
+                               ${duplicates.includes(index) ? 'readonly' : ''}>
+                        <input type="text" 
+                               class="ocr-name-input lastName" 
+                               data-index="${index}"
+                               value="${name.lastName}"
+                               ${duplicates.includes(index) ? 'readonly' : ''}>
+                    </div>
                 </div>
                 <div class="ocr-result-confidence">
                     ${Math.round(name.confidence * 100)}%
@@ -55,74 +63,119 @@ export const OCRModalManager = {
     },
 
     attachEventListeners(content, names, duplicates) {
-        // Event Listener für den "Alle auswählen" Button
+        // "Alle auswählen" Button
         content.querySelector('#selectAllBtn').addEventListener('click', () => {
             const checkboxes = content.querySelectorAll('input[type="checkbox"]:not(:disabled)');
             const allChecked = Array.from(checkboxes).every(cb => cb.checked);
             
             checkboxes.forEach(checkbox => {
-                if (!checkbox.disabled) {
-                    checkbox.checked = !allChecked;
-                }
+                checkbox.checked = !allChecked;
             });
         });
 
-        // Event Listener für den OK-Button
+        // "Als Bewohner speichern" Button
         content.querySelector('#confirmOcrResults').addEventListener('click', async () => {
             const selectedNames = this.getSelectedNames(content, names);
+            
             if (selectedNames.length === 0) {
                 Toast.show('Bitte wählen Sie mindestens einen Namen aus', 'warning');
                 return;
             }
-
+            
             try {
-                for (const name of selectedNames) {
-                    await SaveManager.saveResident(name, true);
-                }
-
-                Toast.show('Namen wurden erfolgreich gespeichert', 'success');
-                Modal.hide('ocrResultsModal');
+                let success = 0;
+                let duplicates = 0;
                 
-                // Aktualisiere die Bewohnerliste
-                await ResidentManager.loadResidents();
+                for (const name of selectedNames) {
+                    try {
+                        // Erstelle den Bewohner
+                        const response = await fetch('/api/solo/resident', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                firstName: name.firstName,
+                                lastName: name.lastName,
+                                createdAt: new Date().toISOString()
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            success++;
+                        } else {
+                            const data = await response.json();
+                            if (data.error === 'Bewohner existiert bereits') {
+                                duplicates++;
+                            } else {
+                                throw new Error(data.error || 'Unbekannter Fehler');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Erstellen:', error);
+                    }
+                }
+                
+                // Erfolgsmeldung
+                if (success > 0) {
+                    Toast.show(`${success} Bewohner erfolgreich gespeichert`, 'success');
+                }
+                
+                if (duplicates > 0) {
+                    Toast.show(`${duplicates} Bewohner existieren bereits`, 'info');
+                }
+                
+                // Liste aktualisieren
+                if (ResidentManager && typeof ResidentManager.loadResidents === 'function') {
+                    await ResidentManager.loadResidents();
+                }
+                
+                // Modal schließen
+                Modal.hide('ocrResultsModal');
             } catch (error) {
-                console.error('Fehler beim Speichern:', error);
-                Toast.show('Fehler beim Speichern der Namen', 'error');
+                console.error('Fehler beim Speichern der Bewohner:', error);
+                Toast.show('Fehler beim Speichern der Bewohner', 'error');
             }
         });
 
-        // Event Listener für den Abbrechen-Button
+        // "Abbrechen" Button
         content.querySelector('#cancelOcrResults').addEventListener('click', () => {
             Modal.hide('ocrResultsModal');
         });
 
-        // Event Listener für die Namens-Eingabefelder
-        content.querySelectorAll('.ocr-name-input').forEach(input => {
-            input.addEventListener('change', (e) => {
-                const index = parseInt(e.target.dataset.index);
-                const [firstName, ...lastNameParts] = e.target.value.split(' ');
-                names[index] = {
-                    ...names[index],
-                    firstName,
-                    lastName: lastNameParts.join(' ')
-                };
-            });
-        });
-
-        // Event Listener für den Schließen-Button im Header
-        content.querySelector('.close-modal').addEventListener('click', () => {
+        // "Manuell auswählen" Button
+        content.querySelector('#manualSelectBtn').addEventListener('click', () => {
+            // Hole den Originaltext aus dem ersten Namen (falls vorhanden)
+            const originalText = names.length > 0 ? names[0].originalText : '';
+            
+            // Extrahiere den vollständigen Text aus dem Kontext
+            const fullText = names.reduce((text, name) => {
+                const startIndex = text.indexOf(name.originalText);
+                return startIndex >= 0 ? text : text + '\n' + name.originalText;
+            }, originalText);
+            
+            // Schließe dieses Modal
             Modal.hide('ocrResultsModal');
+            
+            // Zeige das manuelle Auswahl-Modal
+            if (window.OCRManager && typeof window.OCRManager.showFullTextModal === 'function') {
+                window.OCRManager.showFullTextModal(fullText);
+            }
         });
     },
 
     getSelectedNames(content, names) {
-        return Array.from(content.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(checkbox => names[parseInt(checkbox.id.split('_')[1])]);
-    },
-
-    showEditModal(names) {
-        // Hier implementieren wir die Logik für das Bearbeitungs-Modal
-        // Dies wird später implementiert
-        console.log('Bearbeite Namen:', names);
+        const selectedCheckboxes = Array.from(content.querySelectorAll('input[type="checkbox"]:checked'));
+        return selectedCheckboxes.map(checkbox => {
+            const index = parseInt(checkbox.id.split('_')[1]);
+            const firstNameInput = content.querySelector(`.firstName[data-index="${index}"]`);
+            const lastNameInput = content.querySelector(`.lastName[data-index="${index}"]`);
+            
+            return {
+                firstName: firstNameInput.value,
+                lastName: lastNameInput.value,
+                ...names[index]
+            };
+        });
     }
 }; 

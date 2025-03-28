@@ -318,7 +318,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('captureBtn').addEventListener('click', async () => {
                         const imageBlob = await UploadManager.captureImage();
                         if (imageBlob) {
+                            // Verstecke Kamera-Modal erst nachdem das Bild aufgenommen wurde
                             Modal.hide('cameraModal');
+                            // Verarbeite das Bild und zeige den erkannten Text an
                             await OCRManager.processImage(imageBlob);
                         }
                     });
