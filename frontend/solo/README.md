@@ -1,4 +1,4 @@
-# Seniorenheim Verwaltungssystem
+# Seniorenheim Verwaltungssystem 2025
 
 ## Überblick
 Die Website dient der Verwaltung und Organisation des täglichen Ablaufs in einem Seniorenheim. Sie ermöglicht es dem Personal, Bewohnerdaten zu verwalten, Essenspläne zu erstellen und den täglichen Betrieb effizient zu gestalten.
