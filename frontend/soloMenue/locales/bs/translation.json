@@ -1,0 +1,32 @@
+{
+  "navigation": {
+    "prev-week-btn": "Prethodna sedmica",
+    "next-week-btn": "Sljedeća sedmica",
+    "current-week-btn": "Trenutna sedmica",
+    "nach-oben-button": "Nazad na izbor osobe"
+  },
+  "buttons": {
+    "add-kategorie-btn": "Upravljanje kategorijama",
+    "speichern": "Sačuvaj",
+    "abbrechen": "Otkaži",
+    "loeschen": "Izbriši",
+    "schliessen": "Zatvori",
+    "bearbeiten": "Uredi",
+    "zurueck": "Nazad"
+  },
+  "bewohner": {
+    "name": "Ime",
+    "geschlecht": "Spol",
+    "alter": "Dob",
+    "bereiche": "Područja"
+  },
+  "formular": {
+    "menuEinstellungen": "Postavke vezane za meni",
+    "bitteWaehlen": "Molimo izaberite"
+  },
+  "meldungen": {
+    "datenGespeichert": "Podaci su uspješno sačuvani.",
+    "fehlerSpeichern": "Greška pri čuvanju podataka",
+    "adminKontaktieren": "Ako se problem nastavi, molimo kontaktirajte administratora."
+  }
+} 

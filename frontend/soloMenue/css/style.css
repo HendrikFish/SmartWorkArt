@@ -161,6 +161,33 @@ main {
     justify-content: center;
 }
 
+/* Sprachauswahl-Styling */
+.sprache-container {
+    display: flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.sprache-selector {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.sprache-selector:hover {
+    border-color: #4a89dc;
+}
+
+.sprache-selector:focus {
+    border-color: #4a89dc;
+    box-shadow: 0 0 0 2px rgba(74, 137, 220, 0.2);
+}
+
 /* Bewohner Container */
 #bewohner-container {
     background-color: white;
@@ -489,50 +516,56 @@ td.auswahl-25,
 
 /* Aktiver Bewohner Indikator */
 .aktiver-bewohner-indikator {
-    background-color: #e3f2fd;
+    background-color: #f9f9f9;
     border-left: 4px solid #1976D2;
     margin: 0.5rem 0;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 500;
+    flex-wrap: wrap;
 }
 
 .aktiver-bewohner-indikator .name {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .aktiver-bewohner-indikator .status {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #666;
     font-weight: normal;
+    margin-left: 0.5rem;
 }
 
 .aktiver-bewohner-indikator .station {
     background-color: #bbdefb;
-    padding: 0.25rem 0.5rem;
+    padding: 0.15rem 0.4rem;
     border-radius: 4px;
     margin-left: 0.5rem;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    display: inline-block;
 }
 
 .aktiver-bewohner-indikator .action-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 8px;
 }
 
 .aktiver-bewohner-indikator .action-button {
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 4px;
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .aktiver-bewohner-indikator .action-button:hover {
@@ -889,3 +922,208 @@ td.auswahl-25,
     left: calc(50% - 8px);
     border-width: 2px;
 }
+
+/* Mobile Menüplan Ansicht */
+.mobile-menueplan-container {
+    display: none; /* Standardmäßig ausgeblendet, wird nur auf mobilen Geräten angezeigt */
+    background-color: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+}
+
+.mobile-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eaeaea;
+    color: #333;
+}
+
+.mobile-tag-container {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1rem;
+}
+
+.mobile-tag-container:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.mobile-tag-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    color: #4a89dc;
+}
+
+.mobile-kategorie-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+}
+
+.mobile-kategorie-name {
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.kategorie-inhalt {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.kategorie-inhalt.auswahl-100 {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-color: #4CAF50;
+    font-weight: bold;
+}
+
+.kategorie-inhalt.auswahl-50 {
+    background-color: rgba(255, 152, 0, 0.1);
+    border-color: #FF9800;
+    font-weight: bold;
+}
+
+.kategorie-inhalt.auswahl-25 {
+    background-color: rgba(144, 202, 249, 0.1);
+    border-color: #90CAF9;
+    font-weight: bold;
+}
+
+.kategorie-inhalt.ausgeschlossen {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Ladeanzeige für besseres UI-Feedback */
+.lade-anzeige {
+    padding: 1rem;
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196F3;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lade-anzeige.fehler {
+    background-color: #ffebee;
+    border-left-color: #f44336;
+    color: #d32f2f;
+}
+
+/* Medienabfragen für responsive Design */
+@media (max-width: 1000px) {
+    /* Desktop-Tabelle ausblenden und mobile Ansicht anzeigen */
+    .menueplan-tabelle {
+        display: none;
+    }
+    
+    .mobile-menueplan-container {
+        display: block;
+    }
+    
+    /* Verbesserter Layout für kleine Bildschirme */
+    .top-container {
+        flex-direction: column;
+    }
+    
+    #kalenderwochen-container, #filter-container, #bewohner-container {
+        width: 100%;
+    }
+    
+    /* Kürzere Abstände für kompaktere Anzeige */
+    main {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+    
+    /* Aktiver Bewohner Indikator kompakter gestalten */
+    .aktiver-bewohner-indikator {
+        flex-direction: column;
+        padding: 0.75rem;
+    }
+    
+    .aktiver-bewohner-indikator .name,
+    .aktiver-bewohner-indikator .station,
+    .aktiver-bewohner-indikator .status {
+        font-size: 0.9rem;
+        margin-right: 0;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    
+    .aktiver-bewohner-indikator .action-buttons {
+        margin-top: 0.5rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .aktiver-bewohner-indikator .action-button {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Extra kleine Bildschirme (Smartphones) */
+@media (max-width: 480px) {
+    .kw-navigation {
+        flex-wrap: wrap;
+    }
+    
+    #current-week-display {
+        order: -1;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .nav-button {
+        flex: 1;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.85rem;
+    }
+}
+.zahnrad-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    color: #555;
+    width: 44px;           /* Feste Breite */
+    height: 44px;          /* Gleiche Höhe wie Breite für perfekten Kreis */
+    border-radius: 50%;    /* Macht den Button rund */
+    display: flex;         /* Für die Zentrierung des Symbols */
+    align-items: center;   /* Vertikal zentrieren */
+    justify-content: center; /* Horizontal zentrieren */
+}
+
+.zahnrad-btn:hover {
+    transform: rotate(90deg);
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1); /* Leichter Hintergrund beim Hover */
+}
+
+.zahnrad-btn:active {
+    transform: rotate(180deg);
+}
+
+.zahnrad-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+} 

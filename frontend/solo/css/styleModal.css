@@ -15,6 +15,7 @@
 }
 
 .modal.show {
+    display: flex !important;
     opacity: 1;
 }
 
@@ -29,6 +30,103 @@
     flex-direction: column;
     position: relative;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Verhindert, dass Inhalte über den Rand hinausragen */
+}
+
+/* Spezielle Styles für das Konfigurationsmodal */
+#configModal .modal-content {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#configModal .config-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Verhindert überlaufenden Inhalt */
+}
+
+.fields-container {
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 20px;
+    max-height: calc(80vh - 150px);
+}
+
+/* Tab-Inhalte scrollbar machen */
+.tab-content {
+    display: none;
+    padding: 15px 0;
+    position: relative;
+    overflow-y: auto;
+    max-height: calc(80vh - 200px); /* Platz für Header, Tabs und Button-container lassen */
+}
+
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Scrollbare Bereiche im Konfigurationsmodal */
+#fieldsList, #areasList, #filterOptions {
+    overflow-y: auto;
+    max-height: calc(70vh - 200px);
+}
+
+/* Sticky Header für den Bereich-Tab */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Styling für die Bereiche-Liste */
+.areas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+    max-height: calc(70vh - 250px); /* Reduzierte Höhe wegen des sticky Headers */
+    overflow-y: auto;
+   
+}
+
+/* Schönere Scrollbar-Styles für alle scrollbaren Bereiche */
+.tab-content::-webkit-scrollbar,
+#fieldsList::-webkit-scrollbar,
+#areasList::-webkit-scrollbar,
+#filterOptions::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tab-content::-webkit-scrollbar-track,
+#fieldsList::-webkit-scrollbar-track,
+#areasList::-webkit-scrollbar-track,
+#filterOptions::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.tab-content::-webkit-scrollbar-thumb,
+#fieldsList::-webkit-scrollbar-thumb,
+#areasList::-webkit-scrollbar-thumb,
+#filterOptions::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.tab-content::-webkit-scrollbar-thumb:hover,
+#fieldsList::-webkit-scrollbar-thumb:hover,
+#areasList::-webkit-scrollbar-thumb:hover,
+#filterOptions::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 .modal-header {
@@ -44,31 +142,6 @@
     margin: 0;
     font-size: 1.5rem;
     color: #333;
-}
-
-.fields-container {
-    overflow-y: auto;
-    padding-right: 10px;
-    margin-bottom: 20px;
-    max-height: calc(80vh - 150px);
-}
-
-.fields-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.fields-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.fields-container::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.fields-container::-webkit-scrollbar-thumb:hover {
-    background: #555;
 }
 
 .button-container {
@@ -152,7 +225,7 @@
     gap: 10px;
     margin-bottom: 20px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+   
 }
 
 .tab-btn {
@@ -177,24 +250,13 @@
     border-color: #007bff;
 }
 
-.tab-content {
-    display: none;
-    padding: 15px 0;
-    position: relative;
-}
-
-.tab-content.active {
-    display: flex;
-    flex-direction: column;
-}
-
 /* Config Items */
 .config-item {
     background: white;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 5px;
+    
     transition: all 0.2s ease;
 }
 
@@ -454,11 +516,4 @@
 
 .filter-option {
     transition: opacity 0.3s ease;
-}
-
-.areas-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 20px;
 }

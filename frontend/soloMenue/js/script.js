@@ -6,12 +6,16 @@
 // Module importieren
 import * as Kalenderwoche from './module/kalenderwoche.js';
 import * as BewohnerDate from './module/bewohnerDate.js';
-import * as BearbeitungsPanel from './module/bearbeitungsPanel.js';
+import * as BearbeitungsPanel from './module/BewohnerPanel.js';
 import * as BewohnerButton from './module/bewohnerButton.js';
 import * as FunktionenTabelle from './module/funktionenTabelle.js';
 import * as TabeleAdd from './module/tabeleAdd.js';
 import * as BewohnerAuswahl from './module/bewohnerAuswahl.js';
 import * as KomponentenEditor from './module/komponententEditor.js';
+import EventBusModule, { EventBus as EventBusExport } from './module/EventBus.js';
+import * as BewohnerAnzeiger from './module/BewohnerAnzeiger.js';
+import * as FormularContainer from './module/FormularContainer.js';
+import i18nextAdapter from './module/i18nextAdapter.js';
 
 // Aktuell ausgewählter Bewohner für die Menüplanung
 let aktuellerBewohner = null;
@@ -105,6 +109,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log('Initialisiere SoloMenü-Anwendung...');
 
+        // EventBus explizit initialisieren, direkt mit dem EventBusModule
+        if (typeof EventBusModule.initialisiere === 'function') {
+            EventBusModule.initialisiere({ debug: true });
+            console.log('EventBus-Modul direkt initialisiert');
+            
+            // Die globale Version auch initialisieren, falls noch verwendet
+            if (window.EventBus && typeof window.EventBus.initialisiere === 'function') {
+                window.EventBus.initialisiere({ debug: true });
+                console.log('Globaler EventBus auch initialisiert');
+            }
+        } else {
+            console.warn('EventBusModule.initialisiere ist nicht verfügbar, prüfe alternative Methoden');
+            
+            // Versuche den globalen EventBus
+            if (window.EventBus && typeof window.EventBus.initialisiere === 'function') {
+                window.EventBus.initialisiere({ debug: true });
+                console.log('Globaler EventBus initialisiert');
+            } else if (EventBusModule.on || EventBusModule.subscribe) {
+                console.log('EventBus mit alternativer Methode verfügbar');
+            } else {
+                console.error('EventBus scheint nicht korrekt initialisiert zu sein');
+            }
+        }
+        
+        // Sprachselektor aktualisieren
+        const sprachSelector = document.getElementById('language-selector');
+        if (sprachSelector) {
+            // Event-Listener für Sprachänderung bereits über i18nextAdapter.js registriert
+            console.log('Sprachselektor gefunden und konfiguriert');
+        }
+        
         // Spezielles Debugging für Kalenderwochenänderungen
         console.log("Debug: Füge direkten Event-Listener für Button-Klicks hinzu");
         const nextWeekBtn = document.getElementById('next-week-btn');
@@ -143,6 +178,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             BearbeitungsPanel.initialisiere();
             console.log('BearbeitungsPanel-Modul initialisiert');
         }
+        
+        // BewohnerAnzeiger-Modul initialisieren
+        if (typeof BewohnerAnzeiger.initialisiere === 'function') {
+            BewohnerAnzeiger.initialisiere();
+            console.log('BewohnerAnzeiger-Modul initialisiert');
+        }
+        
+        // FormularContainer-Modul initialisieren
+        if (typeof FormularContainer.initialisiere === 'function') {
+            FormularContainer.initialisiere();
+            console.log('FormularContainer-Modul initialisiert');
+        }
 
         // BewohnerButton-Modul initialisieren (für einheitliche Kartenbreite)
         if (typeof BewohnerButton.initialisiere === 'function') {
@@ -173,7 +220,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Nach oben Button für mobile Ansicht initialisieren
         initialisiereNachObenButton();
         console.log('Nach oben Button initialisiert');
+        
+        // EventBus-Event-Listener für bewohnerSelected einrichten
+        if (typeof EventBusExport.on === 'function') {
+            EventBusExport.on('bewohner:ausgewaehlt', (data) => {
+                console.log('EventBus: Bewohner ausgewählt für Details:', data.bewohner);
+                if (typeof BearbeitungsPanel.zeigeBewohner === 'function') {
+                    BearbeitungsPanel.zeigeBewohner(data.bewohner);
+                }
+            });
 
+            // EventBus-Event-Listener für spracheGeaendert
+            EventBusExport.on('sprache:geaendert', (data) => {
+                if (typeof i18nextAdapter.aktualisiereAlleTexte === 'function') {
+                    i18nextAdapter.aktualisiereAlleTexte();
+                } else if (window.i18n && typeof window.i18n.aktualisiereAlleTexte === 'function') {
+                    window.i18n.aktualisiereAlleTexte();
+                }
+            });
+        } else if (typeof EventBusExport.subscribe === 'function') {
+            EventBusExport.subscribe('bewohner:ausgewaehlt', (data) => {
+                console.log('EventBus: Bewohner ausgewählt für Details:', data.bewohner);
+                if (typeof BearbeitungsPanel.zeigeBewohner === 'function') {
+                    BearbeitungsPanel.zeigeBewohner(data.bewohner);
+                }
+            });
+
+            // EventBus-Event-Listener für spracheGeaendert
+            EventBusExport.subscribe('sprache:geaendert', (data) => {
+                if (typeof i18nextAdapter.aktualisiereAlleTexte === 'function') {
+                    i18nextAdapter.aktualisiereAlleTexte();
+                } else if (window.i18n && typeof window.i18n.aktualisiereAlleTexte === 'function') {
+                    window.i18n.aktualisiereAlleTexte();
+                }
+            });
+        }
+        
         console.log('SoloMenü-Anwendung erfolgreich initialisiert');
     } catch (error) {
         console.error('Fehler bei der Initialisierung der Anwendung:', error);
@@ -182,8 +264,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Event-Listener für globale Ereignisse
 document.addEventListener('bewohnerSelected', (event) => {
-    console.log('Bewohner ausgewählt für Details:', event.detail.bewohner);
-    // Detailansicht öffnen (Bearbeitungspanel anzeigen)
+    console.log('DOM-Event: Bewohner ausgewählt für Details:', event.detail.bewohner);
+    
+    // Event in EventBus-Event umwandeln
+    EventBusExport.emit('bewohner:ausgewaehlt', { bewohner: event.detail.bewohner });
+    
+    // Für Abwärtskompatibilität direkt die Funktion aufrufen
     if (typeof BearbeitungsPanel.zeigeBewohner === 'function') {
         BearbeitungsPanel.zeigeBewohner(event.detail.bewohner);
     }
@@ -229,12 +315,12 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
     // Inhalt des Indikators
     indikator.innerHTML = `
         <div>
-            <span class="name">Aktiver Bewohner: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>
+            <span class="name">Aktiv: <strong>${bewohner.firstName} ${bewohner.lastName}</strong>
             <span class="station">${station}</span>
-            <span class="status">(${statusText})</span>
+            <span class="status">(${statusText})</span></span>
         </div>
         <div class="action-buttons">
-            <button class="action-button" id="reset-bewohner-button">Auswahl aufheben</button>
+            <button class="action-button" id="reset-bewohner-button">Zurücksetzen</button>
             <button class="action-button danger" id="clear-plan-button">Plan leeren</button>
         </div>
     `;
@@ -355,7 +441,7 @@ function zeigeAktivenBewohnerIndikator(bewohner, isExisting) {
 // Funktion global verfügbar machen
 window.zeigeAktivenBewohnerIndikator = zeigeAktivenBewohnerIndikator;
 
-// Neuer Event-Listener für Klicks auf die Bewohnerkarte (ohne Button)
+// Event-Listener für Klicks auf die Bewohnerkarte (ohne Button)
 document.addEventListener('bewohnerCardClicked', async (event) => {
     try {
         const bewohner = event.detail.bewohner;
@@ -368,7 +454,7 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
             BewohnerDate.setzeGlobalAktivenBewohner(bewohnerId);
         }
         
-        // Alle Karten deaktivieren
+        // Alle Karten deaktivieren und UI-Hervorhebung entfernen
         const alleKarten = document.querySelectorAll('.bewohner-card');
         alleKarten.forEach(karte => {
             karte.classList.remove('active');
@@ -398,17 +484,58 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
         
         if (istBewohnerWechsel) {
             console.log(`Bewohnerwechsel: von ${aktuellerBewohner.firstName} ${aktuellerBewohner.lastName} zu ${bewohner.firstName} ${bewohner.lastName}`);
+            
+            // Bei Bewohnerwechsel alle Zellen zurücksetzen
+            if (aktuelleMenueplanTabelle) {
+                const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
+                alleZellen.forEach(zelle => {
+                    zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
+                    zelle.style.backgroundColor = '';
+                    zelle.style.color = '';
+                    zelle.style.border = '';
+                });
+            }
         }
         
         // Aktuellen Bewohner speichern
         aktuellerBewohner = bewohner;
         window.aktuellerBewohner = bewohner; // Für globale Verfügbarkeit
         
-        // Aktuellen Bewohner auch im BewohnerAuswahl-Modul speichern und Auswahl laden
+        // Zeige UI-Feedback während des Ladens
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'lade-anzeige';
+        loadingIndicator.textContent = `Lade Menüplan für ${bewohner.firstName} ${bewohner.lastName}...`;
+        
+        // Einfügen vor der Menü-Tabelle, falls vorhanden
+        const menuContainer = document.querySelector('.menueplan-container');
+        if (menuContainer) {
+            // Bestehende Ladeinfos entfernen
+            const existingLoadingIndicator = menuContainer.querySelector('.lade-anzeige');
+            if (existingLoadingIndicator) {
+                existingLoadingIndicator.remove();
+            }
+            menuContainer.prepend(loadingIndicator);
+        }
+        
+        // Aktuellen Bewohner im BewohnerAuswahl-Modul speichern und Auswahl laden
         console.log(`Lade Bewohnerauswahl für ${bewohner.firstName} ${bewohner.lastName}`);
         let result;
         
         try {
+            // Aktuelle KW und Jahr ermitteln
+            let kw = null, jahr = null;
+            try {
+                const kwDaten = document.querySelector('#current-week-display').textContent;
+                const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
+                if (match) {
+                    kw = parseInt(match[1]);
+                    jahr = parseInt(match[2]);
+                    console.log(`Aktuelle KW/Jahr aus Anzeige: KW${kw}/${jahr}`);
+                }
+            } catch (error) {
+                console.warn('Konnte KW/Jahr nicht aus der Anzeige lesen, verwende aktuelle Werte');
+            }
+            
             // Das setzeAktuellenBewohner im Modul lädt automatisch die Auswahl
             // Wichtig: Auf die Fertigstellung dieses Aufrufs warten
             result = await BewohnerAuswahl.setzeAktuellenBewohner(bewohner);
@@ -417,24 +544,17 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
             // Wenn keine Auswahl zurückgegeben wurde, manuell laden (Fallback)
             if (!result || !result.auswahl) {
                 console.log('Keine Auswahl zurückgegeben, lade manuell');
-                // Aktuelle KW und Jahr ermitteln
-                let kw, jahr;
-                try {
-                    const kwDaten = document.querySelector('#current-week-display').textContent;
-                    const match = kwDaten.match(/KW\s*(\d+)\/(\d+)/);
-                    if (match) {
-                        kw = parseInt(match[1]);
-                        jahr = parseInt(match[2]);
-                    }
-                } catch (error) {
-                    console.warn('Konnte KW/Jahr nicht aus der Anzeige lesen, verwende aktuelle Werte');
-                }
-                
                 result = await BewohnerAuswahl.ladeBewohnerAuswahl(bewohner, kw, jahr);
                 console.log('Manuell geladene Bewohnerauswahl:', result);
             }
         } catch (loadError) {
             console.error('Fehler beim Laden der Bewohnerauswahl:', loadError);
+            
+            // Fehlermeldung in der UI anzeigen
+            if (loadingIndicator) {
+                loadingIndicator.className = 'lade-anzeige fehler';
+                loadingIndicator.textContent = `Fehler beim Laden des Menüplans: ${loadError.message}`;
+            }
             
             // Trotz Fehler mit einer lokalen Auswahl weitermachen
             const localAuswahl = {
@@ -450,6 +570,11 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
         // Extrahiere Ergebnis
         const auswahl = result.auswahl;
         const isExisting = result.isExisting;
+        
+        // Entferne den Ladeindikator
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
         
         // Menüplantabelle erstellen oder aktualisieren
         if (!aktuelleMenueplanTabelle) {
@@ -479,15 +604,6 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
                     }
                 }
             }
-        } else if (istBewohnerWechsel) {
-            // Bei Bewohnerwechsel alle Zellen zurücksetzen, um alte Markierungen zu entfernen
-            const alleZellen = aktuelleMenueplanTabelle.querySelectorAll('td[data-tag]');
-            alleZellen.forEach(zelle => {
-                zelle.classList.remove('auswahl-100', 'auswahl-50', 'auswahl-25');
-                zelle.style.backgroundColor = '';
-                zelle.style.color = '';
-                zelle.style.border = '';
-            });
         }
         
         // Tabelle mit den Auswahlen des Bewohners aktualisieren
@@ -515,6 +631,20 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
             
             // Info anzeigen
             infoElement.style.display = 'flex';
+        }
+        
+        // Auf mobile Ansicht prüfen und ggf. zur Tabelle scrollen
+        const isTabletOrMobile = window.innerWidth <= 1000 || 
+                              /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+        
+        if (isTabletOrMobile) {
+            // Sanft zur Menüplantabelle scrollen
+            const tabelleContainer = document.querySelector('.menueplan-container');
+            if (tabelleContainer) {
+                setTimeout(() => {
+                    scrollMitEffekt(tabelleContainer.offsetTop - 20, 500);
+                }, 300); // Kurze Verzögerung für bessere UX
+            }
         }
     } catch (error) {
         console.error('Allgemeiner Fehler bei der Bewohnerauswahl:', error);

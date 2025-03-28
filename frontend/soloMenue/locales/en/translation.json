@@ -1,0 +1,62 @@
+{
+  "navigation": {
+    "prev-week-btn": "Previous Week",
+    "next-week-btn": "Next Week",
+    "current-week-btn": "Current Week",
+    "nach-oben-button": "Back to Person Selection"
+  },
+  "buttons": {
+    "add-kategorie-btn": "Manage Categories",
+    "speichern": "Save",
+    "abbrechen": "Cancel",
+    "loeschen": "Delete",
+    "schliessen": "Close",
+    "bearbeiten": "Edit",
+    "zurueck": "Back",
+    "aktualisieren": "Update"
+  },
+  "bewohner": {
+    "name": "Name",
+    "geschlecht": "Gender",
+    "alter": "Age",
+    "bereiche": "Areas"
+  },
+  "formular": {
+    "menuEinstellungen": "Menu Relevant Settings",
+    "bitteWaehlen": "Please select",
+    "kategorienVerwalten": "Manage Categories",
+    "kategorienTab": "Categories",
+    "extraOptionenTab": "Extra Options",
+    "sonderwuenscheTab": "Special Requests",
+    "neueKategorieHinzufuegen": "Add New Category",
+    "neueExtraOptionHinzufuegen": "Add New Extra Option",
+    "neuerSonderwunschHinzufuegen": "Add New Special Request",
+    "anzeigenameKategorie": "Display Name of Category",
+    "textAlleTage": "Text for All Days (Monday - Sunday)",
+    "zBSalatSuppe": "e.g. Salad, Soup, Side Dish",
+    "kategorie": "Category",
+    "neueKategorie": "New Category...",
+    "nameNeueKategorie": "Name of New Category",
+    "zBDessertBeilage": "e.g. DESSERT, SIDE DISH, etc.",
+    "nameOption": "Name of Option",
+    "zBMitPueree": "e.g. with puree, salad, etc.",
+    "beschreibung": "Description",
+    "beschreibungExtraOption": "Description of Extra Option",
+    "nameSonderwunsch": "Name of Special Request",
+    "zBDiabetikerSchonkost": "e.g. Diabetic, Light Diet, Vegetarian",
+    "beschreibungSonderwunsch": "Description of Special Request",
+    "vorhandeneKategorien": "Existing Categories",
+    "vorhandeneExtraOptionen": "Existing Extra Options",
+    "vorhandeneSonderwuensche": "Existing Special Requests",
+    "sonderwunschBearbeiten": "Edit Special Request",
+    "kategorieBearbeiten": "Edit Category"
+  },
+  "meldungen": {
+    "datenGespeichert": "The data has been saved successfully.",
+    "fehlerSpeichern": "Error saving data",
+    "adminKontaktieren": "If the problem persists, please contact the administrator.",
+    "kategorienLaden": "Loading categories...",
+    "extraOptionenLaden": "Loading extra options...",
+    "sonderwuenscheLaden": "Loading special requests..."
+  }
+} 

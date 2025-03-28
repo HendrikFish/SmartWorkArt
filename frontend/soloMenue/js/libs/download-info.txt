@@ -1,0 +1,23 @@
+Für die Mehrsprachigkeitsunterstützung werden folgende Bibliotheken benötigt:
+
+1. i18next.min.js - Version 21.8.16 oder neuer
+   Download: https://unpkg.com/i18next@21.8.16/dist/umd/i18next.min.js
+
+2. i18nextHttpBackend.min.js - Kompatible Version
+   Download: https://unpkg.com/i18next-http-backend@1.4.1/i18nextHttpBackend.min.js
+
+Bitte diese Dateien in das Verzeichnis "frontend/soloMenue/js/libs/" herunterladen und speichern.
+
+Alternativ kann der CDN-Link direkt in index.html verwendet werden, indem die lokalen Referenzen 
+durch folgende ersetzt werden:
+
+```html
+<!-- i18next Sprachunterstützung -->
+<script src="https://cdn.jsdelivr.net/npm/i18next@21.8.16/i18next.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@1.4.1/i18nextHttpBackend.min.js"></script>
+<script src="js/eventBus.js"></script>
+<script src="js/i18nextAdapter.js"></script>
+```
+
+Beachten Sie jedoch, dass bei Verwendung von CDN-Links möglicherweise Content Security Policy (CSP)
+Einschränkungen auftreten können. 

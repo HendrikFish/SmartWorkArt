@@ -1,0 +1,32 @@
+{
+  "navigation": {
+    "prev-week-btn": "Predchádzajúci týždeň",
+    "next-week-btn": "Nasledujúci týždeň",
+    "current-week-btn": "Aktuálny týždeň",
+    "nach-oben-button": "Späť na výber osoby"
+  },
+  "buttons": {
+    "add-kategorie-btn": "Správa kategórií",
+    "speichern": "Uložiť",
+    "abbrechen": "Zrušiť",
+    "loeschen": "Vymazať",
+    "schliessen": "Zatvoriť",
+    "bearbeiten": "Upraviť",
+    "zurueck": "Späť"
+  },
+  "bewohner": {
+    "name": "Meno",
+    "geschlecht": "Pohlavie",
+    "alter": "Vek",
+    "bereiche": "Oblasti"
+  },
+  "formular": {
+    "menuEinstellungen": "Nastavenia týkajúce sa menu",
+    "bitteWaehlen": "Prosím vyberte"
+  },
+  "meldungen": {
+    "datenGespeichert": "Údaje boli úspešne uložené.",
+    "fehlerSpeichern": "Chyba pri ukladaní údajov",
+    "adminKontaktieren": "Ak problém pretrváva, kontaktujte prosím správcu."
+  }
+} 

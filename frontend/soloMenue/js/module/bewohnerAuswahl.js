@@ -489,349 +489,93 @@ function aktualisiereTabelle(tabelle) {
                                     zelle.appendChild(bearbeitenButton);
                                 }
                             }
-                            // Bereits eine Mahlzeit gefunden, die ausgeschlossen ist
-                            break;
+                            break; // Nur einmal anwenden
                         }
                     }
                 } else {
-                    // Bei standard Kategorien die einzelnen Komponenten durchgehen
+                    // Bei normalen Menüs die Komponenten durchgehen
                     const komponentenElemente = zelle.querySelectorAll('.menue-komponente');
                     
-                    // Über alle meals-Einträge iterieren
-                    auswahl.meals.forEach(mahlzeit => {
-                        // Wenn diese Mahlzeit als "ohne" markiert ist
+                    // Für jede Mahlzeit im meals-Array
+                    for (const mahlzeit of auswahl.meals) {
                         if (mahlzeit.ohne === true) {
-                            // Entsprechendes Element in der Tabelle finden
-                            const element = Array.from(komponentenElemente).find(el => 
-                                el.textContent.replace(' (ohne)', '').trim() === mahlzeit.name
-                            );
-                            
-                            // Wenn gefunden, als ausgeschlossen markieren
-                            if (element) {
+                            // Passende Komponente finden
+                            for (const element of komponentenElemente) {
+                                const komponentenName = element.textContent.replace(' (ohne)', '').trim();
+                                if (komponentenName === mahlzeit.name) {
                                 element.classList.add('ausgeschlossen');
                                 
                                 // "ohne" hinzufügen, wenn nicht bereits vorhanden
                                 if (!element.textContent.includes('(ohne)')) {
-                                    element.textContent = `${mahlzeit.name} (ohne)`;
+                                        element.textContent = `${komponentenName} (ohne)`;
+                                    }
+                                    break;
                                 }
                             }
                         }
-                    });
+                    }
                 }
             }
             
-            // Extra-Menü-Optionen anzeigen
-            if (auswahl.extraMenueAuswahl && auswahl.extraMenueAuswahl.length > 0) {
-                // Container für Extra-Hinweise erstellen
-                const extraHinweiseContainer = document.createElement('div');
-                extraHinweiseContainer.className = 'extra-hinweise';
+            // Für jede ausgewählte Zelle einen Bearbeiten-Button hinzufügen oder aktualisieren
+            if (auswahl.portion !== 'none') {
+                // Vorhandenen Button suchen
+                let bearbeitenButton = zelle.querySelector('.komponenten-bearbeiten-btn');
                 
-                // Titel-Element
-                const titelElement = document.createElement('div');
-                titelElement.className = 'extra-hinweis-titel';
-                titelElement.textContent = 'Extras:';
-                extraHinweiseContainer.appendChild(titelElement);
-                
-                // Liste der Extra-Optionen
-                const listeElement = document.createElement('div');
-                listeElement.className = 'extra-hinweis-liste';
-                
-                // Namen der Extra-Optionen anhand ihrer IDs aus den global verfügbaren Listen abrufen
-                const extraNamen = [];
-                auswahl.extraMenueAuswahl.forEach(extraId => {
-                    // Zuerst versuchen, den Namen aus extraMenues zu holen (falls vorhanden im window-Objekt)
-                    if (window.KomponentenEditorData && window.KomponentenEditorData.extraMenues) {
-                        const extraMenue = window.KomponentenEditorData.extraMenues.find(m => m.id === extraId);
-                        if (extraMenue) {
-                            extraNamen.push(extraMenue.name);
-                            return;
-                        }
-                    }
+                // Falls keiner vorhanden, einen neuen erstellen
+                if (!bearbeitenButton) {
+                    bearbeitenButton = document.createElement('button');
+                    bearbeitenButton.className = 'komponenten-bearbeiten-btn';
+                    bearbeitenButton.title = 'Komponenten bearbeiten';
+                    bearbeitenButton.innerHTML = '✎';
+                    bearbeitenButton.dataset.tag = tag;
+                    bearbeitenButton.dataset.kategorie = kategorie;
+                    bearbeitenButton.dataset.zellenId = zelle.id;
                     
-                    // Falls nicht gefunden, versuchen aus extraWuensche zu holen
-                    if (window.KomponentenEditorData && window.KomponentenEditorData.extraWuensche) {
-                        const extraWunsch = window.KomponentenEditorData.extraWuensche.find(w => w.id === extraId);
-                        if (extraWunsch) {
-                            extraNamen.push(extraWunsch.name);
-                            return;
-                        }
-                    }
-                    
-                    // Fallback: ID verwenden, wenn kein Name gefunden wurde
-                    extraNamen.push(extraId);
-                });
-                
-                listeElement.textContent = extraNamen.join(', ');
-                extraHinweiseContainer.appendChild(listeElement);
-                
-                // Container zur Zelle hinzufügen
-                zelle.appendChild(extraHinweiseContainer);
-            }
-            
-            // Notizen anzeigen, falls vorhanden
-            if (auswahl.notizen && auswahl.notizen.trim() !== '') {
-                // Falls bereits ein Extra-Hinweise-Container existiert, diesen nutzen
-                let extraHinweiseContainer = zelle.querySelector('.extra-hinweise');
-                if (!extraHinweiseContainer) {
-                    extraHinweiseContainer = document.createElement('div');
-                    extraHinweiseContainer.className = 'extra-hinweise';
-                    zelle.appendChild(extraHinweiseContainer);
+                    zelle.appendChild(bearbeitenButton);
                 }
                 
-                // Notiz-Element erstellen
-                const notizElement = document.createElement('div');
-                notizElement.className = 'extra-hinweis-notiz';
-                notizElement.textContent = auswahl.notizen;
-                extraHinweiseContainer.appendChild(notizElement);
+                // Aktualisiere Attribute für den Button, falls sie sich geändert haben
+                bearbeitenButton.dataset.tag = tag;
+                bearbeitenButton.dataset.kategorie = kategorie;
+                bearbeitenButton.dataset.zellenId = zelle.id;
             }
-            
-            // "Bearbeiten"-Button hinzufügen
-            if (window.KomponentenEditor && typeof window.KomponentenEditor.erstelleBearbeitenButton === 'function') {
-                window.KomponentenEditor.erstelleBearbeitenButton(zelle);
+
+            // Klick-Event für die Zelle registrieren, falls noch nicht geschehen
+            if (zelle.dataset.hasClickHandler !== 'true') {
+                zelle.dataset.hasClickHandler = 'true';
             }
         });
     });
     
-    // WICHTIG: Nach der Aktualisierung der Inhalte die Klick-Handler neu hinzufügen
-    fuegeZellenKlickHinzu(tabelle, true);
+    // Event-Listener für Klicks auf die Zellen hinzufügen
+    fuegeZellenKlickHinzu(tabelle);
     
-    // Mobile Ansicht aktualisieren
-    aktualisiereZellenInMobileAnsicht();
+    // Mobile Ansicht aktualisieren, falls auf einem Smartphone oder Tablet
+    try {
+        // Prüfen ob mobile Container existiert oder erstellt werden muss
+    const mobileContainer = document.querySelector('.mobile-menueplan-container');
+    if (!mobileContainer) {
+            // Mobile Container erstellen
+            // erstelleMobileAnsicht(tabelle);
+            console.log('Mobile Ansicht wird nicht erstellt - Funktion nicht implementiert');
+        }
+        
+        // Mobile Zellen aktualisieren
+        aktualisiereZellenInMobileAnsicht(tabelle);
+    } catch (mobileError) {
+        console.warn('Fehler bei der Aktualisierung der mobilen Ansicht:', mobileError);
+        // Weitermachen, auch wenn die mobile Aktualisierung fehlschlägt
+    }
     
     return true;
 }
 
 /**
- * Fügt Event-Listener für Klicks auf Tabellenzellen hinzu
- * @param {HTMLElement} tabelle - Die Tabelle, deren Zellen mit Klick-Events versehen werden sollen
- * @param {boolean} forceReattach - Erzwingt das erneute Hinzufügen, auch wenn bereits Event-Listener existieren
+ * Aktualisiert alle Zellen in der mobilen Ansicht basierend auf der Desktop-Tabelle
+ * @param {HTMLElement} desktopTabelle - Die Original-Tabelle aus der Desktop-Ansicht
  */
-function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
-    if (!tabelle) return;
-    
-    // Alle klickbaren Zellen finden
-    const klickbareZellen = tabelle.querySelectorAll('.menue-zelle');
-    
-    // Für jede Zelle einen Event-Listener hinzufügen
-    klickbareZellen.forEach(zelle => {
-        // Prüfen, ob die Zelle bereits einen Event-Listener hat
-        if (zelle.dataset.hasClickListener && !forceReattach) {
-            return; // Diese Zelle hat bereits einen Event-Listener
-        }
-        
-        // Verbessertes ID-Attribut für die Zelle
-            const tag = zelle.dataset.tag;
-        const kategorie = zelle.dataset.kategorie;
-        
-        if (tag && kategorie) {
-            // Eindeutige ID für die Zelle setzen, falls noch nicht vorhanden
-            if (!zelle.id) {
-                zelle.id = `zelle-${tag}-${kategorie}`.replace(/\s+/g, '-');
-            }
-            
-            // "klickbar"-Klasse hinzufügen, falls noch nicht vorhanden
-            zelle.classList.add('klickbar');
-            
-            // Hover-Effekt für bessere UX
-            zelle.style.cursor = 'pointer';
-            
-            // Event-Handler für Klicks hinzufügen
-            // Wir verwenden hier keinen direkten Listener, sondern delegieren über die Tabelle
-            zelle.dataset.hasClickListener = 'true';
-        }
-    });
-    
-    // VERBESSERTER ANSATZ: Event-Delegation auf Tabellenebene anstatt einzelner Listener
-    // Dies verhindert Probleme mit mehrfachen Event-Handlern und ist effizienter
-    if (!tabelle.dataset.hasClickDelegation) {
-        tabelle.addEventListener('click', function(event) {
-            // Das geklickte Element finden
-            const target = event.target;
-            
-            // Zuerst überprüfen, ob ein Bearbeiten-Button geklickt wurde
-            const editButton = target.closest('.komponenten-bearbeiten-btn');
-            if (editButton) {
-                // Bearbeiten-Button wurde geklickt - diesen Event getrennt behandeln
-                const zelle = editButton.closest('.menue-zelle');
-                if (zelle && zelle.dataset.tag && zelle.dataset.kategorie) {
-                    console.log(`Delegierter Klick auf Bearbeiten-Button: ${zelle.dataset.tag}, ${zelle.dataset.kategorie}`);
-                    
-                    // Event stoppen
-                    event.stopPropagation();
-                    
-                    // Komponenten-Editor öffnen
-                    if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                        window.KomponentenEditor.oeffneKomponentenEditor(zelle, zelle.dataset.tag, zelle.dataset.kategorie);
-                    }
-                }
-                return; // Event-Bearbeitung hier beenden
-            }
-            
-            // Finde die nächste .menue-zelle im DOM-Baum nach oben
-            const zelle = target.closest('.menue-zelle');
-            if (zelle && zelle.dataset.tag && zelle.dataset.kategorie) {
-                // Prüfen, ob dieses Event von einem Button stammt
-                if (target.tagName === 'BUTTON' || target.closest('button')) {
-                    console.log('Klick auf Button innerhalb der Zelle - keine Aktion für die Zelle');
-                    return;
-                }
-                
-                // Nur weitermachen, wenn die Zelle klickbar ist
-                if (zelle.classList.contains('klickbar')) {
-                    // Event an unsere Hauptfunktion delegieren
-                    handleZellenKlick(zelle, event);
-                }
-            }
-        });
-        
-        tabelle.dataset.hasClickDelegation = 'true';
-        console.log('Event-Delegation für Tabellenklicks eingerichtet');
-    }
-}
-
-/**
- * Aktualisiert eine Zelle in der mobilen Ansicht basierend auf der Original-Zelle
- * @param {HTMLElement} originaleZelle - Die Original-Zelle aus der Desktop-Ansicht
- */
-function aktualisiereZellInMobileAnsicht(originaleZelle) {
-    // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
-    const isTabletOrMobile = window.innerWidth <= 1000 || 
-                           /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
-    if (!isTabletOrMobile) return;
-
-    // Daten der Original-Zelle abrufen
-    const tag = originaleZelle.dataset.tag;
-    const kategorie = originaleZelle.dataset.kategorie;
-    
-    if (!tag || !kategorie) {
-        console.warn('Zelle ohne Tag oder Kategorie-Information');
-        return;
-    }
-    
-    // Mobile-Container suchen
-    const mobileContainer = document.querySelector('.mobile-menueplan-container');
-    if (!mobileContainer) {
-        console.log('Kein Mobile-Container gefunden, überspringe Aktualisierung');
-        return;
-    }
-    
-    // Entsprechende mobile Zelle finden
-    const mobileZelle = mobileContainer.querySelector(
-        `.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`
-    );
-    
-    if (!mobileZelle) {
-        console.warn(`Keine entsprechende mobile Zelle für ${tag}, ${kategorie} gefunden`);
-        return;
-    }
-    
-    // Alten Button vor der Aktualisierung entfernen, damit wir keine doppelten Event-Listener haben
-    const alteButton = mobileZelle.querySelector('.komponenten-bearbeiten-btn');
-    if (alteButton) {
-        alteButton.remove();
-    }
-    
-    // Inhalt synchronisieren (HTML kopieren, aber ohne Button)
-    const originalHtmlOhneButton = originaleZelle.innerHTML.replace(/<button[^>]*komponenten-bearbeiten-btn[^>]*>.*?<\/button>/g, '');
-    mobileZelle.innerHTML = originalHtmlOhneButton;
-    
-    // Klassen synchronisieren (besonders wichtig für die Auswahl-Klassen und Bearbeitungsstatus)
-    ['auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen', 'zelle-in-bearbeitung'].forEach(klasse => {
-        if (originaleZelle.classList.contains(klasse)) {
-            mobileZelle.classList.add(klasse);
-        } else {
-            mobileZelle.classList.remove(klasse);
-        }
-    });
-    
-    // Für Extra-Kategorien sicherstellen, dass der Text korrekt ist (mit oder ohne "(ohne)")
-    const isExtraKategorie = kategorie.startsWith('extra_');
-    if (isExtraKategorie) {
-        // Wenn die ursprüngliche Zelle die Klasse "ausgeschlossen" hat, sicherstellen, dass der mobile Text identisch ist
-        if (originaleZelle.classList.contains('ausgeschlossen')) {
-            const zellenText = mobileZelle.textContent.replace('✎', '').trim();
-            if (!zellenText.includes('(ohne)')) {
-                const originalText = zellenText.replace(' (ohne)', '').trim();
-                
-                // Text mit "(ohne)" setzen
-                mobileZelle.textContent = `${originalText} (ohne)`;
-            }
-        } else if (!originaleZelle.classList.contains('ausgeschlossen')) {
-            // Falls die Zelle nicht ausgeschlossen ist, sicherstellen, dass kein "(ohne)" im Text ist
-            const zellenText = mobileZelle.textContent.replace('✎', '').trim();
-            if (zellenText.includes('(ohne)')) {
-                const originalText = zellenText.replace(' (ohne)', '').trim();
-                
-                // Text ohne "(ohne)" setzen
-                mobileZelle.textContent = originalText;
-            }
-        }
-    }
-    
-    // Bearbeiten-Button für ausgewählte Zellen anpassen oder neu erstellen
-    if (mobileZelle.classList.contains('auswahl-100') || 
-        mobileZelle.classList.contains('auswahl-50') || 
-        mobileZelle.classList.contains('auswahl-25')) {
-        
-        // Immer einen neuen Button erstellen
-        const bearbeitenButton = document.createElement('button');
-        bearbeitenButton.className = 'komponenten-bearbeiten-btn';
-        bearbeitenButton.title = 'Komponenten bearbeiten';
-        bearbeitenButton.innerHTML = '✎';
-        bearbeitenButton.id = `btn-${tag}-${kategorie}`;
-        
-        // Wichtig: zIndex und pointer-events explizit setzen
-        bearbeitenButton.style.zIndex = '1000';
-        bearbeitenButton.style.pointerEvents = 'auto';
-        bearbeitenButton.style.position = 'absolute';
-        bearbeitenButton.style.display = 'flex';
-        
-        // Event-Listener für den Button definieren
-        const handleButtonClick = function(event) {
-            // Alle Event-Propagation stoppen (sowohl Bubbling als auch Capturing)
-            event.stopPropagation();
-            event.preventDefault();
-            
-            // Verhindere, dass der Klick die Zelle aktiviert oder weitere Events auslöst
-            event.cancelBubble = true;
-            
-            console.log('Bearbeiten-Button angeklickt für', tag, kategorie);
-            
-            // Mit kurzer Verzögerung öffnen, um sicherzustellen, dass keine weiteren Events ausgelöst werden
-            setTimeout(() => {
-                if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                    window.KomponentenEditor.oeffneKomponentenEditor(originaleZelle, tag, kategorie);
-                }
-            }, 10);
-        };
-        
-        // Event-Listener hinzufügen (mit mehreren Methoden für maximale Kompatibilität)
-        bearbeitenButton.addEventListener('click', handleButtonClick);
-        bearbeitenButton.addEventListener('touchend', handleButtonClick);
-        
-        // Button zur Zelle hinzufügen
-        mobileZelle.appendChild(bearbeitenButton);
-        
-        // Zusätzlich Doppelklick-Handler hinzufügen als alternative Bedienungsmöglichkeit
-        if (mobileZelle.dataset.hasDblClickHandler !== 'true') {
-            mobileZelle.addEventListener('dblclick', () => {
-                if (window.KomponentenEditor && typeof window.KomponentenEditor.oeffneKomponentenEditor === 'function') {
-                    window.KomponentenEditor.oeffneKomponentenEditor(originaleZelle, tag, kategorie);
-                }
-            });
-            mobileZelle.dataset.hasDblClickHandler = 'true';
-        }
-    } else {
-        // Wenn keine Auswahl besteht, Bearbeiten-Button entfernen
-        const bearbeitenButton = mobileZelle.querySelector('.komponenten-bearbeiten-btn');
-        if (bearbeitenButton) bearbeitenButton.remove();
-    }
-}
-
-/**
- * Aktualisiert alle Zellen in der mobilen Ansicht
- */
-function aktualisiereZellenInMobileAnsicht() {
+function aktualisiereZellenInMobileAnsicht(desktopTabelle) {
     // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
     const isTabletOrMobile = window.innerWidth <= 1000 || 
                            /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
@@ -844,6 +588,14 @@ function aktualisiereZellenInMobileAnsicht() {
         return;
     }
     
+    // Prüfen, ob der Container bereits erstellt wurde, sonst jetzt erstellen
+    if (!mobileContainer.querySelector('.mobile-tag-container')) {
+        // erstelleMobileAnsicht(desktopTabelle);
+        console.log('Mobile Ansicht muss erstellt werden - Funktion nicht verfügbar');
+        return; // Ohne mobile Ansicht können wir nicht fortfahren
+    }
+    
+    // Zunächst alle mobile Zellen zurücksetzen und Bearbeiten-Buttons entfernen
     // Zunächst alle mobile Zellen zurücksetzen und Bearbeiten-Buttons entfernen
     const alleMobileZellen = mobileContainer.querySelectorAll('.kategorie-inhalt');
     alleMobileZellen.forEach(zelle => {
@@ -1966,5 +1718,349 @@ export {
     setzeAktuellenBewohner,
     markiereBewohnerKarteAlsAktiv,
     resetAuswahl,
-    getAktuelleBewohnerAuswahl
+    getAktuelleBewohnerAuswahl,
+    aktualisiereTabelle,
+    ladeBewohnerAuswahl,
+    aktualisiereZellInMobileAnsicht,
+    speichereBewohnerAuswahl
 }; 
+
+/**
+ * Fügt allen Zellen in der Tabelle einen Klick-Event-Listener hinzu
+ * @param {HTMLTableElement} tabelle - Die Menüplantabelle
+ * @param {boolean} forceReattach - Erzwingt das Neuanfügen aller Event-Listener
+ */
+function fuegeZellenKlickHinzu(tabelle, forceReattach = false) {
+    if (!tabelle) {
+        console.error('Keine Tabelle für Event-Listener übergeben');
+        return;
+    }
+    
+    // Alle Menü-Zellen auswählen
+    const alleZellen = tabelle.querySelectorAll('td.menue-zelle');
+    
+    alleZellen.forEach(zelle => {
+        // Prüfen, ob die Zelle bereits einen Event-Listener hat
+        const hasHandler = zelle.dataset.hasClickHandler === 'true';
+        
+        // Event-Listener nur entfernen, wenn forceReattach true ist und bereits ein Handler existiert
+        if (forceReattach && hasHandler) {
+            const oldClone = zelle.cloneNode(true);
+            zelle.parentNode.replaceChild(oldClone, zelle);
+            zelle = oldClone;
+            zelle.dataset.hasClickHandler = 'false';
+        }
+        
+        // Wenn die Zelle noch keinen Handler hat oder wenn forceReattach aktiviert ist
+        if (!hasHandler || forceReattach) {
+            // Event-Listener für Klicks hinzufügen
+            zelle.addEventListener('click', function(event) {
+                // Event nur verarbeiten, wenn der Klick nicht auf den Bearbeiten-Button war
+                if (!event.target.classList.contains('komponenten-bearbeiten-btn')) {
+                    // Tag und Kategorie aus den Datenattributen auslesen
+                    const tag = this.dataset.tag;
+                    const kategorie = this.dataset.kategorie;
+                    
+                    if (tag && kategorie) {
+                        // Zellenklick an die Verarbeitungsfunktion weiterleiten
+                        handleZellenKlick(this, event);
+                    } else {
+                        console.warn('Zelle ohne Tag oder Kategorie-Information angeklickt');
+                    }
+                }
+            });
+            
+            // Event-Listener für Bearbeiten-Buttons in den Zellen
+            const bearbeitenButton = zelle.querySelector('.komponenten-bearbeiten-btn');
+            if (bearbeitenButton) {
+                bearbeitenButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    
+                    // Vorbereitung für die Bearbeitung der Komponenten
+                    const tag = this.dataset.tag;
+                    const kategorie = this.dataset.kategorie;
+                    
+                    // Öffne das Bearbeitungspanel für diese Kategorie
+                    if (window.TabeleAdd && typeof window.TabeleAdd.zeigeKomponentenEditor === 'function') {
+                        window.TabeleAdd.zeigeKomponentenEditor(tag, kategorie, this);
+                    } else {
+                        console.warn('Komponenten-Editor-Funktion nicht gefunden');
+                    }
+                });
+            }
+            
+            // Markieren, dass die Zelle jetzt einen Event-Listener hat
+            zelle.dataset.hasClickHandler = 'true';
+        }
+    });
+    
+    console.log(`Event-Listener für ${alleZellen.length} Menü-Zellen ${forceReattach ? 'neu ' : ''}hinzugefügt`);
+}
+
+/**
+ * Aktualisiert eine Zelle in der mobilen Ansicht basierend auf der Original-Zelle
+ * @param {HTMLElement} originaleZelle - Die Original-Zelle aus der Desktop-Ansicht
+ */
+function aktualisiereZellInMobileAnsicht(originaleZelle) {
+    // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+    const isTabletOrMobile = window.innerWidth <= 1000 || 
+                           /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+    if (!isTabletOrMobile) return;
+
+    // Wenn keine Zelle übergeben wurde, abbrechen
+    if (!originaleZelle) {
+        console.warn('Keine Zelle zum Aktualisieren übergeben');
+        return;
+    }
+
+    // Daten der Original-Zelle abrufen
+    const tag = originaleZelle.dataset.tag;
+    const kategorie = originaleZelle.dataset.kategorie;
+    
+    if (!tag || !kategorie) {
+        console.warn('Zelle ohne Tag oder Kategorie-Information');
+        return;
+    }
+    
+    // Mobile-Container suchen
+    const mobileContainer = document.querySelector('.mobile-menueplan-container');
+    if (!mobileContainer) {
+        console.log('Kein Mobile-Container gefunden, überspringe Aktualisierung');
+        return;
+    }
+    
+    // Erweiterte Selektoren für verschiedene DOM-Strukturen in der mobilen Ansicht
+    // Versuche verschiedene Selektoren, um die mobile Zelle zu finden
+    let mobileZelle = null;
+    
+    // Versuch 1: Standard-Selektor mit genauem data-Attribut-Matching
+    mobileZelle = mobileContainer.querySelector(
+        `.kategorie-inhalt[data-tag="${tag}"][data-kategorie="${kategorie}"]`
+    );
+    
+    // Versuch 2: Mobile Zelle über kombinierten Tag/Kategorie-ID finden
+    if (!mobileZelle) {
+        const mobileCellId = `mobile-${tag}-${kategorie}`.replace(/\s+/g, '-').toLowerCase();
+        mobileZelle = mobileContainer.querySelector(`#${mobileCellId}`);
+    }
+    
+    // Versuch 3: Suche über die Klasse mit dem Tag und der Kategorie als Teil des Klassennamens
+    if (!mobileZelle) {
+        const mobileZellen = mobileContainer.querySelectorAll('.kategorie-inhalt');
+        for (const zelle of mobileZellen) {
+            // Prüfe, ob die Zelle Tag und Kategorie in irgendeiner Form enthält
+            if ((zelle.dataset.tag && zelle.dataset.tag.includes(tag)) ||
+                (zelle.dataset.kategorie && zelle.dataset.kategorie.includes(kategorie)) ||
+                (zelle.className && zelle.className.includes(tag.toLowerCase())) ||
+                (zelle.className && zelle.className.includes(kategorie.toLowerCase()))) {
+                mobileZelle = zelle;
+                break;
+            }
+        }
+    }
+    
+    // Wenn immer noch keine Zelle gefunden wurde, versuche die Zelle über die enthaltenen Texte zu identifizieren
+    if (!mobileZelle) {
+        const mobileZellen = mobileContainer.querySelectorAll('.kategorie-inhalt, .mobile-menu-item');
+        const originalText = originaleZelle.textContent.trim().replace(/\s+/g, ' ').toLowerCase();
+        
+        for (const zelle of mobileZellen) {
+            const zellenText = zelle.textContent.trim().replace(/\s+/g, ' ').toLowerCase();
+            // Wenn der Text sehr ähnlich ist (mindestens 70% Übereinstimmung)
+            if (zellenText.includes(originalText.substring(0, Math.floor(originalText.length * 0.7)))) {
+                mobileZelle = zelle;
+                // Setze die fehlenden Attribute für spätere Zuordnung
+                if (!zelle.dataset.tag) zelle.dataset.tag = tag;
+                if (!zelle.dataset.kategorie) zelle.dataset.kategorie = kategorie;
+                break;
+            }
+        }
+    }
+    
+    if (!mobileZelle) {
+        // Nur eine Warnung ausgeben, nicht den gesamten Prozess unterbrechen
+        console.warn(`Keine entsprechende mobile Zelle für ${tag}, ${kategorie} gefunden`);
+        return;
+    }
+    
+    // Für zukünftige Zuordnungen ID-Attribut setzen, falls noch nicht vorhanden
+    if (!mobileZelle.id) {
+        mobileZelle.id = `mobile-${tag}-${kategorie}`.replace(/\s+/g, '-').toLowerCase();
+    }
+    
+    // Alten Button vor der Aktualisierung entfernen, damit wir keine doppelten Event-Listener haben
+    const alteButton = mobileZelle.querySelector('.komponenten-bearbeiten-btn');
+    if (alteButton) {
+        alteButton.remove();
+    }
+    
+    // Inhalt synchronisieren (HTML kopieren, aber ohne Button)
+    const originalHtmlOhneButton = originaleZelle.innerHTML.replace(/<button[^>]*komponenten-bearbeiten-btn[^>]*>.*?<\/button>/g, '');
+    mobileZelle.innerHTML = originalHtmlOhneButton;
+    
+    // Klassen synchronisieren (besonders wichtig für die Auswahl-Klassen und Bearbeitungsstatus)
+    ['auswahl-100', 'auswahl-50', 'auswahl-25', 'ausgeschlossen', 'zelle-in-bearbeitung'].forEach(klasse => {
+        if (originaleZelle.classList.contains(klasse)) {
+            mobileZelle.classList.add(klasse);
+        } else {
+            mobileZelle.classList.remove(klasse);
+        }
+    });
+    
+    // Für Extra-Kategorien sicherstellen, dass der Text korrekt ist (mit oder ohne "(ohne)")
+    const isExtraKategorie = kategorie && kategorie.startsWith('extra_');
+    if (isExtraKategorie) {
+        // Wenn die ursprüngliche Zelle die Klasse "ausgeschlossen" hat, sicherstellen, dass der mobile Text identisch ist
+        if (originaleZelle.classList.contains('ausgeschlossen')) {
+            const zellenText = originaleZelle.textContent.replace('✎', '').trim();
+            // (ohne) zum Text hinzufügen, falls noch nicht vorhanden
+            if (!zellenText.includes('(ohne)')) {
+                mobileZelle.textContent = `${zellenText} (ohne)`;
+            } else {
+                mobileZelle.textContent = zellenText;
+            }
+        }
+    }
+}
+
+/**
+ * Erstellt die mobile Ansicht der Menüplan-Tabelle
+ * @param {HTMLElement} desktopTabelle - Die Original-Tabelle aus der Desktop-Ansicht
+ */
+function erstelleMobileAnsicht(desktopTabelle) {
+    // Prüfen, ob wir auf einem mobilen Gerät oder Tablet sind
+    const isTabletOrMobile = window.innerWidth <= 1000 || 
+                           /iPad|iPhone|iPod|Android|webOS|IEMobile/i.test(navigator.userAgent);
+    if (!isTabletOrMobile) return;
+    
+    console.log('Erstelle mobile Ansicht für die Menüplan-Tabelle');
+    
+    // Container für die mobile Ansicht suchen oder erstellen
+    let mobileContainer = document.querySelector('.mobile-menueplan-container');
+    if (!mobileContainer) {
+        mobileContainer = document.createElement('div');
+        mobileContainer.className = 'mobile-menueplan-container';
+        
+        // Container nach der Desktop-Tabelle einfügen
+        const menueplanContainer = document.querySelector('.menueplan-container');
+        if (menueplanContainer) {
+            menueplanContainer.parentNode.insertBefore(mobileContainer, menueplanContainer.nextSibling);
+        } else {
+            // Fallback: An die Hauptansicht anhängen
+            document.querySelector('main').appendChild(mobileContainer);
+        }
+    }
+    
+    // Leeren des Containers
+    mobileContainer.innerHTML = '';
+    
+    // Überschrift für die mobile Ansicht
+    const mobileTitle = document.createElement('h3');
+    mobileTitle.className = 'mobile-title';
+    mobileTitle.textContent = document.querySelector('.bewohner-info')?.textContent || 'Menüplan';
+    mobileContainer.appendChild(mobileTitle);
+    
+    // Ermitteln der Tage und Kategorien aus der Desktop-Tabelle
+    const tableHeader = desktopTabelle.querySelector('thead');
+    const tableBody = desktopTabelle.querySelector('tbody');
+    
+    if (!tableHeader || !tableBody) {
+        console.error('Keine Tabellenkopf oder -körper gefunden');
+        return;
+    }
+    
+    // Spaltenüberschriften (Tage) ermitteln
+    const tageElemente = tableHeader.querySelectorAll('th');
+    const tage = Array.from(tageElemente).slice(1).map(th => th.textContent.trim());
+    
+    // Für jeden Tag einen Container erstellen
+    tage.forEach((tag, tagIndex) => {
+        // Container für den Tag
+        const tagContainer = document.createElement('div');
+        tagContainer.className = 'mobile-tag-container';
+        tagContainer.dataset.tag = tag;
+        
+        // Überschrift für den Tag
+        const tagTitle = document.createElement('div');
+        tagTitle.className = 'mobile-tag-title';
+        tagTitle.textContent = tag;
+        tagContainer.appendChild(tagTitle);
+        
+        // Alle Zeilen durchgehen und Kategorien für diesen Tag extrahieren
+        const rows = tableBody.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+            const kategorieZelle = row.querySelector('td.kategorie-zelle');
+            if (!kategorieZelle) return;
+            
+            const kategorie = kategorieZelle.textContent.trim();
+            const kategorieId = kategorieZelle.dataset.kategorie;
+            
+            // Zelle für den aktuellen Tag in dieser Kategorie
+            const menueZelle = row.querySelector(`td[data-tag="${tag}"]`);
+            if (!menueZelle) return;
+            
+            // Container für diese Kategorie
+            const kategorieContainer = document.createElement('div');
+            kategorieContainer.className = 'mobile-kategorie-container';
+            
+            // Name der Kategorie
+            const kategorieName = document.createElement('div');
+            kategorieName.className = 'mobile-kategorie-name';
+            kategorieName.textContent = kategorie;
+            kategorieContainer.appendChild(kategorieName);
+            
+            // Inhalt der Kategorie
+            const kategorieInhalt = document.createElement('div');
+            kategorieInhalt.className = 'kategorie-inhalt klickbar';
+            kategorieInhalt.dataset.tag = tag;
+            kategorieInhalt.dataset.kategorie = kategorieId;
+            kategorieInhalt.id = `mobile-${tag}-${kategorieId}`.replace(/\s+/g, '-').toLowerCase();
+            
+            // Inhalt aus der Desktop-Zelle kopieren
+            kategorieInhalt.innerHTML = menueZelle.innerHTML;
+            
+            // Event-Listener für Klicks hinzufügen
+            kategorieInhalt.addEventListener('click', function(event) {
+                // Verhindere Propagation für Bearbeiten-Button-Klicks
+                if (event.target.classList.contains('komponenten-bearbeiten-btn')) {
+                    return;
+                }
+                
+                // Dieselbe Funktion aufrufen, die für die Desktop-Zellen verwendet wird
+                handleZellenKlick(kategorieInhalt, event);
+            });
+            
+            kategorieContainer.appendChild(kategorieInhalt);
+            tagContainer.appendChild(kategorieContainer);
+        });
+        
+        mobileContainer.appendChild(tagContainer);
+    });
+    
+    // Event-Listener für Bearbeiten-Buttons in der mobilen Ansicht hinzufügen
+    const bearbeitenButtons = mobileContainer.querySelectorAll('.komponenten-bearbeiten-btn');
+    bearbeitenButtons.forEach(button => {
+        // Bestehende Listener entfernen, um doppelte zu vermeiden
+        const clone = button.cloneNode(true);
+        button.parentNode.replaceChild(clone, button);
+        
+        // Neuen Listener hinzufügen
+        clone.addEventListener('click', function(event) {
+            event.stopPropagation();
+            
+            // Vorbereitung für die Bearbeitung der Komponenten
+            const tag = this.dataset.tag;
+            const kategorie = this.dataset.kategorie;
+            
+            // Öffne das Bearbeitungspanel für diese Kategorie
+            if (window.TabeleAdd && typeof window.TabeleAdd.zeigeKomponentenEditor === 'function') {
+                window.TabeleAdd.zeigeKomponentenEditor(tag, kategorie, this);
+            } else {
+                console.warn('Komponenten-Editor-Funktion nicht gefunden');
+            }
+        });
+    });
+    
+    console.log('Mobile Ansicht wurde erstellt');
+}

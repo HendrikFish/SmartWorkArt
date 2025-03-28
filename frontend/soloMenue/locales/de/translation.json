@@ -1,0 +1,63 @@
+{
+  "navigation": {
+    "prev-week-btn": "Vorherige Woche",
+    "next-week-btn": "Nächste Woche",
+    "current-week-btn": "Aktuelle Woche",
+    "nach-oben-button": "Zurück zur Personenauswahl"
+  },
+  "buttons": {
+    "add-kategorie-btn": "Kategorien verwalten",
+    "speichern": "Speichern",
+    "abbrechen": "Abbrechen",
+    "loeschen": "Löschen",
+    "schliessen": "Schließen",
+    "bearbeiten": "Bearbeiten",
+    "zurueck": "Zurück",
+    "aktualisieren": "Aktualisieren",
+    "kategorieHinzufuegen": "Kategorie-Einstellungen öffnen"
+  },
+  "bewohner": {
+    "name": "Name",
+    "geschlecht": "Geschlecht",
+    "alter": "Alter",
+    "bereiche": "Bereiche"
+  },
+  "formular": {
+    "menuEinstellungen": "Menü-relevante Einstellungen",
+    "bitteWaehlen": "Bitte wählen",
+    "kategorienVerwalten": "Kategorien verwalten",
+    "kategorienTab": "Kategorien",
+    "extraOptionenTab": "Extra-Optionen",
+    "sonderwuenscheTab": "Sonderwünsche",
+    "neueKategorieHinzufuegen": "Neue Kategorie hinzufügen",
+    "neueExtraOptionHinzufuegen": "Neue Extra-Option hinzufügen",
+    "neuerSonderwunschHinzufuegen": "Neuen Sonderwunsch hinzufügen",
+    "anzeigenameKategorie": "Anzeigename der Kategorie",
+    "textAlleTage": "Text für alle Tage (Montag - Sonntag)",
+    "zBSalatSuppe": "z.B. Salat, Suppe, Beilage",
+    "kategorie": "Kategorie",
+    "neueKategorie": "Neue Kategorie...",
+    "nameNeueKategorie": "Name der neuen Kategorie",
+    "zBDessertBeilage": "z.B. DESSERT, BEILAGE, etc.",
+    "nameOption": "Name der Option",
+    "zBMitPueree": "z.B. mit Püree, Salat dazu, etc.",
+    "beschreibung": "Beschreibung",
+    "beschreibungExtraOption": "Beschreibung der Extra-Option",
+    "nameSonderwunsch": "Name des Sonderwunsches",
+    "zBDiabetikerSchonkost": "z.B. Diabetiker, Schonkost, Vegetarisch",
+    "beschreibungSonderwunsch": "Beschreibung des Sonderwunsches",
+    "vorhandeneKategorien": "Vorhandene Kategorien",
+    "vorhandeneExtraOptionen": "Vorhandene Extra-Optionen",
+    "vorhandeneSonderwuensche": "Vorhandene Sonderwünsche",
+    "sonderwunschBearbeiten": "Sonderwunsch bearbeiten",
+    "kategorieBearbeiten": "Kategorie bearbeiten"
+  },
+  "meldungen": {
+    "datenGespeichert": "Die Daten wurden erfolgreich gespeichert.",
+    "fehlerSpeichern": "Fehler beim Speichern der Daten",
+    "adminKontaktieren": "Sollte das Problem weiterhin bestehen, kontaktieren Sie bitte den Administrator.",
+    "kategorienLaden": "Kategorien werden geladen...",
+    "extraOptionenLaden": "Extra-Optionen werden geladen...",
+    "sonderwuenscheLaden": "Sonderwünsche werden geladen..."
+  }
+} 

@@ -159,26 +159,52 @@
     
     /* Aktiver Bewohner Indikator anpassen und Reset-Button ausblenden */
     .aktiver-bewohner-indikator {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 0.5rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 0.4rem 0.6rem;
         margin-bottom: 0.25rem;
         font-size: 0.85rem;
+        gap: 5px;
     }
     
-    .aktiver-bewohner-indikator .action-button {
-        display: block; /* Buttons in der mobilen Ansicht anzeigen */
-        width: 100%;
-        margin-top: 5px;
-        padding: 10px;
-        font-size: 1rem; /* Größerer Text für bessere Touch-Bedienung */
+    .aktiver-bewohner-indikator > div:first-child {
+        display: flex;
+        flex: 1;
+        flex-wrap: wrap;
+        align-items: center;
+        min-width: 150px;
+        margin-right: 5px;
+    }
+    
+    .aktiver-bewohner-indikator .name {
+        font-size: 0.9rem;
+    }
+    
+    .aktiver-bewohner-indikator .station {
+        margin: 0 3px;
+    }
+    
+    .aktiver-bewohner-indikator .status {
+        font-size: 0.8rem;
     }
     
     .aktiver-bewohner-indikator .action-buttons {
         display: flex;
-        flex-direction: column;
-        width: 100%;
-        margin-top: 10px;
+        flex-direction: row;
+        width: auto;
+        margin-top: 0;
+        gap: 5px;
+    }
+    
+    .aktiver-bewohner-indikator .action-button {
+        display: inline-block;
+        width: auto;
+        margin-top: 0;
+        padding: 0.25rem 0.4rem;
+        font-size: 0.8rem;
+        min-width: 60px;
+        text-align: center;
     }
     
     /* ------------------------------------
@@ -511,5 +537,30 @@
         text-decoration: line-through;
         color: #999;
         font-style: italic;
+    }
+}
+
+/* Extra kleine Bildschirme (< 480px) */
+@media screen and (max-width: 480px) {
+    .aktiver-bewohner-indikator {
+        padding: 0.3rem 0.4rem;
+    }
+    
+    .aktiver-bewohner-indikator > div:first-child {
+        margin-bottom: 5px;
+        min-width: 100%;
+    }
+    
+    .aktiver-bewohner-indikator .action-buttons {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .aktiver-bewohner-indikator .action-button {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0.35rem 0.3rem;
     }
 }

@@ -11,16 +11,22 @@
     <link rel="stylesheet" href="../navbar/navbar.css">
     <!-- Google Fonts wird durch lokales Icon ersetzt -->
     <script src="../navbar/navbar.js"></script>
+    
+    <!-- i18next Sprachunterstützung - lokale Dateien -->
+    <script src="js/libs/i18next.min.js"></script>
+    <script src="js/libs/i18nextHttpBackend.min.js"></script>
+    <script src="js/EventBus.js"></script>
+    <script src="js/i18nextAdapter.js"></script>
 </head>
 <body>
     <main>
         <div class="top-container">
             <section id="kalenderwochen-container">
                 <div class="kw-navigation">
-                    <button id="prev-week-btn" class="nav-button">Vorherige Woche</button>
+                    <button id="prev-week-btn" class="nav-button" data-i18n-key="navigation.prev-week-btn">Vorherige Woche</button>
                     <div id="current-week-display">Aktuelle Kalenderwoche</div>
-                    <button id="next-week-btn" class="nav-button">Nächste Woche</button>
-                    <button id="current-week-btn" class="nav-button">Aktuelle Woche</button>
+                    <button id="next-week-btn" class="nav-button" data-i18n-key="navigation.next-week-btn">Nächste Woche</button>
+                    <button id="current-week-btn" class="nav-button" data-i18n-key="navigation.current-week-btn">Aktuelle Woche</button>
                 </div>
             </section>
             
@@ -30,9 +36,16 @@
                         <!-- Etagen-Buttons werden hier dynamisch hinzugefügt -->
                     </div>
                     <div id="funktionenFeld" class="funktionen-container">
-                        <button id="add-kategorie-btn" class="icon-button" title="Kategorien verwalten">
-                            <span class="custom-icon">+</span>
-                        </button>
+                        <button id="add-kategorie-btn" class="zahnrad-btn" data-i18n="[title]buttons.kategorieHinzufuegen">⚙️</button>
+                        <div class="sprache-container">
+                            <select id="language-selector" class="sprache-selector" title="Sprache auswählen">
+                                <option value="de">Deutsch</option>
+                                <option value="en">English</option>
+                                <option value="bs">Bosanski</option>
+                                <option value="hr">Hrvatski</option>
+                                <option value="sk">Slovenčina</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -48,22 +61,22 @@
         </section>
         
         <!-- Nach oben Button (nur in Smartphone-Ansicht sichtbar) -->
-        <button id="nach-oben-button" class="nach-oben-button" title="Zurück zur Personenauswahl"></button>
+        <button id="nach-oben-button" class="nach-oben-button" title="Zurück zur Personenauswahl" data-i18n-key="navigation.nach-oben-button"></button>
     </main>
 
     <!-- Formular für Kategorien-Verwaltung -->
     <div class="form-overlay" id="kategorie-form-overlay">
         <div class="form-container">
             <div class="form-header">
-                <h3 class="form-title">Kategorien verwalten</h3>
+                <h3 class="form-title" data-i18n-key="formular.kategorienVerwalten">Kategorien verwalten</h3>
                 <button class="close-form" id="close-kategorie-form">&times;</button>
             </div>
             
             <!-- Tabs für die Navigation -->
             <div class="form-tabs">
-                <button class="form-tab active" data-tab="kategorien">Kategorien</button>
-                <button class="form-tab" data-tab="extra-optionen">Extra-Optionen</button>
-                <button class="form-tab" data-tab="sonderwuensche">Sonderwünsche</button>
+                <button class="form-tab active" data-tab="kategorien" data-i18n-key="formular.kategorienTab">Kategorien</button>
+                <button class="form-tab" data-tab="extra-optionen" data-i18n-key="formular.extraOptionenTab">Extra-Optionen</button>
+                <button class="form-tab" data-tab="sonderwuensche" data-i18n-key="formular.sonderwuenscheTab">Sonderwünsche</button>
             </div>
             
             <!-- Tab-Inhalte -->
@@ -72,36 +85,36 @@
                 <div class="tab-pane active" id="kategorien">
                     <div class="form-content">
                         <button id="toggle-kategorie-form" class="toggle-form-btn">
-                            <span id="toggle-kategorie-btn-text">+ Neue Kategorie hinzufügen</span>
+                            <span id="toggle-kategorie-btn-text" data-i18n-key="formular.neueKategorieHinzufuegen">+ Neue Kategorie hinzufügen</span>
                         </button>
                         
                         <form id="kategorie-form" style="display: none;">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Neue Kategorie hinzufügen</h4>
+                                    <h4 class="card-title" data-i18n-key="formular.neueKategorieHinzufuegen">Neue Kategorie hinzufügen</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="input-group">
-                                        <label for="display-kategorie">Anzeigename der Kategorie</label>
-                                        <input type="text" id="display-kategorie" name="displayKategorie" placeholder="z.B. Salat, Suppe, Beilage">
+                                        <label for="display-kategorie" data-i18n-key="formular.anzeigenameKategorie">Anzeigename der Kategorie</label>
+                                        <input type="text" id="display-kategorie" name="displayKategorie" data-i18n-placeholder="formular.zBSalatSuppe" placeholder="z.B. Salat, Suppe, Beilage">
                                     </div>
                                     <div class="input-group">
-                                        <label for="kategorie-text">Text für alle Tage (Montag - Sonntag)</label>
-                                        <textarea id="kategorie-text" name="text" placeholder="Text, der für alle Wochentage angezeigt werden soll"></textarea>
+                                        <label for="kategorie-text" data-i18n-key="formular.textAlleTage">Text für alle Tage (Montag - Sonntag)</label>
+                                        <textarea id="kategorie-text" name="text" data-i18n-placeholder="formular.textAlleTage" placeholder="Text, der für alle Wochentage angezeigt werden soll"></textarea>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="button" class="btn btn-primary" id="save-kategorie-form">Speichern</button>
-                                        <button type="button" class="btn btn-secondary" id="cancel-kategorie-form">Abbrechen</button>
+                                        <button type="button" class="btn btn-primary" id="save-kategorie-form" data-i18n-key="buttons.speichern">Speichern</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-kategorie-form" data-i18n-key="buttons.abbrechen">Abbrechen</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                         
                         <div class="kategorien-liste-container">
-                            <h4>Vorhandene Kategorien</h4>
+                            <h4 data-i18n-key="formular.vorhandeneKategorien">Vorhandene Kategorien</h4>
                             <div class="kategorien-liste" id="kategorien-liste">
                                 <!-- Hier werden bestehende Kategorien dynamisch eingefügt -->
-                                <div class="loading-message">Kategorien werden geladen...</div>
+                                <div class="loading-message" data-i18n-key="meldungen.kategorienLaden">Kategorien werden geladen...</div>
                             </div>
                         </div>
                     </div>
@@ -111,49 +124,49 @@
                 <div class="tab-pane" id="extra-optionen">
                     <div class="form-content">
                         <button id="toggle-extraoption-form" class="toggle-form-btn">
-                            <span id="toggle-extraoption-btn-text">+ Neue Extra-Option hinzufügen</span>
+                            <span id="toggle-extraoption-btn-text" data-i18n-key="formular.neueExtraOptionHinzufuegen">+ Neue Extra-Option hinzufügen</span>
                         </button>
                         
                         <form id="extra-option-form" style="display: none;">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Neue Extra-Option hinzufügen</h4>
+                                    <h4 class="card-title" data-i18n-key="formular.neueExtraOptionHinzufuegen">Neue Extra-Option hinzufügen</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="input-group">
-                                        <label for="extra-optionen-kategorie">Kategorie</label>
+                                        <label for="extra-optionen-kategorie" data-i18n-key="formular.kategorie">Kategorie</label>
                                         <select id="extra-optionen-kategorie" name="kategorieNamen">
                                             <option value="MENÜ 1">MENÜ 1</option>
                                             <option value="MENÜ 2">MENÜ 2</option>
                                             <option value="KALTE PLATTE">KALTE PLATTE</option>
-                                            <option value="neue-kategorie">Neue Kategorie...</option>
+                                            <option value="neue-kategorie" data-i18n-key="formular.neueKategorie">Neue Kategorie...</option>
                                         </select>
                                     </div>
                                     <div class="input-group neue-kategorie-container" style="display: none;">
-                                        <label for="neue-extra-kategorie">Name der neuen Kategorie</label>
-                                        <input type="text" id="neue-extra-kategorie" name="neueKategorie" placeholder="z.B. DESSERT, BEILAGE, etc.">
+                                        <label for="neue-extra-kategorie" data-i18n-key="formular.nameNeueKategorie">Name der neuen Kategorie</label>
+                                        <input type="text" id="neue-extra-kategorie" name="neueKategorie" data-i18n-placeholder="formular.zBDessertBeilage" placeholder="z.B. DESSERT, BEILAGE, etc.">
                                     </div>
                                     <div class="input-group">
-                                        <label for="extra-option-name">Name der Option</label>
-                                        <input type="text" id="extra-option-name" name="name" placeholder="z.B. mit Püree, Salat dazu, etc.">
+                                        <label for="extra-option-name" data-i18n-key="formular.nameOption">Name der Option</label>
+                                        <input type="text" id="extra-option-name" name="name" data-i18n-placeholder="formular.zBMitPueree" placeholder="z.B. mit Püree, Salat dazu, etc.">
                                     </div>
                                     <div class="input-group">
-                                        <label for="extra-option-description">Beschreibung</label>
-                                        <textarea id="extra-option-description" name="description" placeholder="Beschreibung der Extra-Option"></textarea>
+                                        <label for="extra-option-description" data-i18n-key="formular.beschreibung">Beschreibung</label>
+                                        <textarea id="extra-option-description" name="description" data-i18n-placeholder="formular.beschreibungExtraOption" placeholder="Beschreibung der Extra-Option"></textarea>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="button" class="btn btn-primary" id="save-extra-option-form">Speichern</button>
-                                        <button type="button" class="btn btn-secondary" id="cancel-extra-option-form">Abbrechen</button>
+                                        <button type="button" class="btn btn-primary" id="save-extra-option-form" data-i18n-key="buttons.speichern">Speichern</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-extra-option-form" data-i18n-key="buttons.abbrechen">Abbrechen</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                         
                         <div class="extra-optionen-liste-container">
-                            <h4>Vorhandene Extra-Optionen</h4>
+                            <h4 data-i18n-key="formular.vorhandeneExtraOptionen">Vorhandene Extra-Optionen</h4>
                             <div class="extra-optionen-liste" id="extra-optionen-liste">
                                 <!-- Hier werden bestehende Extra-Optionen dynamisch eingefügt -->
-                                <div class="loading-message">Extra-Optionen werden geladen...</div>
+                                <div class="loading-message" data-i18n-key="meldungen.extraOptionenLaden">Extra-Optionen werden geladen...</div>
                             </div>
                         </div>
                     </div>
@@ -163,36 +176,36 @@
                 <div class="tab-pane" id="sonderwuensche">
                     <div class="form-content">
                         <button id="toggle-sonderwunsch-form" class="toggle-form-btn">
-                            <span id="toggle-btn-text">+ Neuen Sonderwunsch hinzufügen</span>
+                            <span id="toggle-btn-text" data-i18n-key="formular.neuerSonderwunschHinzufuegen">+ Neuen Sonderwunsch hinzufügen</span>
                         </button>
                         
                         <form id="sonderwunsch-form" style="display: none;">
                             <div class="card" id="sonderwunsch-formular-container">
                                 <div class="card-header">
-                                    <h4 class="card-title">Neuen Sonderwunsch hinzufügen</h4>
+                                    <h4 class="card-title" data-i18n-key="formular.neuerSonderwunschHinzufuegen">Neuen Sonderwunsch hinzufügen</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="input-group">
-                                        <label for="sonderwunsch-name">Name des Sonderwunsches</label>
-                                        <input type="text" id="sonderwunsch-name" name="name" placeholder="z.B. Diabetiker, Schonkost, Vegetarisch">
+                                        <label for="sonderwunsch-name" data-i18n-key="formular.nameSonderwunsch">Name des Sonderwunsches</label>
+                                        <input type="text" id="sonderwunsch-name" name="name" data-i18n-placeholder="formular.zBDiabetikerSchonkost" placeholder="z.B. Diabetiker, Schonkost, Vegetarisch">
                                     </div>
                                     <div class="input-group">
-                                        <label for="sonderwunsch-description">Beschreibung</label>
-                                        <textarea id="sonderwunsch-description" name="description" placeholder="Beschreibung des Sonderwunsches"></textarea>
+                                        <label for="sonderwunsch-description" data-i18n-key="formular.beschreibung">Beschreibung</label>
+                                        <textarea id="sonderwunsch-description" name="description" data-i18n-placeholder="formular.beschreibungSonderwunsch" placeholder="Beschreibung des Sonderwunsches"></textarea>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="button" class="btn btn-primary" id="save-sonderwunsch-form">Speichern</button>
-                                        <button type="button" class="btn btn-secondary" id="cancel-sonderwunsch-form">Abbrechen</button>
+                                        <button type="button" class="btn btn-primary" id="save-sonderwunsch-form" data-i18n-key="buttons.speichern">Speichern</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-sonderwunsch-form" data-i18n-key="buttons.abbrechen">Abbrechen</button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                         
                         <div class="sonderwunsch-liste-container" id="sonderwunsch-liste-container">
-                            <h4>Vorhandene Sonderwünsche</h4>
+                            <h4 data-i18n-key="formular.vorhandeneSonderwuensche">Vorhandene Sonderwünsche</h4>
                             <div class="sonderwunsch-liste" id="sonderwunsch-liste">
                                 <!-- Hier werden bestehende Sonderwünsche dynamisch eingefügt -->
-                                <div class="loading-message">Sonderwünsche werden geladen...</div>
+                                <div class="loading-message" data-i18n-key="meldungen.sonderwuenscheLaden">Sonderwünsche werden geladen...</div>
                             </div>
                         </div>
                     </div>
@@ -202,22 +215,22 @@
             <!-- Bearbeitungs-Panel für einen bestehenden Sonderwunsch -->
             <div class="edit-panel" id="edit-sonderwunsch-panel" style="display: none;">
                 <div class="edit-header">
-                    <h4>Sonderwunsch bearbeiten</h4>
-                    <button class="back-button" id="back-to-sonderwunsche-btn">&larr; Zurück</button>
+                    <h4 data-i18n-key="formular.sonderwunschBearbeiten">Sonderwunsch bearbeiten</h4>
+                    <button class="back-button" id="back-to-sonderwunsche-btn" data-i18n-key="buttons.zurueck">&larr; Zurück</button>
                 </div>
                 <div class="form-content">
                     <input type="hidden" id="edit-sonderwunsch-id" value="">
                     <div class="input-group">
-                        <label for="edit-sonderwunsch-name">Name des Sonderwunsches</label>
+                        <label for="edit-sonderwunsch-name" data-i18n-key="formular.nameSonderwunsch">Name des Sonderwunsches</label>
                         <input type="text" id="edit-sonderwunsch-name" name="name">
                     </div>
                     <div class="input-group">
-                        <label for="edit-sonderwunsch-description">Beschreibung</label>
+                        <label for="edit-sonderwunsch-description" data-i18n-key="formular.beschreibung">Beschreibung</label>
                         <textarea id="edit-sonderwunsch-description" name="description"></textarea>
                     </div>
                     <div class="form-buttons">
-                        <button class="form-btn form-btn-danger" id="delete-sonderwunsch-btn">Löschen</button>
-                        <button class="form-btn form-btn-primary" id="update-sonderwunsch-btn">Aktualisieren</button>
+                        <button class="form-btn form-btn-danger" id="delete-sonderwunsch-btn" data-i18n-key="buttons.loeschen">Löschen</button>
+                        <button class="form-btn form-btn-primary" id="update-sonderwunsch-btn" data-i18n-key="buttons.aktualisieren">Aktualisieren</button>
                     </div>
                 </div>
             </div>
@@ -225,22 +238,22 @@
             <!-- Bearbeitungs-Panel für eine bestehende Kategorie -->
             <div class="edit-panel" id="edit-kategorie-panel">
                 <div class="edit-header">
-                    <h4>Kategorie bearbeiten</h4>
-                    <button class="back-button" id="back-to-list-btn">&larr; Zurück</button>
+                    <h4 data-i18n-key="formular.kategorieBearbeiten">Kategorie bearbeiten</h4>
+                    <button class="back-button" id="back-to-list-btn" data-i18n-key="buttons.zurueck">&larr; Zurück</button>
                 </div>
                 <div class="form-content">
                     <input type="hidden" id="edit-kategorie-id">
                     <div class="input-group">
-                        <label for="edit-display-kategorie">Anzeigename der Kategorie</label>
+                        <label for="edit-display-kategorie" data-i18n-key="formular.anzeigenameKategorie">Anzeigename der Kategorie</label>
                         <input type="text" id="edit-display-kategorie" name="displayKategorie">
                     </div>
                     <div class="input-group">
-                        <label for="edit-kategorie-text">Text für alle Tage</label>
+                        <label for="edit-kategorie-text" data-i18n-key="formular.textAlleTage">Text für alle Tage</label>
                         <textarea id="edit-kategorie-text" name="text"></textarea>
                     </div>
                     <div class="form-buttons">
-                        <button class="form-btn form-btn-danger" id="delete-kategorie-btn">Löschen</button>
-                        <button class="form-btn form-btn-primary" id="update-kategorie-btn">Aktualisieren</button>
+                        <button class="form-btn form-btn-danger" id="delete-kategorie-btn" data-i18n-key="buttons.loeschen">Löschen</button>
+                        <button class="form-btn form-btn-primary" id="update-kategorie-btn" data-i18n-key="buttons.aktualisieren">Aktualisieren</button>
                     </div>
                 </div>
             </div>
@@ -249,5 +262,72 @@
 
     <!-- JavaScript Module -->
     <script type="module" src="js/script.js"></script>
+    <script>
+        // EventBus und i18next explizit initialisieren
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded: Initialisiere Module...');
+
+            // EventBus initialisieren (falls nicht über das Modul initialisiert)
+            if (window.EventBus && typeof window.EventBus.initialisiere === 'function') {
+                console.log('Initialisiere EventBus direkt...');
+                try {
+                    window.EventBus.initialisiere({ debug: true });
+                    console.log('EventBus wurde direkt initialisiert');
+                } catch (error) {
+                    console.error('Fehler bei der Initialisierung von EventBus:', error);
+                }
+            } else {
+                console.warn('window.EventBus.initialisiere ist nicht verfügbar! Das kann zu Fehlern führen.');
+                console.info('Verfügbare EventBus-Eigenschaften:', window.EventBus ? Object.keys(window.EventBus) : 'EventBus nicht definiert');
+            }
+
+            // i18nextAdapter initialisieren
+            if (window.i18nextAdapter && typeof window.i18nextAdapter.initialisiere === 'function') {
+                console.log('Initialisiere i18nextAdapter direkt...');
+                window.i18nextAdapter.initialisiere().then(() => {
+                    console.log('i18nextAdapter wurde direkt initialisiert');
+                }).catch(error => {
+                    console.error('Fehler bei der direkten Initialisierung von i18nextAdapter:', error);
+                });
+            } else if (window.i18n && typeof window.i18n.aktualisiereAlleTexte === 'function') {
+                console.log('Aktualisiere Texte über globales i18n-Objekt...');
+                window.i18n.aktualisiereAlleTexte();
+            } else {
+                console.warn('Weder i18nextAdapter noch i18n sind verfügbar!');
+            }
+            
+            // Überprüfen des EventBus-Status nach einer kurzen Verzögerung
+            setTimeout(function() {
+                console.group('EventBus Status-Check');
+                
+                // Prüfen der globalen EventBus-Instanz
+                if (window.EventBus) {
+                    console.log('✅ Globale EventBus-Instanz ist verfügbar');
+                    
+                    if (typeof window.EventBus.initialisiere === 'function') {
+                        console.log('✅ EventBus.initialisiere ist verfügbar (global)');
+                    } else {
+                        console.warn('❌ EventBus.initialisiere fehlt (global)');
+                    }
+                    
+                    if (typeof window.EventBus.on === 'function' || typeof window.EventBus.subscribe === 'function') {
+                        console.log('✅ EventBus Subscription-Methoden sind verfügbar (global)');
+                    } else {
+                        console.warn('❌ EventBus Subscription-Methoden fehlen (global)');
+                    }
+                } else {
+                    console.error('❌ Globale EventBus-Instanz fehlt vollständig!');
+                }
+                
+                // Test-Event senden und Ausgabe prüfen
+                if (window.EventBus && typeof window.EventBus.emit === 'function') {
+                    console.log('Sende Test-Event über globalen EventBus...');
+                    window.EventBus.emit('test:event', { time: new Date().toISOString() });
+                }
+                
+                console.groupEnd();
+            }, 1000);
+        });
+    </script>
 </body>
 </html>

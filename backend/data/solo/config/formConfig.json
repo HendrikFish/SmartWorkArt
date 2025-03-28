@@ -27,9 +27,9 @@
     },
     {
       "name": "Allergene",
-      "allowMultiple": true,
+      "allowMultiple": false,
       "menuFilter": false,
-      "menuRelevant": true,
+      "menuRelevant": false,
       "buttons": [
         {
           "label": "Laktoseintoleranz"
@@ -50,32 +50,12 @@
     },
     {
       "name": "Frühstück",
-      "allowMultiple": true,
+      "allowMultiple": false,
       "menuFilter": false,
-      "menuRelevant": true,
+      "menuRelevant": false,
       "buttons": [
         {
           "label": "Saal"
-        },
-        {
-          "label": "1. OG"
-        },
-        {
-          "label": "2. OG"
-        },
-        {
-          "label": "3. OG "
-        }
-      ]
-    },
-    {
-      "name": "Mittagessen",
-      "allowMultiple": false,
-      "menuFilter": false,
-      "menuRelevant": true,
-      "buttons": [
-        {
-          "label": "Saal "
         },
         {
           "label": "1. OG"
@@ -89,10 +69,10 @@
       ]
     },
     {
-      "name": "Abendessen ",
+      "name": "Mittagessen",
       "allowMultiple": false,
       "menuFilter": false,
-      "menuRelevant": true,
+      "menuRelevant": false,
       "buttons": [
         {
           "label": "Saal"
@@ -101,10 +81,30 @@
           "label": "1. OG"
         },
         {
-          "label": "2. OG "
+          "label": "2. OG"
         },
         {
-          "label": "3. OG "
+          "label": "3. OG"
+        }
+      ]
+    },
+    {
+      "name": "Abendessen",
+      "allowMultiple": false,
+      "menuFilter": true,
+      "menuRelevant": false,
+      "buttons": [
+        {
+          "label": "Saal"
+        },
+        {
+          "label": "1. OG"
+        },
+        {
+          "label": "2. OG"
+        },
+        {
+          "label": "3. OG"
         }
       ]
     },
@@ -131,8 +131,6 @@
   ],
   "filters": {
     "fields": [],
-    "areas": [
-      "Wo wird das Essen eingetragen!"
-    ]
+    "areas": []
   }
 }

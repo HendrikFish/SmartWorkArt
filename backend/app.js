@@ -1,7 +1,6 @@
 const path = require('path');
 require('dotenv').config();
 
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -10,6 +9,25 @@ const connectDB = require('./config/database');
 const multer = require('multer');
 const fs = require('fs');
 const { promisify } = require('util');
+
+// Importiere Routen
+const einrichtungRoutes = require('./routes/einrichtungRoutes');
+const datenbankRoutes = require('./routes/datenbankRoutes');
+const rezepteRoutes = require('./routes/rezepteRoutes');
+const zutatenRoutes = require('./routes/zutatenRoutes');
+const planRoutes = require('./routes/planRoutes');
+const calcRoutes = require('./routes/calcRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const numberRoutes = require('./routes/numberRoutes');
+const menueRoutes = require('./routes/menueRoutes');
+const soloRoutes = require('./routes/soloRoutes');
+const soloPlanRoutes = require('./routes/soloPlanRoutes');
+const soloSelectRoutes = require('./routes/soloSelectRoutes');
+const soloMenueRoutes = require('./routes/soloMenueRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const customRoutes = require('./routes/customRoutes');
+const filtersRouter = require('./routes/solo/filters');
+const { auth, checkRole } = require('./middleware/auth');
 
 // Port aus .env oder Standard 8086
 const PORT = process.env.PORT || 8086;
@@ -92,7 +110,6 @@ app.use(cors({
     exposedHeaders: ['set-cookie']
 }));
 
-
 // Helmet Middleware mit angepasster CSP
 app.use(helmet({
     contentSecurityPolicy: {
@@ -140,24 +157,6 @@ app.get('/app.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(path.join(__dirname, '../app.js'));
 });
-
-// API-Routen registrieren
-const einrichtungRoutes = require('./routes/einrichtungRoutes');
-const datenbankRoutes = require('./routes/datenbankRoutes');
-const rezepteRoutes = require('./routes/rezepteRoutes');
-const zutatenRoutes = require('./routes/zutatenRoutes');
-const planRoutes = require('./routes/planRoutes');
-const calcRoutes = require('./routes/calcRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const numberRoutes = require('./routes/numberRoutes');
-const menueRoutes = require('./routes/menueRoutes');
-const soloRoutes = require('./routes/soloRoutes');
-const soloPlanRoutes = require('./routes/soloPlanRoutes');
-const soloSelectRoutes = require('./routes/soloSelectRoutes');
-const soloMenueRoutes = require('./routes/soloMenueRoutes');
-const loginRoutes = require('./routes/loginRoutes');
-const customRoutes = require('./routes/customRoutes');
-const { auth, checkRole } = require('./middleware/auth');
 
 // API-Routen registrieren
 app.use('/api/auth', loginRoutes);
@@ -280,6 +279,7 @@ app.use('/api/solo', conditionalAuth, soloRoutes);
 app.use('/api/soloplan', conditionalAuth, soloPlanRoutes);
 app.use('/api/soloselect', conditionalAuth, soloSelectRoutes);
 app.use('/api/solomenue', conditionalAuth, soloMenueRoutes);
+app.use('/api/solo/filters', conditionalAuth, filtersRouter);
 
 // Direkter File-API Endpunkt für Bewohnerdaten (Fallback zum Speichern)
 app.post('/api/bewohner-save-direct', conditionalAuth, async (req, res) => {

@@ -1,0 +1,32 @@
+{
+  "navigation": {
+    "prev-week-btn": "Prethodni tjedan",
+    "next-week-btn": "Sljedeći tjedan",
+    "current-week-btn": "Trenutni tjedan",
+    "nach-oben-button": "Natrag na odabir osobe"
+  },
+  "buttons": {
+    "add-kategorie-btn": "Upravljanje kategorijama",
+    "speichern": "Spremi",
+    "abbrechen": "Odustani",
+    "loeschen": "Izbriši",
+    "schliessen": "Zatvori",
+    "bearbeiten": "Uredi",
+    "zurueck": "Natrag"
+  },
+  "bewohner": {
+    "name": "Ime",
+    "geschlecht": "Spol",
+    "alter": "Dob",
+    "bereiche": "Područja"
+  },
+  "formular": {
+    "menuEinstellungen": "Postavke vezane za izbornik",
+    "bitteWaehlen": "Molimo odaberite"
+  },
+  "meldungen": {
+    "datenGespeichert": "Podaci su uspješno spremljeni.",
+    "fehlerSpeichern": "Pogreška pri spremanju podataka",
+    "adminKontaktieren": "Ako se problem nastavi, molimo kontaktirajte administratora."
+  }
+} 

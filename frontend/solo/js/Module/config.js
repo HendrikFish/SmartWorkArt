@@ -19,6 +19,14 @@ export const ConfigManager = {
 
     async saveConfig(configData) {
         try {
+            // Stelle sicher, dass die Filter-Konfiguration korrekt ist
+            if (!configData.filters) {
+                configData.filters = {
+                    fields: [],
+                    areas: []
+                };
+            }
+
             const response = await fetch('/api/solo/config', {
                 method: 'POST',
                 headers: {
@@ -43,7 +51,15 @@ export const ConfigManager = {
                     
                     // Importiere den FilterManager und zeige die Bewohner an
                     const FilterManager = (await import('./filter.js')).FilterManager;
+                    
+                    // Aktualisiere die Filter-Konfiguration im FilterManager
+                    FilterManager.setFilters(configData.filters);
+                    
+                    // Zeige die gefilterten Bewohner an
                     await FilterManager.displayResidents(residents, configData);
+                    
+                    // Aktualisiere die UI der Filter
+                    this.updateFilterOptions();
                 } catch (error) {
                     console.error('Fehler beim Aktualisieren der Bewohneranzeige:', error);
                     Toast.show('Fehler beim Aktualisieren der Bewohneranzeige', 'error');
@@ -345,120 +361,96 @@ export const ConfigManager = {
 
     updateFilterOptions() {
         const filterOptions = document.getElementById('filterOptions');
+        if (!filterOptions) return;
+
+        // Felder Filter
+        const fieldsSection = document.createElement('div');
+        fieldsSection.className = 'filter-section';
+        fieldsSection.innerHTML = `
+            <h4>Nach Feld filtern</h4>
+            <div class="filter-options">
+                ${Object.entries(this.config.fields || {}).map(([id, field]) => `
+                    <div class="switch-wrapper">
+                        <label class="switch">
+                            <input type="checkbox" class="field-filter" value="${id}">
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="switch-label">${field.label || id}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Bereiche Filter
+        const areasSection = document.createElement('div');
+        areasSection.className = 'filter-section';
+        areasSection.innerHTML = `
+            <h4>Nach Bereich filtern</h4>
+            <div class="filter-options">
+                ${(this.config.areas || []).map(area => `
+                    <div class="switch-wrapper">
+                        <label class="switch">
+                            <input type="checkbox" class="area-filter" value="${area.name}">
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span class="switch-label">${area.name}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Leere den Container und füge die neuen Sektionen hinzu
         filterOptions.innerHTML = '';
+        filterOptions.appendChild(fieldsSection);
+        filterOptions.appendChild(areasSection);
 
-        if (this.config) {
-            // Initialisiere die Filter, falls sie nicht existieren
-            this.config.filters = this.config.filters || { fields: [], areas: [] };
-
-            // Wenn beide Filter-Typen aktiv sind, setze alle zurück
-            if (this.config.filters.fields.length > 0 && this.config.filters.areas.length > 0) {
-                this.config.filters = { fields: [], areas: [] };
-            }
-
-            // Felder-Filter
-            const baseFields = [
-                { id: 'firstName', label: 'Vorname' },
-                { id: 'lastName', label: 'Nachname' },
-                { id: 'gender', label: 'Geschlecht' }
-            ];
-
-            // Kombiniere Basis-Felder mit benutzerdefinierten Feldern
-            const allFields = [
-                ...baseFields,
-                ...(this.config.fields?.filter(f => !['firstName', 'lastName'].includes(f.id)) || [])
-            ];
-
-            const fieldsHtml = `
-                <div class="filter-section">
-                    <h4>Nach Feld filtern</h4>
-                    <div class="filter-options">
-                        ${allFields.map(field => {
-                            const isActive = this.config.filters?.fields?.includes(field.id);
-                            const isDisabled = this.config.filters?.areas?.length > 0;
-                            return `
-                                <div class="switch-wrapper ${isDisabled ? 'disabled' : ''}">
-                                    <label class="switch">
-                                        <input type="checkbox" 
-                                               class="field-filter" 
-                                               value="${field.id}"
-                                               ${isActive ? 'checked' : ''}
-                                               ${isDisabled ? 'disabled' : ''}>
-                                        <span class="switch-slider"></span>
-                                    </label>
-                                    <span class="switch-label">${field.label}</span>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `;
-
-            // Bereich-Filter
-            const areasHtml = this.config.areas ? `
-                <div class="filter-section">
-                    <h4>Nach Bereich filtern</h4>
-                    <div class="filter-options">
-                        ${this.config.areas.map(area => {
-                            const isActive = this.config.filters?.areas?.includes(area.name);
-                            const isDisabled = this.config.filters?.fields?.length > 0;
-                            return `
-                                <div class="switch-wrapper ${isDisabled ? 'disabled' : ''}">
-                                    <label class="switch">
-                                        <input type="checkbox" 
-                                               class="area-filter" 
-                                               value="${area.name}"
-                                               ${isActive ? 'checked' : ''}
-                                               ${isDisabled ? 'disabled' : ''}>
-                                        <span class="switch-slider"></span>
-                                    </label>
-                                    <span class="switch-label">${area.name}</span>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            ` : '';
-
-            filterOptions.innerHTML = fieldsHtml + areasHtml;
-
-            // Event Listener für die Filter
-            const handleFilterChange = async (checkbox, type) => {
-                const isField = type === 'field';
-                const otherSelector = isField ? '.area-filter' : '.field-filter';
-                const sameSelector = isField ? '.field-filter' : '.area-filter';
-
-                // Deaktiviere alle anderen Filter des gleichen Typs
-                filterOptions.querySelectorAll(sameSelector).forEach(cb => {
-                    if (cb !== checkbox) {
-                        cb.checked = false;
-                    }
-                });
-
-                // Deaktiviere alle Filter des anderen Typs
-                filterOptions.querySelectorAll(otherSelector).forEach(cb => {
-                    cb.checked = false;
-                    cb.disabled = checkbox.checked;
-                    cb.closest('.switch-wrapper').classList.toggle('disabled', checkbox.checked);
-                });
-
-                // Aktualisiere die Konfiguration
-                this.config.filters = {
-                    fields: isField ? (checkbox.checked ? [checkbox.value] : []) : [],
-                    areas: !isField ? (checkbox.checked ? [checkbox.value] : []) : []
-                };
-
-                // Speichere die Konfiguration und aktualisiere die Anzeige
-                await this.saveConfig(this.config);
-            };
-
-            // Füge Event Listener hinzu
-            filterOptions.querySelectorAll('.field-filter').forEach(checkbox => {
-                checkbox.addEventListener('change', () => handleFilterChange(checkbox, 'field'));
+        // Event Listener für die Filter-Checkboxen
+        filterOptions.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const type = checkbox.classList.contains('field-filter') ? 'field' : 'area';
+                this.handleFilterChange(checkbox, type);
             });
+        });
+    },
 
-            filterOptions.querySelectorAll('.area-filter').forEach(checkbox => {
-                checkbox.addEventListener('change', () => handleFilterChange(checkbox, 'area'));
+    handleFilterChange(checkbox, type) {
+        const value = checkbox.value;
+        const isChecked = checkbox.checked;
+
+        // Aktualisiere die Filter-Konfiguration
+        if (!this.config.filters) {
+            this.config.filters = {
+                fields: [],
+                areas: []
+            };
+        }
+
+        if (type === 'field') {
+            if (isChecked) {
+                this.config.filters.fields.push(value);
+            } else {
+                this.config.filters.fields = this.config.filters.fields.filter(f => f !== value);
+            }
+        } else {
+            if (isChecked) {
+                this.config.filters.areas.push(value);
+            } else {
+                this.config.filters.areas = this.config.filters.areas.filter(a => a !== value);
+            }
+        }
+
+        // Aktualisiere die Checkbox-States basierend auf der Konfiguration
+        const filterOptions = document.getElementById('filterOptions');
+        if (filterOptions) {
+            filterOptions.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                const cbType = cb.classList.contains('field-filter') ? 'field' : 'area';
+                const cbValue = cb.value;
+                
+                if (cbType === 'field') {
+                    cb.checked = this.config.filters.fields.includes(cbValue);
+                } else {
+                    cb.checked = this.config.filters.areas.includes(cbValue);
+                }
             });
         }
     },
@@ -497,6 +489,15 @@ export const ConfigManager = {
                 buttons: buttons
             });
         });
+
+        // Filter-Konfiguration sammeln
+        const filterOptions = document.getElementById('filterOptions');
+        if (filterOptions) {
+            configData.filters = {
+                fields: Array.from(filterOptions.querySelectorAll('.field-filter:checked')).map(cb => cb.value),
+                areas: Array.from(filterOptions.querySelectorAll('.area-filter:checked')).map(cb => cb.value)
+            };
+        }
 
         return configData;
     },

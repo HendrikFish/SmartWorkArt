@@ -3,6 +3,8 @@ const router = express.Router();
 const fs = require('fs/promises');
 const path = require('path');
 const defaultConfig = require('../../data/solo/config/config.js');
+const multer = require('multer');
+const Tesseract = require('tesseract.js');
 
 // Pfade korrigieren - vom Projektroot aus
 const BASE_PATH = path.join(__dirname, '../../');
@@ -16,6 +18,12 @@ console.log('Pfade:', {
     current: CURRENT_RESIDENTS_PATH,
     old: OLD_RESIDENTS_PATH,
     config: CONFIG_PATH
+});
+
+// Multer für Datei-Uploads konfigurieren
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB Limit
 });
 
 // Hilfsfunktion für Namenskonvertierung
@@ -40,8 +48,10 @@ const ensureDirectories = async () => {
             old: OLD_RESIDENTS_PATH,
             config: CONFIG_PATH
         });
+        return true;
     } catch (error) {
         console.error('Fehler beim Erstellen der Verzeichnisse:', error);
+        return false;
     }
 };
 
@@ -266,6 +276,73 @@ router.put('/resident/:name', async (req, res) => {
         });
     } catch (error) {
         console.error('Fehler beim Aktualisieren des Bewohners:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// OCR-Verarbeitung
+router.post('/ocr/process', upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'Keine Bilddatei hochgeladen' });
+        }
+
+        // Konvertiere Buffer zu Base64
+        const base64Image = req.file.buffer.toString('base64');
+        
+        // OCR-Verarbeitung mit Tesseract.js
+        const result = await Tesseract.recognize(
+            `data:image/jpeg;base64,${base64Image}`,
+            'deu',
+            {
+                logger: m => console.log(m)
+            }
+        );
+
+        // Extrahiere den erkannten Text
+        const text = result.data.text;
+
+        res.json({
+            success: true,
+            text: text
+        });
+    } catch (error) {
+        console.error('Fehler bei der OCR-Verarbeitung:', error);
+        res.status(500).json({ 
+            error: 'Fehler bei der Texterkennung',
+            message: error.message 
+        });
+    }
+});
+
+// Überprüfe das old-Verzeichnis
+router.get('/check-old-directory', async (req, res) => {
+    try {
+        let exists = false;
+        try {
+            await fs.access(OLD_RESIDENTS_PATH);
+            exists = true;
+        } catch (error) {
+            // Verzeichnis existiert nicht
+            exists = false;
+        }
+        
+        res.json({ exists });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Stelle sicher, dass alle notwendigen Verzeichnisse existieren
+router.post('/create-directories', async (req, res) => {
+    try {
+        const success = await ensureDirectories();
+        if (success) {
+            res.json({ success: true, message: 'Verzeichnisse erfolgreich erstellt' });
+        } else {
+            res.status(500).json({ error: 'Fehler beim Erstellen der Verzeichnisse' });
+        }
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });

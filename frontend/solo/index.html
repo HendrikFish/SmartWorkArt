@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bewohner-Verwaltung</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome für Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Eigene Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/styleModal.css">
+    <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="/navbar-static/navbar.css">
-<script src="/navbar-static/navbar.js"></script>
+    <script src="/navbar-static/navbar.js"></script>
 </head>
 
 <body>
@@ -17,6 +21,9 @@
             <h1>Bewohner-Verwaltung</h1>
             <div class="action-buttons">
                 <button id="newResidentBtn" class="primary-btn">Neuer Bewohner</button>
+                <button id="uploadBtn" class="primary-btn">
+                    <i class="fas fa-upload"></i> Dokumentenerkennung von Personen
+                </button>
                 <button id="resurrectionBtn" class="secondary-btn">Auferstehung</button>
                 <button id="configBtn" class="secondary-btn">Konfiguration</button>
             </div>
@@ -30,7 +37,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Neuer Bewohner</h2>
-                    <button type="button" class="icon-btn close-modal">×</button>
+                    <button type="button" class="icon-btn close-modal"></button>
                 </div>
                 <form id="newResidentFormContent">
                     <div class="fields-container">
@@ -61,6 +68,7 @@
                     </div>
                     <div class="button-container">
                         <button type="submit" class="primary-btn">Speichern</button>
+                        <button type="button" class="secondary-btn close-modal">Abbrechen</button>
                     </div>
                 </form>
             </div>
@@ -78,7 +86,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Konfiguration</h2>
-                    <button type="button" class="icon-btn close-modal">×</button>
+                    <button type="button" class="icon-btn close-modal"></button>
                 </div>
                 <div class="config-content">
                     <!-- Tabs -->
@@ -115,16 +123,62 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Entlassene Bewohner</h2>
-                    <button type="button" class="icon-btn close-modal">×</button>
+                    <button type="button" class="icon-btn close-modal"></button>
                 </div>
                 <div class="fields-container">
                     <div id="dismissedResidentsList"></div>
                 </div>
             </div>
         </div>
+
+        <!-- OCR Modal -->
+        <div id="ocrResultsModal" class="modal">
+            <div class="modal-content">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+        </div>
+
+        <!-- Kamera Modal -->
+        <div id="cameraModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Dokument scannen</h2>
+                    <button type="button" class="icon-btn close-modal"></button>
+                </div>
+                <div class="camera-container">
+                    <video id="cameraPreview" autoplay playsinline></video>
+                    <div class="ocr-frame"></div>
+                    <div class="camera-controls">
+                        <button type="button" class="primary-btn" id="captureBtn">Aufnehmen</button>
+                        <button type="button" class="secondary-btn" id="switchCameraBtn">Kamera wechseln</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- JavaScript -->
     <script type="module" src="js/init.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal-Management
+            document.querySelectorAll('.open-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modalId = btn.dataset.target;
+                    document.getElementById(modalId).classList.add('show');
+                });
+            });
+
+            document.querySelectorAll('.close-modal, .modal-background').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.classList.remove('show');
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

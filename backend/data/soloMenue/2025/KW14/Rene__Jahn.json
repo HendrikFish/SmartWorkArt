@@ -1,6 +1,17 @@
 {
   "name": "Rene__Jahn",
-  "Montag": {},
+  "Montag": {
+    "milchspeise": {
+      "category": "milchspeise",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
   "Dienstag": {},
   "Mittwoch": {},
   "Donnerstag": {},
