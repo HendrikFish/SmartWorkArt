@@ -488,6 +488,215 @@ ResidentDetailModal.show(resident, () => {
 
 # Seniorenheim-Management-System
 
+## OCR-System (Texterkennung)
+
+### Überblick
+Das OCR-System ermöglicht die automatische Erkennung von Text aus Dokumenten und Bildern, insbesondere zur Erfassung neuer Bewohner. Das System ist besonders nützlich für die schnelle Aufnahme von Bewohnerdaten aus offiziellen Dokumenten.
+
+### Komponenten des OCR-Systems
+
+#### 1. `OCRManager`
+Die Hauptkomponente für die Verarbeitung von Bildern und Extraktion von Text:
+
+```javascript
+export const OCRManager = {
+    async processImage(imageFile) {
+        // Verarbeitet Bilder und extrahiert Text
+        // Übermittelt Bilder an die OCR-API
+        // Extrahiert automatisch Namen und prüft auf Duplikate
+    },
+    
+    extractNames(text) {
+        // Extrahiert Namen aus dem erkannten Text mit verschiedenen Regex-Mustern
+        // Normalisiert und filtert die erkannten Namen
+        // Berechnet die Konfidenz der erkannten Namen
+    },
+    
+    calculateConfidence(text) {
+        // Berechnet eine Konfidenz-Bewertung für erkannte Namen
+        // Berücksichtigt Faktoren wie ungewöhnliche Zeichen oder Länge
+    }
+}
+```
+
+#### 2. `OCRModalManager`
+Verwaltet die Benutzeroberfläche für die OCR-Ergebnisse:
+
+```javascript
+export const OCRModalManager = {
+    lastRecognizedText: '', // Speichert den letzten erkannten Text
+    
+    showResults(names, duplicates) {
+        // Zeigt erkannte Namen in einem Modal an
+        // Markiert mögliche Duplikate
+        // Erlaubt die Auswahl und Bearbeitung vor dem Speichern
+    },
+    
+    showFullTextModal(text) {
+        // Zeigt den vollständigen erkannten Text an
+        // Präsentiert Text als klickbare Wort-Buttons
+        // Ermöglicht manuelle Auswahl von Namen
+    },
+    
+    attachFullTextModalListeners(content) {
+        // Fügt Event-Listener zu den Wort-Buttons hinzu
+        // Implementiert ein Wechselsystem zwischen Vorname und Nachname
+        // Ermöglicht die direkte Übernahme von Wörtern in die Namensfelder
+    },
+    
+    createResidentFromNames(firstName, lastName) {
+        // Erstellt neue Bewohner aus ausgewählten Namen
+        // Prüft auf bereits existierende Bewohner
+        // Aktualisiert die Bewohnerliste nach erfolgreicher Erstellung
+    }
+}
+```
+
+#### 3. `UploadManager`
+Verwaltet das Hochladen und die Kameraintegration:
+
+```javascript
+export const UploadManager = {
+    openFileDialog() {
+        // Öffnet einen Datei-Dialog zur Auswahl von Bildern
+        // Validiert die ausgewählten Dateien
+        // Übergibt gültige Bilder an den OCRManager
+    },
+    
+    processImageFromCamera() {
+        // Nimmt ein Foto mit der Gerätekamera auf
+        // Optimiert das Bild für die OCR-Verarbeitung
+        // Übergibt das aufgenommene Bild an den OCRManager
+    }
+}
+```
+
+### OCR-Workflow
+
+1. **Bildaufnahme**:
+   - Hochladen eines Dokuments über den Datei-Dialog
+   - Aufnahme eines Fotos mit der Gerätekamera
+   - Optimierung des Bildes (Kontrast, Helligkeit)
+
+2. **Textextraktion**:
+   - Übermittlung des Bildes an die OCR-API (`/api/solo/ocr/process`)
+   - Extraktion des Volltexts mit Tesseract.js
+   - Rückgabe des erkannten Textes und Metadaten
+
+3. **Namensextraktion**:
+   - Automatische Erkennung von Namen mit verschiedenen Regex-Mustern
+   - Bewertung der Konfidenz jedes erkannten Namens
+   - Filterung von Duplikaten und unwahrscheinlichen Ergebnissen
+
+4. **Ergebnisanzeige**:
+   - Bei erkannten Namen: Anzeige der Liste mit Bearbeitungsoptionen
+   - Bei keinen Namen: Anzeige des Volltexts zur manuellen Auswahl
+   - Markierung möglicher Duplikate zur Vermeidung doppelter Einträge
+
+5. **Manuelle Auswahl**:
+   - Interaktive Benutzeroberfläche mit klickbaren Wort-Buttons
+   - Automatische Zuweisung zu Vorname oder Nachname im Wechsel
+   - Möglichkeit zur direkten Bearbeitung der Textfelder
+
+6. **Bewohner erstellen**:
+   - Validierung der ausgewählten Namen
+   - Prüfung auf bestehende Bewohner zur Vermeidung von Duplikaten
+   - Speicherung der neuen Bewohner in der Datenbank
+   - Aktualisierung der Bewohnerliste in der Benutzeroberfläche
+
+### Benutzererfahrung und UI
+
+#### Desktop-Erfahrung
+- Klassische Dateiauswahl über den Datei-Dialog
+- Erweiterte Textauswahl mit Mausmarkierung
+- Vollständige Tastaturunterstützung
+
+#### Mobile Erfahrung
+- Optimierte Kameranutzung mit visuellen Hilfen
+- Einfache Wortauswahl durch Tippen
+- Angepasste Benutzeroberfläche für Touchscreens
+- Responsive Design für verschiedene Bildschirmgrößen
+
+### CSS-Styling
+
+Das OCR-System verwendet spezielle CSS-Klassen für ein konsistentes Erscheinungsbild:
+
+```css
+/* Wort-Buttons für die Textauswahl */
+.word-button {
+    display: inline-block;
+    margin: 2px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.word-button.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+/* OCR-Ergebnisliste */
+.ocr-results-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+}
+
+.ocr-result-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ocr-result-item.duplicate {
+    background-color: #fff5f5;
+    opacity: 0.7;
+}
+```
+
+### Technische Implementierung
+
+#### Backend-Integration
+- RESTful API-Endpunkt für OCR-Verarbeitung
+- Serverseitige Verarbeitung mit Tesseract.js
+- Mehrsprachige Unterstützung (Deutsch als Hauptsprache)
+
+#### Frontendkomponenten
+- JavaScript-Module für die OCR-Verarbeitung
+- Responsive Modals für die Benutzerinteraktion
+- Asynchrone Verarbeitung mit Promises
+
+#### Optimierungen
+- Bild-Vorverarbeitung für bessere OCR-Ergebnisse
+- Zwischenspeicherung von Zwischenergebnissen
+- Verzögerte Ladung für bessere Performance
+
+### Einrichtung und Konfiguration
+
+1. **OCR-API einrichten**:
+   - Tesseract.js auf dem Server installieren
+   - Sprachpakete für Deutsch konfigurieren
+   - API-Endpunkt in der Backend-Konfiguration aktivieren
+
+2. **Frontend-Integration**:
+   - OCR-Module in die Hauptanwendung einbinden
+   - Modal-Templates in die HTML-Struktur einfügen
+   - CSS-Styles für OCR-Komponenten laden
+
+3. **Kamera-Berechtigungen**:
+   - Entsprechende Berechtigungen in der Webanwendung anfordern
+   - Fallback-Mechanismen für nicht unterstützte Browser implementieren
+   - Sicherheitsrichtlinien für Kamerazugriff beachten
+
 ## Filter-System
 
 ### Filter-Konfiguration
@@ -543,4 +752,131 @@ Die Filter-Optionen werden in der `filterOptions`-Sektion angezeigt:
 ### Filter-Persistenz
 - Filter-Einstellungen werden in `filter.json` gespeichert
 - Beim Neuladen der Seite werden die letzten Filter-Einstellungen automatisch wiederhergestellt
-- Filter-Änderungen werden sofort gespeichert und angewendet 
+- Filter-Änderungen werden sofort gespeichert und angewendet
+
+## Modulare Architektur
+
+### Frontend-Module
+
+Die Anwendung ist in folgende JavaScript-Module aufgeteilt:
+
+#### 1. `script.js`
+- Haupteinstiegspunkt der Anwendung
+- Initialisiert alle anderen Module
+- Verwaltet den globalen Anwendungszustand
+
+#### 2. `filter.js`
+- Enthält das `FilterManager`-Objekt
+- Verwaltet Filteroptionen und -logik
+- Aktualisiert die Bewohnerliste basierend auf Filtern
+
+#### 3. `ocr.js` und `ocr-modal.js`
+- Implementiert die OCR-Funktionalität
+- Verarbeitet Dokumentenbilder und extrahiert Text
+- Zeigt Ergebnisse und ermöglicht Benutzerinteraktion
+
+#### 4. `upload.js`
+- Verwaltet Datei-Uploads und Kamerafunktionalität
+- Integriert sich mit dem OCR-System
+- Unterstützt Desktop- und Mobile-Geräte
+
+#### 5. `resident-detail.js`
+- Implementiert den Bewohner-Detail-Modal
+- Ermöglicht das Anzeigen und Bearbeiten von Bewohnerdaten
+- Interagiert mit der API für Datenpersistenz
+
+#### 6. `save.js`
+- Enthält das `SaveManager`-Objekt
+- Stellt Funktionen zum Speichern und Aktualisieren von Bewohnern bereit
+- Handhabt API-Kommunikation für Bewohnerdaten
+
+#### 7. `config.js`
+- Verwaltet die Systemkonfiguration
+- Bietet UI für Konfigurationsänderungen
+- Speichert Konfigurationsdaten persistent
+
+### Startreihenfolge und Abhängigkeiten
+
+Die Module werden in folgender Reihenfolge initialisiert:
+
+1. `script.js` lädt als Haupteinstiegspunkt
+2. Konfiguration wird aus `config.json` geladen
+3. `FilterManager` wird initialisiert
+4. Bewohnerdaten werden über API geladen
+5. Event-Listener für UI-Elemente werden registriert
+6. Andere Module (OCR, Upload) werden bei Bedarf geladen
+
+### Wichtige JavaScript-Objekte
+
+#### `ResidentManager`
+Verwaltet die Bewohnerdaten und -anzeige:
+```javascript
+export const ResidentManager = {
+    loadResidents() {
+        // Lädt Bewohner über API
+    },
+    displayResidents(residents) {
+        // Zeigt Bewohner in der UI an
+    },
+    createResidentCard(resident) {
+        // Erstellt eine Bewohnerkarte für die UI
+    }
+};
+```
+
+#### `FilterManager`
+Verwaltet die Filter-Logik:
+```javascript
+export const FilterManager = {
+    currentFilters: {
+        fields: [],
+        areas: []
+    },
+    
+    initFilterListeners() {
+        // Initialisiert Event-Listener für Filter
+    },
+    
+    handleFilterButtonClick(button) {
+        // Verarbeitet Filterbutton-Klicks
+    },
+    
+    updateFilterUI() {
+        // Aktualisiert die Filter-UI basierend auf aktuellen Filtern
+    }
+};
+```
+
+#### `SaveManager`
+Verwaltet das Speichern von Bewohnerdaten:
+```javascript
+export const SaveManager = {
+    saveResident(resident) {
+        // Speichert Änderungen an einem Bewohner
+    },
+    
+    createResident(data) {
+        // Erstellt einen neuen Bewohner
+    },
+    
+    dismissResident(name) {
+        // Entlässt einen Bewohner
+    },
+    
+    resurrectResident(name) {
+        // Stellt einen entlassenen Bewohner wieder her
+    }
+};
+```
+
+## Zusammenfassung
+
+Die Solo-Anwendung ist ein umfassendes Managementsystem für Seniorenheime mit folgenden Hauptfunktionen:
+
+1. **Bewohnerverwaltung**: Erfassung und Bearbeitung von Bewohnerdaten
+2. **OCR-Dokumentenerkennung**: Automatische Extraktion von Bewohnerdaten aus Dokumenten
+3. **Flexible Filterfunktionen**: Konfigurierbare Filter für effiziente Bewohnersuche
+4. **Bereichskonfiguration**: Anpassbare Bereiche und Buttons für verschiedene Anwendungsfälle
+5. **Responsive Benutzeroberfläche**: Optimiert für Desktop- und Mobile-Nutzung
+
+Die modulare Architektur ermöglicht einfache Wartung und Erweiterbarkeit. Die Anwendung ist für tägliche Arbeitsabläufe in Seniorenheimen optimiert und bietet eine intuitive Benutzeroberfläche für Pflegepersonal und Verwaltung. 

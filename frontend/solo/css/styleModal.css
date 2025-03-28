@@ -1199,57 +1199,60 @@
 }
 
 /* Neue Struktur für OCR-Textmodal */
-#ocrResultsModal .modal-content {
-    display: flex;
-    flex-direction: column;
-    height: 90vh;
+#ocrResultsModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow: hidden;
     transform: none !important;
-    max-width: 95%;
-    width: 95%;
+    z-index: 1000;
+}
+
+#ocrResultsModal .modal-content {
     position: relative;
+    max-width: 600px;
+    width: 95%;
+    margin: auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: none !important;
+    transition: none !important;
 }
 
-#ocrResultsModal .modal-header {
-    flex: 0 0 auto;
+#ocrResultsModal.show {
+    display: flex !important;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+    transform: none !important;
 }
 
-.ocr-scroll-container {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    min-height: 200px;
-    padding: 0 10px 0 0;
-}
-
-.ocr-full-text {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
-    line-height: 2.0;
-    touch-action: manipulation;
-    padding: 15px !important;
-    font-size: 16px !important;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background-color: #f8fafc;
-    white-space: pre-wrap;
-    cursor: text;
-    margin-bottom: 0;
-}
-
+/* Verbesserte Namensauswahl und Button-Styles */
 .name-selection-form {
-    flex: 0 0 auto;
-    padding: 15px;
-    margin: 10px 0;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background-color: #f8fafc;
+    position: relative;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    z-index: 2;
+    background-color: white;
 }
 
-#ocrResultsModal .modal-footer {
-    flex: 0 0 auto;
-    margin-top: 5px;
+#confirmNameBtn {
+    position: relative;
+    transition: background-color 0.3s ease;
+    z-index: 3;
+}
+
+#confirmNameBtn:active {
+    transform: translateY(1px);
+}
+
+/* Verbesserte Wort-Button-Styles */
+.word-button {
+    position: relative;
+    z-index: 2;
 }
 
 /* Verbesserte OCR-Textanzeige für Touch-Geräte */
@@ -1310,4 +1313,57 @@
         padding: 6px 10px;
         margin-bottom: 10px;
     }
+}
+
+/* Stile für die Wort-Buttons im OCR-Text */
+.word-button {
+    display: inline-block;
+    margin: 2px;
+    padding: 5px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.word-button:hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+}
+
+.word-button.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}
+
+/* Verbesserte Styles für die OCR-Textanzeige */
+.ocr-full-text {
+    margin-bottom: 15px;
+    line-height: 1.8;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Verbesserte Styles für das Formular */
+.name-selection-form {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.name-selection-form h3 {
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.name-selection-form .touch-hint {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #666;
 }

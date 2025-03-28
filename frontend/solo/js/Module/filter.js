@@ -494,19 +494,20 @@ export const FilterManager = {
                 const isMultiple = currentArea?.allowMultiple === true;
                 const buttonGroup = button.closest('.button-group');
                 
-                // Toggle Button-Status
-                button.classList.toggle('active');
-                
                 // Aktualisiere resident.areas
                 if (!resident.areas) resident.areas = {};
                 if (!resident.areas[area]) resident.areas[area] = '';
                 
                 let buttons = resident.areas[area].split(',').map(b => b.trim()).filter(b => b);
                 
-                if (button.classList.contains('active')) {
+                // Prüfe zuerst den aktuellen Status des Buttons
+                const wasActive = button.classList.contains('active');
+                
+                if (!wasActive) {
+                    // Button wird aktiviert
                     if (!buttons.includes(buttonLabel)) {
                         if (!isMultiple) {
-                            // Bei Einzelauswahl alle anderen Buttons deaktivieren
+                            // Bei Einzelauswahl alle anderen Buttons deaktivieren und ihre Klasse entfernen
                             buttonGroup.querySelectorAll('.filter-button.active').forEach(activeButton => {
                                 if (activeButton !== button) {
                                     activeButton.classList.remove('active');
@@ -517,8 +518,13 @@ export const FilterManager = {
                             buttons.push(buttonLabel);
                         }
                     }
+                    // Füge die aktive Klasse hinzu
+                    button.classList.add('active');
                 } else {
+                    // Button wird deaktiviert
                     buttons = buttons.filter(b => b !== buttonLabel);
+                    // Entferne die aktive Klasse
+                    button.classList.remove('active');
                 }
                 
                 // Aktualisiere den Wert im resident.areas Objekt
@@ -724,19 +730,20 @@ export const FilterManager = {
                         const isMultiple = currentArea?.allowMultiple === true;
                         const buttonGroup = button.closest('.button-group');
                         
-                        // Toggle Button-Status
-                        button.classList.toggle('active');
-                        
                         // Aktualisiere resident.areas
                         if (!resident.areas) resident.areas = {};
                         if (!resident.areas[area]) resident.areas[area] = '';
                         
                         let buttons = resident.areas[area].split(',').map(b => b.trim()).filter(b => b);
                         
-                        if (button.classList.contains('active')) {
+                        // Prüfe zuerst den aktuellen Status des Buttons
+                        const wasActive = button.classList.contains('active');
+                        
+                        if (!wasActive) {
+                            // Button wird aktiviert
                             if (!buttons.includes(buttonLabel)) {
                                 if (!isMultiple) {
-                                    // Bei Einzelauswahl alle anderen Buttons deaktivieren
+                                    // Bei Einzelauswahl alle anderen Buttons deaktivieren und ihre Klasse entfernen
                                     buttonGroup.querySelectorAll('.filter-button.active').forEach(activeButton => {
                                         if (activeButton !== button) {
                                             activeButton.classList.remove('active');
@@ -747,14 +754,19 @@ export const FilterManager = {
                                     buttons.push(buttonLabel);
                                 }
                             }
+                            // Füge die aktive Klasse hinzu
+                            button.classList.add('active');
                         } else {
+                            // Button wird deaktiviert
                             buttons = buttons.filter(b => b !== buttonLabel);
+                            // Entferne die aktive Klasse
+                            button.classList.remove('active');
                         }
                         
                         // Aktualisiere den Wert im resident.areas Objekt
                         resident.areas[area] = buttons.join(', ');
                         
-                        console.log(`Bereich ${area}, Multiple: ${isMultiple}, Buttons: ${buttons.join(', ')}`);
+                        console.log(`Bereich ${area}, Multiple: ${isMultiple}, Buttons: ${buttons.join(', ')}, Button Status: ${wasActive ? 'war aktiv' : 'war inaktiv'}`);
                     });
                 });
 

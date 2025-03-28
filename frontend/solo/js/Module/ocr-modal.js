@@ -9,6 +9,36 @@ export const OCRModalManager = {
     lastRecognizedText: '',
     // Status-Flags zur Verhinderung von Layout-Problemen
     isProcessingClick: false,
+    // Position und Größe des Modals speichern
+    modalPosition: null,
+
+    // Neue Hilfsfunktion zur Stabilisierung des Modals
+    stabilizeModal() {
+        const modal = document.getElementById('ocrResultsModal');
+        if (!modal) return;
+        
+        // Wenn wir noch keine Position gespeichert haben, speichern wir die aktuelle
+        if (!this.modalPosition) {
+            this.modalPosition = modal.getBoundingClientRect();
+        } else {
+            // Stelle sicher, dass das Modal in der Mitte des Bildschirms bleibt
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.position = 'relative';
+                modalContent.style.margin = 'auto';
+                modalContent.style.transform = 'none';
+            }
+            
+            // Verhindere, dass das Fenster scrollt
+            const scrollY = window.scrollY;
+            const scrollX = window.scrollX;
+            
+            // Nach dem Async-Prozess wiederherstellen
+            setTimeout(() => {
+                window.scrollTo(scrollX, scrollY);
+            }, 0);
+        }
+    },
 
     async showResults(names, duplicates) {
         return new Promise((resolve) => {
@@ -79,12 +109,28 @@ export const OCRModalManager = {
     showFullTextModal(text) {
         // Speichere den aktuellen Text für spätere Verwendung
         this.lastRecognizedText = text;
+        // Zurücksetzen der gespeicherten Modal-Position
+        this.modalPosition = null;
         
         const modal = document.getElementById('ocrResultsModal');
         const content = modal.querySelector('.modal-content');
         
-        // Formatiere den Text für bessere Lesbarkeit
-        const formattedText = text.replace(/\n/g, '<br>');
+        // Formatiere den Text und wandle Wörter in Buttons um
+        const words = text.split(/\s+/);
+        const buttonsHtml = words.map(word => {
+            // Ignoriere leere Wörter oder Sonderzeichen
+            if (word.length <= 1 || !/[a-zA-ZäöüÄÖÜß]/.test(word)) {
+                return '';
+            }
+            
+            // Bereinige das Wort von unerwünschten Zeichen
+            const cleanWord = word.replace(/[^a-zA-ZäöüÄÖÜß\-]/g, '');
+            if (cleanWord.length <= 1) {
+                return '';
+            }
+            
+            return `<button type="button" class="word-button">${cleanWord}</button>`;
+        }).filter(button => button !== '').join(' ');
         
         content.innerHTML = `
             <div class="modal-header">
@@ -94,11 +140,11 @@ export const OCRModalManager = {
                 </div>
             </div>
             <div class="ocr-scroll-container">
-                <div class="ocr-full-text">${formattedText}</div>
+                <div class="ocr-full-text">${buttonsHtml}</div>
             </div>
             <div class="name-selection-form">
-                <h3>Bitte markieren Sie Vor- und Nachnamen</h3>
-                <p class="touch-hint">Tippen Sie auf einen Namen, um ihn auszuwählen</p>
+                <h3>Bitte wählen Sie Vor- und Nachnamen</h3>
+                <p class="touch-hint">Tippen Sie auf ein Wort, um es auszuwählen</p>
                 <div class="form-group">
                     <label for="firstName">Vorname</label>
                     <input type="text" id="firstName" class="form-control" placeholder="Vorname eingeben">
@@ -114,7 +160,7 @@ export const OCRModalManager = {
             </div>
         `;
 
-        // Event-Listener für die manuelle Textauswahl
+        // Event-Listener für die Buttons im Text
         this.attachFullTextModalListeners(content);
         
         // Styles fixieren
@@ -122,6 +168,9 @@ export const OCRModalManager = {
         
         // Modal anzeigen
         Modal.show('ocrResultsModal');
+        
+        // Modal stabilisieren
+        this.stabilizeModal();
     },
 
     attachEventListeners(content, names, resolve) {
@@ -193,42 +242,45 @@ export const OCRModalManager = {
     },
     
     attachFullTextModalListeners(content) {
-        const fullTextElement = content.querySelector('.ocr-full-text');
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        // Variable für den Wechsel zwischen Vorname und Nachname
+        let isFirstNameNext = true;
         
-        if (isTouchDevice) {
-            // Für Touch-Geräte: Tap-Event für Text-Auswahl
-            fullTextElement.addEventListener('click', (event) => {
-                // Prüfe, ob ein Wort geklickt wurde
-                const text = event.target.innerText || '';
-                if (text) {
-                    // Finde das Wort, das geklickt wurde
-                    const words = text.split(/\s+/);
-                    // Vereinfachte Annahme: Das nächste Wort zum Klickpunkt auswählen
-                    if (words.length > 0) {
-                        const selectedText = words[0].replace(/[^a-zA-ZäöüÄÖÜß]/g, '');
-                        if (selectedText.length > 1) {
-                            this.showSelectionDialog(selectedText);
-                        }
-                    }
+        // Event-Listener für die Wort-Buttons
+        const wordButtons = content.querySelectorAll('.word-button');
+        wordButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const selectedText = button.textContent;
+                
+                // Abhängig vom Status in das entsprechende Feld eintragen
+                if (isFirstNameNext) {
+                    content.querySelector('#firstName').value = selectedText;
+                    // Fokus auf das Nachnamenfeld setzen
+                    content.querySelector('#lastName').focus();
+                } else {
+                    content.querySelector('#lastName').value = selectedText;
+                    // Fokus auf den "Namen übernehmen" Button setzen
+                    content.querySelector('#confirmNameBtn').focus();
                 }
+                
+                // Status umschalten für das nächste Feld
+                isFirstNameNext = !isFirstNameNext;
+                
+                // Visuelles Feedback für den Button
+                button.classList.add('selected');
+                setTimeout(() => {
+                    button.classList.remove('selected');
+                }, 500);
             });
-        } else {
-            // Für Desktop: Normale Textauswahl mit Maus
-            fullTextElement.addEventListener('mouseup', () => {
-                const selection = window.getSelection();
-                if (selection.toString().trim()) {
-                    const selectedText = selection.toString().trim();
-                    this.showSelectionDialog(selectedText);
-                }
-            });
-        }
+        });
 
         // Bestätigungs-Button (Namen übernehmen)
         content.querySelector('#confirmNameBtn').addEventListener('click', async () => {
             // Verhindere mehrfaches Klicken
             if (this.isProcessingClick) return;
             this.isProcessingClick = true;
+            
+            // Stabilisiere das Modal vor der Verarbeitung
+            this.stabilizeModal();
             
             const firstName = content.querySelector('#firstName').value.trim();
             const lastName = content.querySelector('#lastName').value.trim();
@@ -245,79 +297,31 @@ export const OCRModalManager = {
                     // Fokus zurück auf das Vornamenfeld setzen
                     content.querySelector('#firstName').focus();
                     
+                    // Status für den nächsten Klick zurücksetzen
+                    isFirstNameNext = true;
+                    
+                    // Stelle sicher, dass das Modal seine Position behält
+                    this.stabilizeModal();
+                    
                     // Status zurücksetzen
                     this.isProcessingClick = false;
                 } catch (error) {
                     console.error('Fehler beim Speichern:', error);
                     this.isProcessingClick = false;
+                    // Auch bei Fehlern sollte das Modal stabil bleiben
+                    this.stabilizeModal();
                 }
             } else {
                 Toast.show('Bitte geben Sie Vor- und Nachnamen ein', 'warning');
                 this.isProcessingClick = false;
+                // Auch bei Validierungsfehlern sollte das Modal stabil bleiben
+                this.stabilizeModal();
             }
         });
 
         // Abbrechen-Button
         content.querySelector('#cancelOcrBtn').addEventListener('click', () => {
             Modal.hide('ocrResultsModal');
-        });
-    },
-    
-    showSelectionDialog(selectedText) {
-        // Entferne alle vorhandenen Auswahldialoge
-        document.querySelectorAll('.selection-dialog-container').forEach(el => el.remove());
-        
-        const dialogHTML = `
-            <div class="selection-dialog">
-                <p>Ausgewählter Text: "${selectedText}"</p>
-                <div class="selection-buttons">
-                    <button type="button" class="btn btn-sm" id="setFirstNameBtn">Als Vorname</button>
-                    <button type="button" class="btn btn-sm" id="setLastNameBtn">Als Nachname</button>
-                    <button type="button" class="btn btn-sm" id="cancelSelectionBtn">Abbrechen</button>
-                </div>
-            </div>
-        `;
-        
-        // Dialog erstellen und positionieren
-        const dialog = document.createElement('div');
-        dialog.className = 'selection-dialog-container';
-        dialog.innerHTML = dialogHTML;
-        document.body.appendChild(dialog);
-        
-        // Positioniere den Dialog - für Touch-Geräte zentriert
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        
-        if (isTouchDevice) {
-            // Zentriert für Touch-Geräte
-            dialog.style.position = 'fixed';
-            dialog.style.top = '50%';
-            dialog.style.left = '50%';
-            dialog.style.transform = 'translate(-50%, -50%)';
-            dialog.style.zIndex = '9999';
-        } else {
-            // Nahe der Selektion für Desktop
-            const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
-            const rect = range.getBoundingClientRect();
-            
-            dialog.style.position = 'absolute';
-            dialog.style.top = `${rect.bottom + window.scrollY + 10}px`;
-            dialog.style.left = `${rect.left + window.scrollX}px`;
-        }
-        
-        // Event-Listener
-        dialog.querySelector('#setFirstNameBtn').addEventListener('click', () => {
-            document.querySelector('#firstName').value = selectedText;
-            document.body.removeChild(dialog);
-        });
-        
-        dialog.querySelector('#setLastNameBtn').addEventListener('click', () => {
-            document.querySelector('#lastName').value = selectedText;
-            document.body.removeChild(dialog);
-        });
-        
-        dialog.querySelector('#cancelSelectionBtn').addEventListener('click', () => {
-            document.body.removeChild(dialog);
         });
     },
     
