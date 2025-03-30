@@ -11,13 +11,15 @@ const BASE_PATH = path.join(__dirname, '../../');
 const CURRENT_RESIDENTS_PATH = path.join(BASE_PATH, 'backend/data/solo/person/upToDate');
 const OLD_RESIDENTS_PATH = path.join(BASE_PATH, 'backend/data/solo/person/old');
 const CONFIG_PATH = path.join(BASE_PATH, 'backend/data/solo/config/formConfig.json');
+const FILTER_PATH = path.join(BASE_PATH, 'backend/data/solo/config/filter.json');
 
 // Debug-Log für Pfade
 console.log('Pfade:', {
     base: BASE_PATH,
     current: CURRENT_RESIDENTS_PATH,
     old: OLD_RESIDENTS_PATH,
-    config: CONFIG_PATH
+    config: CONFIG_PATH,
+    filter: FILTER_PATH
 });
 
 // Multer für Datei-Uploads konfigurieren
@@ -43,10 +45,12 @@ const ensureDirectories = async () => {
         await fs.mkdir(CURRENT_RESIDENTS_PATH, { recursive: true });
         await fs.mkdir(OLD_RESIDENTS_PATH, { recursive: true });
         await fs.mkdir(path.dirname(CONFIG_PATH), { recursive: true });
+        await fs.mkdir(path.dirname(FILTER_PATH), { recursive: true });
         console.log('Verzeichnisse erstellt/überprüft:', {
             current: CURRENT_RESIDENTS_PATH,
             old: OLD_RESIDENTS_PATH,
-            config: CONFIG_PATH
+            config: CONFIG_PATH,
+            filter: FILTER_PATH
         });
         return true;
     } catch (error) {
@@ -229,13 +233,144 @@ router.get('/config', async (req, res) => {
     }
 });
 
+// Filter laden
+router.get('/filters', async (req, res) => {
+    try {
+        // Prüfe, ob die Filter-Datei existiert
+        try {
+            await fs.access(FILTER_PATH);
+        } catch (error) {
+            // Erstelle eine Standard-Filter-Datei, wenn sie nicht existiert
+            const defaultFilters = {
+                fields: [],
+                areas: []
+            };
+            await fs.writeFile(FILTER_PATH, JSON.stringify(defaultFilters, null, 2));
+            return res.json(defaultFilters);
+        }
+        
+        // Lese die Filter-Datei
+        const filterData = await fs.readFile(FILTER_PATH, 'utf-8');
+        let filters;
+        
+        try {
+            filters = JSON.parse(filterData);
+        } catch (parseError) {
+            console.error('Fehler beim Parsen der Filter-Datei:', parseError);
+            // Bei JSON-Parse-Fehler, erstelle neue, leere Filter-Datei
+            const defaultFilters = {
+                fields: [],
+                areas: []
+            };
+            await fs.writeFile(FILTER_PATH, JSON.stringify(defaultFilters, null, 2));
+            return res.json(defaultFilters);
+        }
+        
+        // Validiere Filter-Format
+        if (!filters || typeof filters !== 'object') {
+            throw new Error('Ungültiges Filter-Format');
+        }
+        
+        // Stelle sicher, dass die Filter korrekt formatiert sind
+        const validatedFilters = {
+            fields: Array.isArray(filters.fields) ? filters.fields : [],
+            areas: Array.isArray(filters.areas) ? filters.areas : []
+        };
+        
+        return res.json(validatedFilters);
+    } catch (error) {
+        console.error('Fehler beim Laden der Filter:', error);
+        return res.status(500).json({ error: 'Fehler beim Laden der Filter: ' + error.message });
+    }
+});
+
+// Filter speichern
+router.put('/filters', async (req, res) => {
+    try {
+        const filters = req.body;
+        
+        // Validiere Filter-Format
+        if (!filters || typeof filters !== 'object') {
+            return res.status(400).json({ error: 'Ungültiges Filter-Format' });
+        }
+        
+        // Stelle sicher, dass die Filter korrekt formatiert sind
+        const validatedFilters = {
+            fields: Array.isArray(filters.fields) ? filters.fields : [],
+            areas: Array.isArray(filters.areas) ? filters.areas : []
+        };
+        
+        // Stelle sicher, dass das Verzeichnis existiert
+        await fs.mkdir(path.dirname(FILTER_PATH), { recursive: true });
+        
+        // Speichere Filter in einer separaten Datei
+        await fs.writeFile(FILTER_PATH, JSON.stringify(validatedFilters, null, 2));
+        
+        return res.json({
+            success: true,
+            message: 'Filter erfolgreich gespeichert',
+            filters: validatedFilters
+        });
+    } catch (error) {
+        console.error('Fehler beim Speichern der Filter:', error);
+        return res.status(500).json({ error: 'Fehler beim Speichern der Filter: ' + error.message });
+    }
+});
+
 // Config speichern
 router.post('/config', async (req, res) => {
     try {
+        // Stelle sicher, dass nur die relevanten Konfigurationsdaten gespeichert werden
+        const configToSave = {
+            fields: Array.isArray(req.body.fields) ? req.body.fields : [],
+            areas: Array.isArray(req.body.areas) ? req.body.areas : []
+        };
+        
+        // Bereinige jedes Feld und jeden Bereich
+        configToSave.fields = configToSave.fields.filter(field => 
+            field && typeof field === 'object' && field.id && field.label
+        );
+        
+        configToSave.areas = configToSave.areas.filter(area => 
+            area && typeof area === 'object' && area.name && Array.isArray(area.buttons)
+        ).map(area => ({
+            name: String(area.name).trim(),
+            multiple: Boolean(area.multiple),
+            menuFilter: Boolean(area.menuFilter),
+            changeable: Boolean(area.changeable),
+            buttons: Array.isArray(area.buttons) ? 
+                area.buttons
+                    .filter(btn => btn && typeof btn === 'object' && btn.label)
+                    .map(btn => ({ label: String(btn.label).trim() })) 
+                : []
+        }));
+        
+        // Validiere das resultierende JSON
+        const jsonString = JSON.stringify(configToSave, null, 2);
+        try {
+            // Versuche, das JSON zu parsen, um sicherzustellen, dass es gültig ist
+            JSON.parse(jsonString);
+        } catch (error) {
+            console.error('Ungültiges JSON würde generiert:', error);
+            return res.status(400).json({ 
+                error: 'Die Konfigurationsdaten können nicht als gültiges JSON gespeichert werden',
+                details: error.message
+            });
+        }
+
+        // Stelle sicher, dass das Verzeichnis existiert
         await fs.mkdir(path.dirname(CONFIG_PATH), { recursive: true });
-        await fs.writeFile(CONFIG_PATH, JSON.stringify(req.body, null, 2));
-        res.json({ success: true, message: 'Konfiguration gespeichert' });
+        
+        // Speichere die Konfiguration
+        await fs.writeFile(CONFIG_PATH, jsonString);
+        
+        res.json({ 
+            success: true, 
+            message: 'Konfiguration gespeichert',
+            config: configToSave
+        });
     } catch (error) {
+        console.error('Fehler beim Speichern der Konfiguration:', error);
         res.status(500).json({ error: error.message });
     }
 });

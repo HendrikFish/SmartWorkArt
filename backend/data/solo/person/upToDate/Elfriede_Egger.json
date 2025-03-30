@@ -1,5 +1,11 @@
 {
   "firstName": "Elfriede",
   "lastName": "Egger",
-  "createdAt": "2025-03-28T21:01:16.437Z"
+  "createdAt": "2025-03-28T21:01:16.437Z",
+  "areas": {
+    "Wo wird das Essen eingetragen!": "3.OG"
+  },
+  "gender": "",
+  "vergin": "",
+  "lastModified": "2025-03-30T18:29:00.352Z"
 }

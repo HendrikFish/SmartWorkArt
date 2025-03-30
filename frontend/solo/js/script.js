@@ -476,4 +476,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Fehler beim Initialisieren:', error);
         Toast.show('Fehler beim Initialisieren der Anwendung', 'error');
     }
-}); 
+});
+
+// ResidentManager auch global verfügbar machen
+window.ResidentManager = ResidentManager;
+
+// Diese Zeile nur zu Debugging-Zwecken hinzufügen
+console.log('ResidentManager global verfügbar gemacht:', window.ResidentManager); 

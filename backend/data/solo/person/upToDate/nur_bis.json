@@ -1,5 +1,12 @@
 {
   "firstName": "nur",
   "lastName": "bis",
-  "createdAt": "2025-03-28T21:11:23.018Z"
+  "createdAt": "2025-03-28T21:11:23.018Z",
+  "gender": "Herr",
+  "vergin": "",
+  "lastModified": "2025-03-30T18:46:13.910Z",
+  "areas": {
+    "Wo wird das Essen eingetragen!": "1.OG",
+    "Sexy": "No"
+  }
 }

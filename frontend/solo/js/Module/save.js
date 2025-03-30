@@ -203,6 +203,10 @@ export const SaveManager = {
 
             if (!response.ok) {
                 const data = await response.json();
+                // Spezifischer Fehler für bereits existierende Bewohner
+                if (data.error && data.error.includes('bereits existiert')) {
+                    throw new Error('Bewohner existiert bereits');
+                }
                 throw new Error(data.error || 'Fehler beim Erstellen des Bewohners');
             }
 

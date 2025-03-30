@@ -57,7 +57,6 @@
 /* Tab-Inhalte scrollbar machen */
 .tab-content {
     display: none;
-    padding: 15px 0;
     position: relative;
     overflow-y: auto;
     max-height: calc(80vh - 200px); /* Platz für Header, Tabs und Button-container lassen */
@@ -81,9 +80,9 @@
     top: 0;
     z-index: 10;
     background-color: white;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -389,7 +388,6 @@
 #addFieldBtn,
 #addAreaBtn {
     width: 100% !important;
-    padding: 12px !important;
     background: #f8f9fa !important;
     border: 2px dashed #ddd !important;
     border-radius: 6px !important;
@@ -397,7 +395,6 @@
     font-size: 14px !important;
     cursor: pointer;
     transition: all 0.2s ease !important;
-    margin-top: 20px;
     display: block;
     position: relative;
     z-index: 1;
@@ -1366,4 +1363,16 @@
     margin-bottom: 15px;
     font-size: 14px;
     color: #666;
+}
+
+.ocr-result-item.existing-resident {
+    background-color: #fff0f0;
+    border-left: 3px solid #e53e3e;
+}
+
+.ocr-existing-warning {
+    color: #e53e3e;
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 500;
 }

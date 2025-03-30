@@ -1,5 +1,11 @@
 {
   "firstName": "Eder",
   "lastName": "Marianne",
-  "createdAt": "2025-03-28T21:00:38.203Z"
+  "createdAt": "2025-03-28T21:00:38.203Z",
+  "areas": {
+    "Wo wird das Essen eingetragen!": "2.OG"
+  },
+  "gender": "",
+  "vergin": "",
+  "lastModified": "2025-03-30T18:29:03.675Z"
 }

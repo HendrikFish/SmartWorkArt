@@ -1,5 +1,12 @@
 {
   "firstName": "Aufgen",
   "lastName": "Namen",
-  "createdAt": "2025-03-28T21:11:10.325Z"
+  "createdAt": "2025-03-28T21:11:10.325Z",
+  "areas": {
+    "Abendessen": "Saal",
+    "Wo wird das Essen eingetragen!": "Saal"
+  },
+  "gender": "",
+  "vergin": "",
+  "lastModified": "2025-03-30T18:29:08.175Z"
 }

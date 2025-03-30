@@ -36,13 +36,42 @@ async function initializeApp() {
 
 // Konfiguration laden (Helper-Funktion)
 async function loadConfiguration() {
-    const configResponse = await fetch('/api/solo/config');
-    if (!configResponse.ok) {
-        throw new Error('Fehler beim Laden der Konfiguration');
+    try {
+        const configResponse = await fetch('/api/solo/config');
+        if (!configResponse.ok) {
+            throw new Error(`Fehler beim Laden der Konfiguration: ${configResponse.status} ${configResponse.statusText}`);
+        }
+        
+        const configData = await configResponse.json();
+        console.log('Rohdaten der Konfiguration:', configData);
+        
+        // Validiere die geladene Konfiguration
+        const validConfig = {
+            fields: Array.isArray(configData.fields) ? configData.fields : [],
+            areas: Array.isArray(configData.areas) ? configData.areas : []
+        };
+        
+        // Überprüfe, ob wir die falsche Konfiguration erhalten haben (mit Pfaden statt Feldern)
+        if (configData.paths && !configData.fields && !configData.areas) {
+            console.error('Falsche Konfigurationsdatei geladen (config.js statt formConfig.json)');
+            // Erzwinge das Laden einer Standardkonfiguration
+            return {
+                fields: [],
+                areas: []
+            };
+        }
+        
+        console.log('Validierte Konfiguration:', validConfig);
+        return validConfig;
+    } catch (error) {
+        console.error('Fehler beim Laden der Konfiguration:', error);
+        Toast.show('Fehler beim Laden der Konfiguration', 'error');
+        // Gib eine Standardkonfiguration zurück
+        return {
+            fields: [],
+            areas: []
+        };
     }
-    const config = await configResponse.json();
-    console.log('Konfiguration geladen:', config);
-    return config;
 }
 
 async function initializeFieldsTab(config) {
@@ -186,10 +215,42 @@ async function initializeAreasTab(config) {
         newAreasList.innerHTML = areasHtml;
         console.log('Bereiche-Tab HTML generiert');
         
+        // Entferne doppelte "Bereich hinzufügen" Buttons, falls vorhanden
+        const removeDuplicateAreaButtons = () => {
+            // Sammle alle Buttons mit der ID "addAreaBtn"
+            const addAreaButtons = document.querySelectorAll('#addAreaBtn');
+            
+            // Wenn mehr als ein Button gefunden wurde, behalte nur den ersten (sticky header)
+            if (addAreaButtons.length > 1) {
+                console.log(`${addAreaButtons.length} "+ Bereich hinzufügen" Buttons gefunden, entferne doppelte...`);
+                
+                // Behalte den ersten Button und entferne die anderen
+                for (let i = 1; i < addAreaButtons.length; i++) {
+                    const buttonParent = addAreaButtons[i].closest('.config-item');
+                    if (buttonParent) {
+                        buttonParent.remove();
+                        console.log('Doppelten "+ Bereich hinzufügen" Button entfernt');
+                    }
+                }
+            }
+            
+            // Entferne auch alle Buttons innerhalb von areasList, die nicht zu einem Bereich gehören
+            const areaTitles = newAreasList.querySelectorAll('.config-header:not(.sticky-header)');
+            areaTitles.forEach(header => {
+                if (!header.querySelector('h4')) {
+                    header.remove();
+                    console.log('Zusätzlichen Header in areasList entfernt');
+                }
+            });
+        };
+        
+        // Führe die Bereinigung nach einem kurzen Timeout aus, um sicherzustellen, dass das DOM aktualisiert wurde
+        setTimeout(removeDuplicateAreaButtons, 100);
+        
         // Event-Listener für Bereichaktionen hinzufügen
         initAreasEventListeners(newAreasList);
         
-        // Jetzt den Event-Listener für den Add-Button hinzufügen, der außerhalb der Liste ist
+        // Event-Listener für den Add-Button im sticky-header hinzufügen
         const addAreaBtn = document.getElementById('addAreaBtn');
         if (addAreaBtn) {
             addAreaBtn.addEventListener('click', function() {
@@ -280,7 +341,6 @@ async function initializeAreasTab(config) {
                 newArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         }
-        
     } catch (error) {
         console.error('Fehler beim Initialisieren des Bereiche-Tabs:', error);
     }
@@ -296,6 +356,55 @@ function initButtons() {
             if (configModal) {
                 configModal.classList.add('show');
                 
+                // HINZUGEFÜGT: Entferne den doppelten "+ Bereich hinzufügen" Button
+                setTimeout(() => {
+                    const removeExtraButtons = () => {
+                        // Finde alle "+ Bereich hinzufügen" Buttons
+                        const addAreaButtons = document.querySelectorAll('#addAreaBtn');
+                        
+                        if (addAreaButtons.length > 1) {
+                            console.log(`${addAreaButtons.length} "+ Bereich hinzufügen" Buttons gefunden, entferne doppelte...`);
+                            
+                            // Der erste Button ist im sticky-header, behalte diesen
+                            for (let i = 1; i < addAreaButtons.length; i++) {
+                                const buttonContainer = addAreaButtons[i].closest('.config-item');
+                                if (buttonContainer) {
+                                    console.log('Entferne doppelten Button-Container:', buttonContainer);
+                                    buttonContainer.remove();
+                                } else {
+                                    // Falls der Button nicht in einem .config-item ist, entferne ihn direkt
+                                    console.log('Entferne doppelten Button direkt:', addAreaButtons[i]);
+                                    addAreaButtons[i].remove();
+                                }
+                            }
+                            console.log('Doppelte Buttons wurden entfernt');
+                        }
+                        
+                        // Entferne auch leere Header-Elemente in areasList
+                        const areasList = document.getElementById('areasList');
+                        if (areasList) {
+                            const emptyHeaders = areasList.querySelectorAll('.config-header:not(.sticky-header)');
+                            emptyHeaders.forEach(header => {
+                                if (!header.querySelector('h4')) {
+                                    console.log('Entferne leeren Header:', header);
+                                    header.remove();
+                                }
+                            });
+                        }
+                    };
+                    
+                    // Führe die Bereinigung aus
+                    removeExtraButtons();
+                    
+                    // Stelle sicher, dass die Funktion auch ausgeführt wird, wenn Tabs gewechselt werden
+                    const areaTabs = document.querySelectorAll('.tab-btn[data-tab="areas"]');
+                    areaTabs.forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            setTimeout(removeExtraButtons, 100);
+                        });
+                    });
+                }, 100);
+                
                 // Stellen Sie sicher, dass der Filter-Tab korrekt initialisiert ist,
                 // wenn er in der Konfiguration angezeigt wird
                 const filterTab = document.getElementById('filterTab');
@@ -308,46 +417,145 @@ function initButtons() {
         });
     }
     
-    // Speichern-Button für Konfiguration
+    // Speichern-Button im Konfigurationsmodal
     const saveConfigBtn = document.getElementById('saveConfigBtn');
     if (saveConfigBtn) {
-        saveConfigBtn.addEventListener('click', async () => {
+        saveConfigBtn.addEventListener('click', async function() {
+            console.log('Konfiguration wird gespeichert...');
+            
+            // Speichere den aktuellen Filter-Zustand für die spätere Wiederherstellung
+            const currentFilterState = window.currentSavedFilter || 
+                (FilterManager && FilterManager.currentFilters ? 
+                    JSON.parse(JSON.stringify(FilterManager.currentFilters)) : 
+                    { fields: [], areas: [] });
+            
+            // Debug-Ausgabe, welcher Filter aktuell aktiv ist
+            const activeFilter = 
+                currentFilterState.fields.length > 0 ? 
+                    `Feld: ${currentFilterState.fields[0]}` : 
+                    (currentFilterState.areas.length > 0 ? 
+                        `Bereich: ${currentFilterState.areas[0]}` : 
+                        'Keine');
+            console.log(`Speichere Konfiguration mit aktivem Filter: ${activeFilter}`);    
+            console.log('Aktueller Filter-Zustand vor dem Speichern:', currentFilterState);
+
+            // Zeige Lade-Animation
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            loadingIndicator.innerHTML = '<div class="spinner"></div><p>Konfiguration wird gespeichert...</p>';
+            document.body.appendChild(loadingIndicator);
+            
             try {
-                console.log('Speichere Konfiguration...');
+                // Sammle Konfigurationsdaten
+                const configData = collectConfigData();
+                console.log('Gesammelte Konfiguration:', configData);
                 
-                // Sammle die Daten aus den Formularfeldern
-                const config = collectConfigData();
+                if (!configData || !configData.fields || !configData.areas) {
+                    throw new Error('Ungültige Konfigurationsdaten');
+                }
                 
-                // Sende die Daten an den Server
+                // Speichere Konfiguration auf dem Server
                 const response = await fetch('/api/solo/config', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(config)
+                    body: JSON.stringify(configData)
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Fehler beim Speichern der Konfiguration');
+                    throw new Error(`Server-Fehler: ${response.status} ${response.statusText}`);
                 }
                 
-                // Erfolgreiche Speicherung
-                console.log('Konfiguration erfolgreich gespeichert');
-                Toast.show('Konfiguration gespeichert', 'success');
+                const result = await response.json();
+                console.log('Konfiguration erfolgreich gespeichert:', result);
                 
-                // Schließe das Modal
-                document.getElementById('configModal').classList.remove('show');
+                // WICHTIG: Erst Tabs aktualisieren, dann Modal schließen
+                try {
+                    // UI aktualisieren, bevor das Modal geschlossen wird
+                    await updateTabsWithNewConfig(configData);
+                    
+                    // WICHTIG: Filter-Zustand als globale Variable speichern vor dem Modal-Schließen
+                    window.currentSavedFilter = currentFilterState;
+                    
+                    // Erst jetzt das Modal schließen
+                    Modal.hide('configModal');
+                    
+                    // KRITISCH: 500ms Verzögerung, um sicherzustellen, dass das Modal vollständig geschlossen ist
+                    // bevor wir die Filter anwenden
+                    setTimeout(async () => {
+                        try {
+                            // Prüfe, ob noch ein Filter aktiv sein sollte
+                            if ((currentFilterState.fields && currentFilterState.fields.length > 0) ||
+                                (currentFilterState.areas && currentFilterState.areas.length > 0)) {
+                                
+                                console.log('Wende gespeicherten Filter an nach Modal-Schließung:', currentFilterState);
+                                
+                                // Filter-Zustand explizit setzen
+                                FilterManager.currentFilters = currentFilterState;
+                                
+                                // Aktualisiere die Filter-Buttons
+                                FilterManager.updateFilterButtons();
+                                
+                                // Filtere und zeige die Bewohner erneut an
+                                await FilterManager.loadAndDisplayResidents();
+                                
+                                // Prüfe nach dem Anwenden, ob der Filter richtig gesetzt wurde
+                                console.log('Filter nach Anwendung:', FilterManager.currentFilters);
+                            } else {
+                                console.log('Kein Filter zum Anwenden vorhanden');
+                                // Trotzdem neu laden, damit die Liste aktualisiert wird
+                                await FilterManager.loadAndDisplayResidents();
+                            }
+                            console.log('Filtervorgang nach Modal-Schließung abgeschlossen');
+                        } catch (filterError) {
+                            console.error('Fehler beim Anwenden der Filter:', filterError);
+                        }
+                    }, 500);
+                } catch (uiError) {
+                    console.error('Fehler bei der UI-Aktualisierung:', uiError);
+                    // Trotz UI-Fehler Modal schließen und weitermachen
+                    Modal.hide('configModal');
+                    Toast.show('Konfiguration gespeichert, UI-Aktualisierung fehlgeschlagen', 'warning');
+                }
                 
-                // Lade die Seite neu, um die Änderungen zu übernehmen
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                // Entferne Lade-Animation
+                if (document.body.contains(loadingIndicator)) {
+                    document.body.removeChild(loadingIndicator);
+                }
                 
+                // Erfolgs-Nachricht anzeigen
+                Toast.show('Konfiguration erfolgreich gespeichert', 'success');
             } catch (error) {
                 console.error('Fehler beim Speichern der Konfiguration:', error);
+                // Entferne Lade-Animation
+                if (document.body.contains(loadingIndicator)) {
+                    document.body.removeChild(loadingIndicator);
+                }
                 Toast.show('Fehler beim Speichern der Konfiguration', 'error');
             }
         });
+    }
+    
+    // Hilfsfunktion zum Aktualisieren der Tabs nach Konfigurationsänderung
+    async function updateTabsWithNewConfig(configData) {
+        console.log('Aktualisiere Tabs mit neuer Konfiguration...');
+        
+        try {
+            // Wir verwenden die bestehenden Initialisierungsfunktionen statt undefinierter Funktionen
+            await initializeFieldsTab(configData);
+            await initializeAreasTab(configData);
+            
+            // FilterManager aktualisieren, wenn er existiert
+            if (window.FilterManager) {
+                await FilterManager.forceRenderFilterOptions(configData);
+            }
+            
+            console.log('Tabs wurden erfolgreich aktualisiert');
+        } catch (error) {
+            console.error('Fehler bei der Aktualisierung der Tabs:', error);
+            throw error;
+        }
     }
     
     // Weitere Button-Initialisierungen können hier hinzugefügt werden
@@ -356,38 +564,100 @@ function initButtons() {
 }
 
 function collectConfigData() {
+    // Erstelle ein leeres Konfigurationsobjekt
     const config = {
         fields: [],
         areas: []
     };
     
-    // Felder sammeln
-    document.querySelectorAll('#fieldsList .config-item').forEach(item => {
-        const label = item.querySelector('.field-label').value;
-        const type = item.querySelector('.field-type').value;
-        const required = item.querySelector('.field-required').checked;
-        const id = item.dataset.id || label.toLowerCase().replace(/\s+/g, '_');
+    try {
+        // Felder sammeln
+        const fieldItems = document.querySelectorAll('#fieldsList .config-item');
+        console.log(`Gefundene Feld-Elemente: ${fieldItems.length}`);
         
-        config.fields.push({ id, label, type, required });
-    });
-    
-    // Bereiche sammeln
-    document.querySelectorAll('#areasList .config-area').forEach(item => {
-        const name = item.querySelector('.area-name').value;
-        const multiple = item.querySelector('.area-multiple').checked;
-        const menuFilter = item.querySelector('.area-menu-filter').checked;
-        const changeable = item.querySelector('.area-changeable').checked;
-        
-        const buttons = [];
-        item.querySelectorAll('.button-item').forEach(btnItem => {
-            const label = btnItem.querySelector('.button-label').value;
-            buttons.push({ label });
+        fieldItems.forEach(item => {
+            const labelElement = item.querySelector('.field-label');
+            const typeElement = item.querySelector('.field-type');
+            const requiredElement = item.querySelector('.field-required');
+            
+            if (!labelElement || !typeElement || !requiredElement) {
+                console.warn('Fehlende Elemente für Feld:', item);
+                return; // Überspringe dieses Feld
+            }
+            
+            const label = labelElement.value.trim();
+            const type = typeElement.value;
+            const required = requiredElement.checked;
+            const id = item.dataset.id || label.toLowerCase().replace(/\s+/g, '_');
+            
+            config.fields.push({ id, label, type, required });
         });
         
-        config.areas.push({ name, multiple, menuFilter, changeable, buttons });
-    });
-    
-    return config;
+        // Bereiche sammeln
+        const areaItems = document.querySelectorAll('#areasList .config-area');
+        console.log(`Gefundene Bereich-Elemente: ${areaItems.length}`);
+        
+        areaItems.forEach(item => {
+            const nameElement = item.querySelector('.area-name');
+            const multipleElement = item.querySelector('.area-multiple');
+            const menuFilterElement = item.querySelector('.area-menu-filter');
+            const changeableElement = item.querySelector('.area-changeable');
+            
+            if (!nameElement || !multipleElement || !menuFilterElement || !changeableElement) {
+                console.warn('Fehlende Elemente für Bereich:', item);
+                return; // Überspringe diesen Bereich
+            }
+            
+            const name = nameElement.value.trim();
+            const multiple = multipleElement.checked;
+            const menuFilter = menuFilterElement.checked;
+            const changeable = changeableElement.checked;
+            
+            // ID für den Bereich generieren
+            const id = name;
+            
+            const buttons = [];
+            const buttonItems = item.querySelectorAll('.button-item');
+            
+            buttonItems.forEach(btnItem => {
+                const buttonLabelElement = btnItem.querySelector('.button-label');
+                if (!buttonLabelElement) {
+                    console.warn('Fehlendes Label-Element für Button:', btnItem);
+                    return; // Überspringe diesen Button
+                }
+                
+                const label = buttonLabelElement.value.trim();
+                if (label) {
+                    buttons.push({ label });
+                }
+            });
+            
+            if (name && buttons.length > 0) {
+                config.areas.push({ id, name, multiple, menuFilter, changeable, buttons });
+            }
+        });
+        
+        console.log('Gesammelte Konfiguration:', config);
+        
+        // Verifiziere, dass die JSON-Serialisierung fehlerfrei funktioniert
+        const jsonString = JSON.stringify(config, null, 2);
+        try {
+            // Versuche die Serialisierung zu dekodieren, um sicherzustellen, dass sie gültig ist
+            JSON.parse(jsonString);
+        } catch (jsonError) {
+            console.error('Ungültiges JSON würde generiert:', jsonError);
+            throw new Error('Die generierte Konfiguration ist kein gültiges JSON');
+        }
+        
+        return config;
+    } catch (error) {
+        console.error('Fehler beim Sammeln der Konfigurationsdaten:', error);
+        // Stelle sicher, dass immer ein gültiges Objekt zurückgegeben wird
+        return {
+            fields: [],
+            areas: []
+        };
+    }
 }
 
 function initFieldsEventListeners(fieldsList) {
@@ -463,27 +733,6 @@ function initAreasEventListeners(areasList) {
             buttonItem.remove();
         });
     });
-    
-    // Event-Listener für "Button hinzufügen"-Buttons
-    areasList.querySelectorAll('.add-button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const buttonsList = this.previousElementSibling;
-            const newButton = document.createElement('div');
-            newButton.className = 'button-item';
-            
-            newButton.innerHTML = `
-                <input type="text" class="button-label" value="Neuer Button">
-                <button type="button" class="danger-btn delete-button">×</button>
-            `;
-            
-            buttonsList.appendChild(newButton);
-            
-            // Event-Listener für den neuen Lösch-Button
-            newButton.querySelector('.delete-button').addEventListener('click', function() {
-                newButton.remove();
-            });
-        });
-    });
 }
 
 function initTabs() {
@@ -550,16 +799,18 @@ function initTabs() {
 
 // Generiere HTML für Filter-Optionen
 function generateFilterOptionsHtml(config) {
-    // Sicherstellen, dass config nicht undefined ist
-    if (!config) {
-        console.error('Keine Konfiguration für Filter-Optionen vorhanden');
-        return '<div id="filterOptions"><p>Konfiguration konnte nicht geladen werden.</p></div>';
-    }
-
-    // Sicherstellen, dass die erforderlichen Felder vorhanden sind
-    const fields = Array.isArray(config.fields) ? config.fields : [];
-    const areas = Array.isArray(config.areas) ? config.areas : [];
-
+    const fields = config.fields || [];
+    const areas = config.areas || [];
+    
+    console.log('Generiere Filter-Optionen mit Bereichen:', areas);
+    
+    // Debug: Prüfe, ob Bereiche korrekte Namen haben
+    areas.forEach((area, index) => {
+        if (!area.name || area.name === 'undefined') {
+            console.warn(`Bereich #${index} hat ungültigen Namen:`, area);
+        }
+    });
+    
     return `
         <div id="filterOptions">
             <div class="filter-section">
@@ -579,11 +830,14 @@ function generateFilterOptionsHtml(config) {
                 <div class="filter-options">
                     ${areas
                         .filter(area => area && area.name)
-                        .map(area => `
-                            <button class="filter-btn area-filter" data-value="${area.name}">
-                                ${area.name}
-                            </button>
-                        `).join('')}
+                        .map(area => {
+                            console.log(`Generiere Button für Bereich: ${area.name}`);
+                            return `
+                                <button class="filter-btn area-filter" data-value="${area.name}">
+                                    ${area.name}
+                                </button>
+                            `;
+                        }).join('')}
                 </div>
             </div>
         </div>
@@ -658,13 +912,25 @@ async function initializeFilterTab(config) {
         filterTab.innerHTML = generateFilterOptionsHtml(config);
         console.log('Filter-Tab HTML generiert');
         
+        // Warte kurz, um sicherzustellen, dass das DOM aktualisiert wurde
+        await new Promise(resolve => setTimeout(resolve, 150));
+        
         // Initialisiere den FilterManager
         await FilterManager.init();
         console.log('FilterManager erfolgreich initialisiert');
         
-        // Teste Filter-Buttons nach dem Generieren
-        const filterButtons = filterTab.querySelectorAll('.filter-btn');
-        console.log(`${filterButtons.length} Filter-Buttons gefunden und generiert`);
+        // Teste Filter-Buttons nach dem Generieren mit Verzögerung, um DOM-Updates zu berücksichtigen
+        setTimeout(() => {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            console.log(`${filterButtons.length} Filter-Buttons gefunden und generiert`);
+            
+            // Wenn keine Buttons gefunden wurden, versuche es noch einmal
+            if (filterButtons.length === 0) {
+                console.warn('Keine Filter-Buttons gefunden, versuche es erneut mit globalem Selektor');
+                const allButtons = document.querySelectorAll('.filter-btn');
+                console.log(`${allButtons.length} Filter-Buttons über globalen Selektor gefunden`);
+            }
+        }, 250);
     } catch (error) {
         console.error('Fehler beim Initialisieren des Filter-Tabs:', error);
         // Stelle sicher, dass der Filter-Tab trotz Fehler nicht leer bleibt

@@ -10,9 +10,9 @@
   "areas": [
     {
       "name": "Sexy",
-      "allowMultiple": false,
+      "multiple": false,
       "menuFilter": false,
-      "menuRelevant": false,
+      "changeable": false,
       "buttons": [
         {
           "label": "Yes"
@@ -27,9 +27,9 @@
     },
     {
       "name": "Allergene",
-      "allowMultiple": false,
+      "multiple": false,
       "menuFilter": false,
-      "menuRelevant": false,
+      "changeable": false,
       "buttons": [
         {
           "label": "Laktoseintoleranz"
@@ -50,9 +50,9 @@
     },
     {
       "name": "Frühstück",
-      "allowMultiple": false,
+      "multiple": false,
       "menuFilter": false,
-      "menuRelevant": false,
+      "changeable": false,
       "buttons": [
         {
           "label": "Saal"
@@ -70,9 +70,9 @@
     },
     {
       "name": "Mittagessen",
-      "allowMultiple": false,
+      "multiple": false,
       "menuFilter": false,
-      "menuRelevant": false,
+      "changeable": false,
       "buttons": [
         {
           "label": "Saal"
@@ -90,9 +90,9 @@
     },
     {
       "name": "Abendessen",
-      "allowMultiple": false,
+      "multiple": false,
       "menuFilter": true,
-      "menuRelevant": false,
+      "changeable": false,
       "buttons": [
         {
           "label": "Saal"
@@ -110,9 +110,9 @@
     },
     {
       "name": "Wo wird das Essen eingetragen!",
-      "allowMultiple": false,
+      "multiple": false,
       "menuFilter": true,
-      "menuRelevant": false,
+      "changeable": false,
       "buttons": [
         {
           "label": "Saal"
@@ -128,9 +128,5 @@
         }
       ]
     }
-  ],
-  "filters": {
-    "fields": [],
-    "areas": []
-  }
+  ]
 }

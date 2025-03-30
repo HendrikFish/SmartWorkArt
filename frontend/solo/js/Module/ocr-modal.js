@@ -1,7 +1,8 @@
 import { Modal } from './modal.js';
 import { Toast } from './module.js';
 import { SaveManager } from './save.js';
-import { ResidentManager } from '../script.js';
+// Import von ResidentManager aus script.js entfernen und stattdessen einen Direktzugriff auf window.ResidentManager verwenden
+// import { ResidentManager } from '../script.js';
 import { UploadManager } from './upload.js';
 
 export const OCRModalManager = {
@@ -41,9 +42,34 @@ export const OCRModalManager = {
     },
 
     async showResults(names, duplicates) {
-        return new Promise((resolve) => {
+        return new Promise(async (resolve) => {
             // Verstecke den Ladekreisel, falls er noch angezeigt wird
             UploadManager.hideLoadingOverlay();
+            
+            // Prüfe, welche Namen bereits existieren
+            const existingResidentsMap = {};
+            console.log('Prüfe, welche Namen bereits existieren...');
+            try {
+                const response = await fetch('/api/solo/residents');
+                if (response.ok) {
+                    const residents = await response.json();
+                    
+                    // Prüfe jeden Namen gegen die bestehenden Bewohner
+                    for (const name of names) {
+                        const exists = residents.some(resident => 
+                            resident.firstName.toLowerCase() === name.firstName.toLowerCase() && 
+                            resident.lastName.toLowerCase() === name.lastName.toLowerCase()
+                        );
+                        
+                        if (exists) {
+                            console.log(`Bewohner ${name.firstName} ${name.lastName} existiert bereits`);
+                            existingResidentsMap[`${name.firstName}_${name.lastName}`] = true;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Fehler beim Prüfen existierender Bewohner:', error);
+            }
             
             const modal = document.getElementById('ocrResultsModal');
             const content = modal.querySelector('.modal-content');
@@ -61,17 +87,30 @@ export const OCRModalManager = {
                         const isDuplicate = duplicates.some(dup => 
                             dup.firstName === name.firstName && dup.lastName === name.lastName);
                         
+                        // Prüfe, ob dieser Name bereits existiert
+                        const nameKey = `${name.firstName}_${name.lastName}`;
+                        const isExisting = existingResidentsMap[nameKey];
+                        
+                        // Setze CSS-Klassen basierend auf dem Status
+                        let itemClass = '';
+                        if (isExisting) itemClass = 'existing-resident';
+                        else if (isDuplicate) itemClass = 'duplicate';
+                        
                         return `
-                        <div class="ocr-result-item ${isDuplicate ? 'duplicate' : ''}">
+                        <div class="ocr-result-item ${itemClass}">
                             <div class="ocr-result-checkbox">
-                                <input type="checkbox" id="name_${index}" ${isDuplicate ? '' : 'checked'}>
+                                <input type="checkbox" id="name_${index}" ${(isExisting || isDuplicate) ? '' : 'checked'}>
                             </div>
                             <div class="ocr-result-name">
                                 <div class="ocr-name-fields">
                                     <input type="text" class="ocr-name-input firstName" data-index="${index}" value="${name.firstName}">
                                     <input type="text" class="ocr-name-input lastName" data-index="${index}" value="${name.lastName}">
                                 </div>
-                                ${isDuplicate ? `
+                                ${isExisting ? `
+                                <div class="ocr-existing-warning">
+                                    Person existiert bereits im System
+                                </div>
+                                ` : isDuplicate ? `
                                 <div class="ocr-duplicate-warning">
                                     Mögliches Duplikat gefunden
                                 </div>
@@ -183,9 +222,11 @@ export const OCRModalManager = {
         
         // "Als Bewohner speichern" Button
         content.querySelector('#confirmOcrResults').addEventListener('click', async () => {
+            console.log('Speichern-Button wurde geklickt');
             try {
                 // Sammle alle ausgewählten Namen
                 const selectedNames = [];
+                console.log('Suche nach ausgewählten Namen...');
                 content.querySelectorAll('.ocr-result-item').forEach((item, index) => {
                     const checkbox = item.querySelector(`input[type="checkbox"]`);
                     if (checkbox && checkbox.checked) {
@@ -193,27 +234,73 @@ export const OCRModalManager = {
                         const lastName = item.querySelector(`.lastName`).value.trim();
                         
                         if (firstName && lastName) {
-                            selectedNames.push({ firstName, lastName });
+                            // Speichere den Item-Typ (existierend oder neu)
+                            const isExisting = item.classList.contains('existing-resident');
+                            
+                            selectedNames.push({ 
+                                firstName, 
+                                lastName,
+                                isExisting
+                            });
+                            console.log(`Name ${index+1} ausgewählt:`, firstName, lastName, isExisting ? '(existiert bereits)' : '');
                         }
                     }
                 });
                 
                 if (selectedNames.length === 0) {
+                    console.log('Keine Namen ausgewählt');
                     Toast.show('Bitte wählen Sie mindestens einen Namen aus', 'warning');
                     return;
                 }
                 
+                console.log(`${selectedNames.length} Namen zum Speichern ausgewählt`);
+                
+                // Zähler für erfolgreich erstellte und übersprungene Bewohner
+                let createdCount = 0;
+                let skippedCount = 0;
+                
                 // Speichere die ausgewählten Bewohner
                 for (const name of selectedNames) {
-                    await SaveManager.createResident(name);
+                    if (name.isExisting) {
+                        console.log(`Überspringe existierenden Bewohner: ${name.firstName} ${name.lastName}`);
+                        skippedCount++;
+                        continue;
+                    }
+                    
+                    try {
+                        console.log('Speichere Bewohner:', name);
+                        await SaveManager.createResident({ 
+                            firstName: name.firstName, 
+                            lastName: name.lastName 
+                        });
+                        createdCount++;
+                    } catch (error) {
+                        // Wenn der Bewohner bereits existiert, überspringen
+                        if (error.message && error.message.includes('existiert bereits')) {
+                            console.log(`Bewohner ${name.firstName} ${name.lastName} existiert bereits, wird übersprungen`);
+                            skippedCount++;
+                        } else {
+                            // Bei anderen Fehlern abbrechen
+                            throw error;
+                        }
+                    }
                 }
                 
-                Toast.show(`${selectedNames.length} Bewohner wurden erfolgreich angelegt`, 'success');
+                // Zeige passende Erfolgsmeldung an
+                if (createdCount > 0 && skippedCount === 0) {
+                    Toast.show(`${createdCount} Bewohner wurden erfolgreich angelegt`, 'success');
+                } else if (createdCount > 0 && skippedCount > 0) {
+                    Toast.show(`${createdCount} Bewohner angelegt, ${skippedCount} übersprungen (existieren bereits)`, 'info');
+                } else if (createdCount === 0 && skippedCount > 0) {
+                    Toast.show(`Alle ${skippedCount} Bewohner existieren bereits`, 'warning');
+                }
                 
                 // Aktualisiere die Bewohnerliste
-                await ResidentManager.loadResidents();
+                console.log('Aktualisiere Bewohnerliste...');
+                await window.ResidentManager.loadResidents();
                 
                 // Modal schließen
+                console.log('Schließe Modal...');
                 Modal.hide('ocrResultsModal');
                 resolve();
             } catch (error) {
@@ -340,9 +427,16 @@ export const OCRModalManager = {
             Toast.show(`Bewohner ${firstName} ${lastName} wurde erfolgreich angelegt`, 'success');
             
             // Aktualisiere die Bewohnerliste
-            await ResidentManager.loadResidents();
+            await window.ResidentManager.loadResidents();
             return true;
         } catch (error) {
+            // Bei Fehler vom Typ "existiert bereits" keinen Fehler werfen
+            if (error.message && error.message.includes('existiert bereits')) {
+                console.log(`Bewohner ${firstName} ${lastName} existiert bereits, wird übersprungen`);
+                Toast.show(`Bewohner ${firstName} ${lastName} existiert bereits!`, 'warning');
+                return false;
+            }
+            
             console.error('Fehler beim Speichern des Bewohners:', error);
             Toast.show('Fehler beim Speichern des Bewohners', 'error');
             throw error;
