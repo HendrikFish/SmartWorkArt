@@ -452,7 +452,7 @@ select.form-input {
     margin-top: 60px;
 }
 
-/* Professionellere Kamera-Steuerelemente mit Material Design */
+/* Professionellere Kamera-Steuerelemente - bereinigte Version ohne überlagernde Elemente */
 .camera-controls {
     display: flex;
     justify-content: center;
@@ -468,12 +468,13 @@ select.form-input {
     z-index: 25;
 }
 
-/* Rechteckige Buttons für Kamerasteuerung */
+/* Rechteckige Buttons für Kamerasteuerung - bereinigte Version */
 .camera-control-btn {
+    /* Grundstil - keine zusätzlichen/verborgenen Elemente */
     background-color: white;
     border: 2px solid var(--gray-500);
     border-radius: 8px;
-    padding: 10px 20px;
+    padding: 0; /* Kein Padding, um Inhaltsüberlagerungen zu vermeiden */
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -482,8 +483,23 @@ select.form-input {
     position: relative;
     outline: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-family: sans-serif; /* Einheitliche Schriftart für die Symbole */
+    text-decoration: none; /* Keine Unterstreichung */
+    text-shadow: none; /* Kein Textschatten */
+    overflow: visible; /* Wichtig: verhindert Abschneiden von Zeichen */
 }
 
+/* Entferne alle before/after Pseudo-Elemente, die Überlagerungen verursachen könnten */
+.camera-control-btn::before,
+.camera-control-btn::after,
+#captureBtn::before,
+#captureBtn::after,
+#switchCameraBtn::before,
+#switchCameraBtn::after {
+    content: none !important; /* Keine zusätzlichen Inhalte durch Pseudo-Elemente */
+}
+
+/* Einfache Hover/Active-Effekte ohne Überlagerungen */
 .camera-control-btn:hover {
     background-color: var(--gray-100);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);

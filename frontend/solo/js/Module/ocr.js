@@ -6,13 +6,16 @@ import { UploadManager } from './upload.js';
 export const OCRManager = {
     async processImage(imageFile) {
         try {
+            // Debug: File-Typ und Größe prüfen, um festzustellen, ob die Parameter konsistent sind
+            console.log('OCR-Verarbeitung gestartet für:', {
+                name: imageFile.name,
+                type: imageFile.type,
+                size: imageFile.size + ' Bytes',
+                lastModified: new Date(imageFile.lastModified).toISOString()
+            });
+            
             // Lade-Anzeige anzeigen
             Toast.show('Bild wird verarbeitet...', 'info', 5000);
-            
-            // Debug-Ausgabe
-            console.log('Verarbeite Bild:', imageFile);
-            console.log('Bildgröße:', imageFile.size, 'Bytes');
-            console.log('Bildtyp:', imageFile.type);
             
             // FormData für den Upload vorbereiten
             const formData = new FormData();
@@ -20,61 +23,78 @@ export const OCRManager = {
 
             // OCR-API aufrufen
             console.log('Sende Bild an API...');
-            const response = await fetch('/api/solo/ocr/process', {
-                method: 'POST',
-                body: formData
-            });
+            
+            try {
+                const response = await fetch('/api/solo/ocr/process', {
+                    method: 'POST',
+                    body: formData,
+                    // Erhöhe Timeout für größere Bilder
+                    timeout: 30000
+                });
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Fehler bei der Texterkennung');
-            }
+                if (!response.ok) {
+                    // Versuche, detaillierte Fehlerinformationen zu erhalten
+                    let errorMessage = 'Fehler bei der Texterkennung';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (e) {
+                        // Wenn kein JSON zurückkommt, verwende den HTTP-Status
+                        errorMessage = `Fehler bei der Texterkennung (${response.status}: ${response.statusText})`;
+                    }
+                    throw new Error(errorMessage);
+                }
 
-            console.log('API-Antwort erhalten');
-            const result = await response.json();
-            console.log('OCR-Ergebnis:', result);
-            
-            // Ladekreisel ausblenden, nachdem Text erkannt wurde
-            UploadManager.hideLoadingOverlay();
-            
-            // Auch wenn kein Text erkannt wurde, speichern wir das Ergebnis (leerer String)
-            const recognizedText = result.text || '';
-            console.log('Erkannter Text:', recognizedText || 'Kein Text erkannt');
-            OCRModalManager.lastRecognizedText = recognizedText;
-            
-            if (!result.success || !recognizedText) {
-                // Zeige einen deutlicheren Hinweis und öffne direkt das Volltext-Modal
-                Toast.show('Kein Text erkannt. Bitte manuell Namen eingeben.', 'warning', 5000);
+                console.log('API-Antwort erhalten');
+                const result = await response.json();
+                console.log('OCR-Ergebnis:', result);
                 
-                // Kurze Verzögerung, damit der Toast sichtbar ist, dann direkt zum Volltext-Modal
-                setTimeout(() => {
-                    OCRModalManager.showFullTextModal('');
-                }, 800);
-                return [];
-            }
-
-            // Extrahiere Namen aus dem erkannten Text
-            const names = this.extractNames(recognizedText);
-            console.log('Extrahierte Namen:', names.length > 0 ? names : 'Keine Namen erkannt');
-            
-            // Prüfe auf Duplikate
-            const duplicates = await this.checkDuplicates(names);
-            
-            // Wenn Namen erkannt wurden, zeige sie an
-            if (names.length > 0) {
-                // Zeige die erkannten Namen im OCR-Modal an
-                await OCRModalManager.showResults(names, duplicates);
-            } else {
-                // Wenn keine Namen erkannt wurden, zeige Hinweis und dann den vollständigen Text an
-                Toast.show('Keine Namen im Dokument gefunden. Bitte markieren Sie die Namen manuell.', 'warning', 5000);
+                // Stellen wir sicher, dass wir das Lade-Overlay auch wirklich ausblenden
+                UploadManager.hideLoadingOverlay();
                 
-                // Kurze Verzögerung, damit der Toast sichtbar ist
-                setTimeout(() => {
-                    OCRModalManager.showFullTextModal(recognizedText);
-                }, 800);
+                // Auch wenn kein Text erkannt wurde, speichern wir das Ergebnis (leerer String)
+                const recognizedText = result.text || '';
+                console.log('Erkannter Text:', recognizedText || 'Kein Text erkannt');
+                OCRModalManager.lastRecognizedText = recognizedText;
+                
+                if (!result.success || !recognizedText) {
+                    // Zeige einen deutlicheren Hinweis und öffne direkt das Volltext-Modal
+                    Toast.show('Kein Text erkannt. Bitte manuell Namen eingeben.', 'warning', 5000);
+                    
+                    // Kurze Verzögerung, damit der Toast sichtbar ist, dann direkt zum Volltext-Modal
+                    setTimeout(() => {
+                        OCRModalManager.showFullTextModal('');
+                    }, 800);
+                    return [];
+                }
+
+                // Extrahiere Namen aus dem erkannten Text
+                const names = this.extractNames(recognizedText);
+                console.log('Extrahierte Namen:', names.length > 0 ? names : 'Keine Namen erkannt');
+                
+                // Prüfe auf Duplikate
+                const duplicates = await this.checkDuplicates(names);
+                
+                // Wenn Namen erkannt wurden, zeige sie an
+                if (names.length > 0) {
+                    // Zeige die erkannten Namen im OCR-Modal an
+                    await OCRModalManager.showResults(names, duplicates);
+                } else {
+                    // Wenn keine Namen erkannt wurden, zeige Hinweis und dann den vollständigen Text an
+                    Toast.show('Keine Namen im Dokument gefunden. Bitte markieren Sie die Namen manuell.', 'warning', 5000);
+                    
+                    // Kurze Verzögerung, damit der Toast sichtbar ist
+                    setTimeout(() => {
+                        OCRModalManager.showFullTextModal(recognizedText);
+                    }, 800);
+                }
+                
+                return names;
+            } catch (apiError) {
+                // Spezifischer API-Fehler
+                console.error('API-Fehler bei der OCR-Verarbeitung:', apiError);
+                throw new Error(`Fehler bei der Texterkennung: ${apiError.message}`);
             }
-            
-            return names;
         } catch (error) {
             console.error('Fehler bei der OCR-Verarbeitung:', error);
             // Stelle sicher, dass der Ladekreisel auch bei Fehlern ausgeblendet wird

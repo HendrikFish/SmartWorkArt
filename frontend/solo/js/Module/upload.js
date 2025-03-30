@@ -130,93 +130,104 @@ export const UploadManager = {
         const container = document.querySelector('.camera-controls');
         if (!container) return;
 
-        // Rechteckige Buttons mit Schwarz-Weiß-Symbolen
-        container.innerHTML = `
-            <button type="button" id="captureBtn" class="camera-control-btn">
-                <span style="font-size: 18px; color: #000;">⬤</span>
-            </button>
-            <button type="button" id="switchCameraBtn" class="camera-control-btn">
-                <span style="font-size: 18px; color: #000;">↻</span>
-            </button>
-        `;
+        // Vollständige Neuerstellung der Buttons mit bereinigtem Inhalt
+        // und nur den gewünschten Symbolen ohne überlagernde Elemente
+        container.innerHTML = '';
         
-        // Verbessere die Button-Styles direkt
-        const captureBtn = document.getElementById('captureBtn');
-        const switchBtn = document.getElementById('switchCameraBtn');
+        // Erstelle die Buttons individuell mit dem DOM API
+        const captureBtn = document.createElement('button');
+        captureBtn.id = 'captureBtn';
+        captureBtn.className = 'camera-control-btn';
+        captureBtn.type = 'button';
         
-        if (captureBtn) {
-            // Stil für den Aufnahme-Button (rechteckig)
-            captureBtn.style.width = '80px';
-            captureBtn.style.height = '50px';
-            captureBtn.style.borderRadius = '8px';
+        const switchBtn = document.createElement('button');
+        switchBtn.id = 'switchCameraBtn';
+        switchBtn.className = 'camera-control-btn';
+        switchBtn.type = 'button';
+        
+        // Füge die Buttons zum Container hinzu
+        container.appendChild(captureBtn);
+        container.appendChild(switchBtn);
+        
+        // Füge die Symbole direkt als Text ohne zusätzliche Span-Elemente hinzu
+        captureBtn.textContent = '⬤';
+        switchBtn.textContent = '↻';
+        
+        // Stil für den Aufnahme-Button (rechteckig)
+        captureBtn.style.width = '80px';
+        captureBtn.style.height = '50px';
+        captureBtn.style.borderRadius = '8px';
+        captureBtn.style.backgroundColor = '#ffffff';
+        captureBtn.style.border = '2px solid #3b82f6';
+        captureBtn.style.cursor = 'pointer';
+        captureBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        captureBtn.style.display = 'flex';
+        captureBtn.style.alignItems = 'center';
+        captureBtn.style.justifyContent = 'center';
+        captureBtn.style.transition = 'all 0.2s ease';
+        captureBtn.style.fontSize = '18px';
+        captureBtn.style.color = '#000';
+        captureBtn.style.fontWeight = 'normal';
+        
+        // Hover-Effekt manuell hinzufügen
+        captureBtn.addEventListener('mouseover', () => {
+            captureBtn.style.backgroundColor = '#f0f9ff';
+            captureBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+        });
+        
+        captureBtn.addEventListener('mouseout', () => {
             captureBtn.style.backgroundColor = '#ffffff';
-            captureBtn.style.border = '2px solid #3b82f6';
-            captureBtn.style.cursor = 'pointer';
             captureBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-            captureBtn.style.display = 'flex';
-            captureBtn.style.alignItems = 'center';
-            captureBtn.style.justifyContent = 'center';
-            captureBtn.style.transition = 'all 0.2s ease';
-            
-            // Hover-Effekt manuell hinzufügen
-            captureBtn.addEventListener('mouseover', () => {
-                captureBtn.style.backgroundColor = '#f0f9ff';
-                captureBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
-            });
-            
-            captureBtn.addEventListener('mouseout', () => {
-                captureBtn.style.backgroundColor = '#ffffff';
-                captureBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-            });
-            
-            captureBtn.addEventListener('mousedown', () => {
-                captureBtn.style.transform = 'translateY(2px)';
-                captureBtn.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
-            });
-            
-            captureBtn.addEventListener('mouseup', () => {
-                captureBtn.style.transform = 'translateY(0)';
-                captureBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
-            });
-        }
+        });
         
-        if (switchBtn) {
-            // Stil für den Wechsel-Button (rechteckig)
-            switchBtn.style.width = '60px';
-            switchBtn.style.height = '50px';
-            switchBtn.style.borderRadius = '8px';
+        captureBtn.addEventListener('mousedown', () => {
+            captureBtn.style.transform = 'translateY(2px)';
+            captureBtn.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
+        });
+        
+        captureBtn.addEventListener('mouseup', () => {
+            captureBtn.style.transform = 'translateY(0)';
+            captureBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+        });
+        
+        // Stil für den Wechsel-Button (rechteckig)
+        switchBtn.style.width = '60px';
+        switchBtn.style.height = '50px';
+        switchBtn.style.borderRadius = '8px';
+        switchBtn.style.backgroundColor = '#ffffff';
+        switchBtn.style.border = '2px solid #64748b';
+        switchBtn.style.cursor = 'pointer';
+        switchBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        switchBtn.style.display = 'flex';
+        switchBtn.style.alignItems = 'center';
+        switchBtn.style.justifyContent = 'center';
+        switchBtn.style.transition = 'all 0.2s ease';
+        switchBtn.style.fontSize = '24px';
+        switchBtn.style.color = '#000';
+        switchBtn.style.fontWeight = 'normal';
+        
+        // Hover-Effekt manuell hinzufügen
+        switchBtn.addEventListener('mouseover', () => {
+            switchBtn.style.backgroundColor = '#f8fafc';
+            switchBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+        });
+        
+        switchBtn.addEventListener('mouseout', () => {
             switchBtn.style.backgroundColor = '#ffffff';
-            switchBtn.style.border = '2px solid #64748b';
-            switchBtn.style.cursor = 'pointer';
             switchBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-            switchBtn.style.display = 'flex';
-            switchBtn.style.alignItems = 'center';
-            switchBtn.style.justifyContent = 'center';
-            switchBtn.style.transition = 'all 0.2s ease';
-            
-            // Hover-Effekt manuell hinzufügen
-            switchBtn.addEventListener('mouseover', () => {
-                switchBtn.style.backgroundColor = '#f8fafc';
-                switchBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
-            });
-            
-            switchBtn.addEventListener('mouseout', () => {
-                switchBtn.style.backgroundColor = '#ffffff';
-                switchBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-            });
-            
-            switchBtn.addEventListener('mousedown', () => {
-                switchBtn.style.transform = 'translateY(2px)';
-                switchBtn.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
-            });
-            
-            switchBtn.addEventListener('mouseup', () => {
-                switchBtn.style.transform = 'translateY(0)';
-                switchBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
-            });
-        }
+        });
         
-        console.log('Kamera-Buttons wurden mit rechteckigem Design und Schwarz-Weiß-Symbolen neu erstellt');
+        switchBtn.addEventListener('mousedown', () => {
+            switchBtn.style.transform = 'translateY(2px)';
+            switchBtn.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
+        });
+        
+        switchBtn.addEventListener('mouseup', () => {
+            switchBtn.style.transform = 'translateY(0)';
+            switchBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+        });
+        
+        console.log('Kamera-Buttons wurden mit reinen Unicode-Symbolen neu erstellt');
     },
 
     optimizeForMobile() {
@@ -306,13 +317,16 @@ export const UploadManager = {
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, videoWidth, videoHeight);
             
-            // Optimiere das Bild für die OCR
+            // Wende Bildverbesserungen für bessere OCR an
             this.enhanceImageForOCR(canvas, context);
             
-            // Konvertiere Canvas zu Blob/File
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+            // Zusätzliche Bildschärfung für bessere Texterkennung
+            this.applyTextEnhancement(canvas, context);
             
-            console.log('Bild erfolgreich erfasst:', blob.size, 'Bytes');
+            // Konvertiere Canvas zu Blob/File mit hoher Qualität für Texterkennung
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+            
+            console.log('Bild erfolgreich erfasst und optimiert:', blob.size, 'Bytes');
             return blob;
         } catch (error) {
             console.error('Fehler beim Erfassen des Bildes:', error);
@@ -330,9 +344,9 @@ export const UploadManager = {
             console.log('Verbessere Bild für OCR...');
             
             // Parameter für die Bildverbesserung
-            const contrast = 1.4;   // Erhöhter Kontrast für bessere Texterkennung
-            const brightness = 10;  // Leicht erhöhte Helligkeit
-            const threshold = 120;  // Schwellwert für Binarisierung (0-255)
+            const contrast = 1.6;   // Höherer Kontrast für bessere Texterkennung
+            const brightness = 15;  // Erhöhte Helligkeit
+            const threshold = 130;  // Höherer Schwellwert für Binarisierung (0-255)
             
             // Verbessere Kontrast und Helligkeit
             for (let i = 0; i < data.length; i += 4) {
@@ -341,8 +355,7 @@ export const UploadManager = {
                 data[i + 1] = Math.min(255, Math.max(0, (data[i + 1] - 128) * contrast + 128 + brightness));
                 data[i + 2] = Math.min(255, Math.max(0, (data[i + 2] - 128) * contrast + 128 + brightness));
                 
-                // Optional: Binarisierung für Text
-                // Konvertiere zu Graustufe und wende Schwellwert an
+                // Binarisierung für Text - Schwarz auf Weiß für bessere OCR
                 const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
                 if (gray > threshold) {
                     data[i] = data[i + 1] = data[i + 2] = 255; // Weiß
@@ -354,10 +367,74 @@ export const UploadManager = {
             // Aktualisiere das Canvas mit den verbesserten Daten
             context.putImageData(imageData, 0, 0);
             
-            console.log('Bild wurde optimiert: Kontrast und Helligkeit angepasst');
+            console.log('Bild wurde für OCR optimiert: Kontrast und Binarisierung angewendet');
             return true;
         } catch (error) {
             console.error('Fehler bei der Bildverbesserung:', error);
+            return false;
+        }
+    },
+    
+    // Neue Methode für bessere Texterkennung mit Kantenbetonung
+    applyTextEnhancement(canvas, context) {
+        try {
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const pixels = imageData.data;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Erstelle ein temporäres Array für die verarbeiteten Pixel
+            const tempArray = new Uint8ClampedArray(pixels.length);
+            
+            // Einfacher Unsharp-Masking-Algorithmus zur Kantenschärfung
+            // Dies betont Textränder, was die OCR verbessern kann
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = (y * width + x) * 4;
+                    
+                    // Einfacher Sobel-Operator für Kantenbetonung
+                    const idx_tl = ((y-1) * width + (x-1)) * 4;
+                    const idx_t  = ((y-1) * width + x) * 4;
+                    const idx_tr = ((y-1) * width + (x+1)) * 4;
+                    const idx_l  = (y * width + (x-1)) * 4;
+                    const idx_r  = (y * width + (x+1)) * 4;
+                    const idx_bl = ((y+1) * width + (x-1)) * 4;
+                    const idx_b  = ((y+1) * width + x) * 4;
+                    const idx_br = ((y+1) * width + (x+1)) * 4;
+                    
+                    // Berechne gewichteten Durchschnitt für Schärfung
+                    const center = pixels[idx];
+                    const avgValue = (
+                        pixels[idx_tl] + pixels[idx_t] + pixels[idx_tr] +
+                        pixels[idx_l] + pixels[idx_r] +
+                        pixels[idx_bl] + pixels[idx_b] + pixels[idx_br]
+                    ) / 8;
+                    
+                    // Verstärke Kontrast zwischen Zentrum und Umgebung (Schärfung)
+                    const sharpness = 0.8; // Schärfungsgrad
+                    tempArray[idx] = Math.min(255, Math.max(0, center + sharpness * (center - avgValue)));
+                    tempArray[idx+1] = tempArray[idx];
+                    tempArray[idx+2] = tempArray[idx];
+                    tempArray[idx+3] = pixels[idx+3]; // Alpha-Kanal unverändert lassen
+                }
+            }
+            
+            // Kopiere verarbeitete Pixel zurück ins Original-Array
+            for (let i = 0; i < pixels.length; i += 4) {
+                if (tempArray[i] !== undefined) {
+                    pixels[i] = tempArray[i];
+                    pixels[i+1] = tempArray[i+1];
+                    pixels[i+2] = tempArray[i+2];
+                }
+            }
+            
+            // Aktualisiere das Canvas mit den verbesserten Daten
+            context.putImageData(imageData, 0, 0);
+            
+            console.log('Textverbesserung durch Kantenschärfung angewendet');
+            return true;
+        } catch (error) {
+            console.error('Fehler bei der Textverstärkung:', error);
             return false;
         }
     },
@@ -471,28 +548,24 @@ export const UploadManager = {
     // Verarbeitung des aufgenommenen Bildes
     async processImageFromCamera() {
         try {
-            // Stoppe die Kamera und räume auf
-            if (this.currentStream) {
-                this.stopCamera(this.currentStream);
-                this.currentStream = null;
-            }
-            
-            // Modal schließen, da die Aufnahme erfolgreich war
-            Modal.hide('cameraModal');
-            
-            // Explizit Ladebildschirm anzeigen bevor wir das Bild aufnehmen
+            // Lade-Overlay anzeigen
             this.showLoadingOverlay();
             
             // Toast anzeigen, dass die Auswertung läuft
-            Toast.show('Auswertung läuft...', 'info', 5000);
+            Toast.show('Bild wird verarbeitet...', 'info', 5000);
             
-            // Bild aufnehmen
+            console.log('Verarbeite Kamera-Aufnahme...');
+            
+            // Bild von der Kamera aufnehmen
             const imageBlob = await this.captureImage();
             if (!imageBlob) {
+                console.error('Kein Bild von der Kamera erhalten');
                 Toast.show('Fehler beim Aufnehmen des Bildes', 'error', 5000);
                 this.hideLoadingOverlay();
                 return;
             }
+            
+            console.log('Kamera-Bild erfolgreich aufgenommen:', imageBlob.size, 'Bytes');
             
             // Erstelle einen File-Objekt aus dem Blob für eine einheitliche Verarbeitung
             const imageFile = new File([imageBlob], "kamera_aufnahme.jpg", {
@@ -500,24 +573,37 @@ export const UploadManager = {
                 lastModified: new Date().getTime()
             });
             
-            console.log('Bild erfolgreich aufgenommen und als File-Objekt formatiert');
+            console.log('Kamera-Bild in File-Objekt konvertiert und bereit für OCR-Verarbeitung');
             
-            // Stelle sicher, dass der Ladebildschirm sichtbar ist
-            this.showLoadingOverlay();
+            // Stoppe die Kamera und räume auf
+            if (this.currentStream) {
+                this.stopCamera(this.currentStream);
+                this.currentStream = null;
+            }
             
-            // Verarbeite das Bild genau wie in der Desktop-Version
-            await OCRManager.processImage(imageFile);
+            // Modal schließen, da wir das Bild bereits aufgenommen haben
+            Modal.hide('cameraModal');
             
-            // Ladebildschirm nach dem OCR-Prozess ausblenden (als Fallback)
-            // Dies sollte normalerweise bereits im OCR-Manager passieren
-            setTimeout(() => {
+            try {
+                // Die exakt gleiche Verarbeitung wie bei Datei-Upload verwenden
+                await OCRManager.processImage(imageFile);
+                console.log('OCR-Verarbeitung für Kamera-Bild abgeschlossen');
+            } catch (error) {
+                console.error('Fehler bei der OCR-Verarbeitung des Kamera-Bildes:', error);
+                Toast.show('Fehler bei der Texterkennung', 'error');
                 this.hideLoadingOverlay();
-            }, 500);
-            
+            }
         } catch (error) {
-            console.error('Fehler bei der OCR-Verarbeitung:', error);
-            Toast.show('Fehler bei der OCR-Verarbeitung', 'error', 5000);
+            console.error('Fehler bei der Kamera-Aufnahme:', error);
+            Toast.show('Fehler bei der Kamera-Aufnahme', 'error');
             this.hideLoadingOverlay();
+            
+            // Bei einem Fehler die Kamera beenden und Modal schließen
+            if (this.currentStream) {
+                this.stopCamera(this.currentStream);
+                this.currentStream = null;
+            }
+            Modal.hide('cameraModal');
         }
     },
 
@@ -526,12 +612,20 @@ export const UploadManager = {
         // Listener für den Aufnahme-Button
         const captureBtn = document.getElementById('captureBtn');
         if (captureBtn) {
-            // Alten Event-Listener entfernen
+            // Entferne ALLE vorhandenen Event-Listener durch Klonen
             const newCaptureBtn = captureBtn.cloneNode(true);
-            captureBtn.parentNode.replaceChild(newCaptureBtn, captureBtn);
+            // Bewahre den Textinhalt - wichtig!
+            const originalSymbol = captureBtn.textContent;
+            newCaptureBtn.textContent = originalSymbol;
+            
+            // Ersetze den Button
+            if (captureBtn.parentNode) {
+                captureBtn.parentNode.replaceChild(newCaptureBtn, captureBtn);
+            }
             
             // Neuen Event-Listener hinzufügen
             newCaptureBtn.addEventListener('click', () => {
+                console.log('Capture Button clicked');
                 this.processImageFromCamera();
             });
         }
@@ -539,14 +633,24 @@ export const UploadManager = {
         // Listener für den Kamera-Wechsel-Button
         const switchCameraBtn = document.getElementById('switchCameraBtn');
         if (switchCameraBtn) {
-            // Alten Event-Listener entfernen
+            // Entferne ALLE vorhandenen Event-Listener durch Klonen
             const newSwitchBtn = switchCameraBtn.cloneNode(true);
-            switchCameraBtn.parentNode.replaceChild(newSwitchBtn, switchCameraBtn);
+            // Bewahre den Textinhalt - wichtig!
+            const originalSymbol = switchCameraBtn.textContent;
+            newSwitchBtn.textContent = originalSymbol;
+            
+            // Ersetze den Button
+            if (switchCameraBtn.parentNode) {
+                switchCameraBtn.parentNode.replaceChild(newSwitchBtn, switchCameraBtn);
+            }
             
             // Neuen Event-Listener hinzufügen
             newSwitchBtn.addEventListener('click', () => {
+                console.log('Switch Button clicked');
                 this.switchCamera();
             });
         }
+        
+        console.log('Kamera-Control-Listener wurden hinzugefügt');
     }
 }; 

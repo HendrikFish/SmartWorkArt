@@ -146,87 +146,82 @@ export const OCRModalManager = {
 
     // Zeige den Volltext-Modal an mit dem erkannten Text
     showFullTextModal(text) {
-        // Speichere den aktuellen Text für spätere Verwendung
-        this.lastRecognizedText = text || '';
-        // Zurücksetzen der gespeicherten Modal-Position
-        this.modalPosition = null;
-        
-        const modal = document.getElementById('ocrResultsModal');
-        const content = modal.querySelector('.modal-content');
-        
-        // Prüfen, ob Text überhaupt vorhanden ist
-        const hasText = text && text.trim().length > 0;
-        
-        // Formatiere den Text und wandle Wörter in Buttons um
-        let buttonsHtml = '';
-        if (hasText) {
-            const words = text.split(/\s+/);
-            buttonsHtml = words.map(word => {
-                // Ignoriere leere Wörter oder Sonderzeichen
-                if (word.length <= 1 || !/[a-zA-ZäöüÄÖÜß]/.test(word)) {
-                    return '';
-                }
-                
-                // Bereinige das Wort von unerwünschten Zeichen
-                const cleanWord = word.replace(/[^a-zA-ZäöüÄÖÜß\-]/g, '');
-                if (cleanWord.length <= 1) {
-                    return '';
-                }
-                
-                return `<button type="button" class="word-button">${cleanWord}</button>`;
-            }).filter(button => button !== '').join(' ');
-        }
-        
-        content.innerHTML = `
-            <div class="modal-header">
-                <h2>${hasText ? 'Erkannter Text' : 'Manueller Eintrag'}</h2>
-                <div class="header-actions">
-                    <button type="button" class="icon-btn close-modal">×</button>
-                </div>
-            </div>
-            <div class="ocr-scroll-container" ${!hasText ? 'style="display: none;"' : ''}>
-                ${hasText ? `<div class="ocr-full-text">${buttonsHtml}</div>` : ''}
-            </div>
-            <div class="name-selection-form">
-                <h3>${hasText ? 'Bitte wählen Sie Vor- und Nachnamen' : 'Bitte geben Sie den Namen manuell ein'}</h3>
-                ${hasText ? '<p class="touch-hint">Tippen Sie auf ein Wort, um es auszuwählen</p>' : 
-                '<p class="no-text-hint">Es wurde kein Text erkannt. Bitte geben Sie den Namen manuell ein.</p>'}
-                <div class="form-group">
-                    <label for="firstName">Vorname</label>
-                    <input type="text" id="firstName" class="form-control" placeholder="Vorname eingeben">
-                </div>
-                <div class="form-group">
-                    <label for="lastName">Nachname</label>
-                    <input type="text" id="lastName" class="form-control" placeholder="Nachname eingeben">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="primary-btn" id="confirmNameBtn">Namen übernehmen</button>
-                <button type="button" class="danger-btn" id="cancelOcrBtn">Abbrechen</button>
-            </div>
-        `;
-
-        // Event-Listener für die Buttons im Text, nur wenn Text vorhanden ist
-        if (hasText) {
-            this.attachFullTextModalListeners(content);
-        }
-        
-        // Styles fixieren
-        content.style.overflow = 'hidden'; // Verhindert horizontales Scrollen
-        
-        // Modal anzeigen
-        Modal.show('ocrResultsModal');
-        
-        // Modal stabilisieren
-        this.stabilizeModal();
-        
-        // Setze automatisch den Fokus auf das Vorname-Feld
-        setTimeout(() => {
-            const firstNameInput = content.querySelector('#firstName');
-            if (firstNameInput) {
-                firstNameInput.focus();
+        try {
+            // Wende Modal-Zuweisung zu DOM-Variablen an, falls noch nicht vorhanden
+            if (!this.modals.fullTextModal) {
+                this.initializeModals();
             }
-        }, 300);
+
+            // Hole den Container für den Text
+            const textContainer = document.getElementById('ocrFullText');
+            if (!textContainer) {
+                console.error('OCR Volltext-Container nicht gefunden');
+                return;
+            }
+
+            // Zeige das Modal
+            Modal.show('fullTextModal');
+
+            // Prüfe, ob Text erkannt wurde
+            if (text && text.trim().length > 0) {
+                // Wenn Text vorhanden, normalen Ablauf fortsetzen - zeige Wortauswahl
+                textContainer.innerHTML = ''; // Container leeren
+                
+                // Erstelle klickbare Wörter
+                const words = text.split(/\s+/);
+                words.forEach(word => {
+                    if (word.trim().length > 0) {
+                        const wordSpan = document.createElement('span');
+                        wordSpan.className = 'word-button';
+                        wordSpan.textContent = word;
+                        wordSpan.addEventListener('click', () => this.toggleWordSelection(wordSpan));
+                        textContainer.appendChild(wordSpan);
+                        textContainer.appendChild(document.createTextNode(' '));
+                    }
+                });
+                
+                // Zeige Hinweis für Touch-Geräte
+                const touchHint = document.getElementById('touchSelectionHint');
+                if (touchHint) {
+                    touchHint.style.display = 'block';
+                }
+                
+                // Blende "Kein Text" Hinweis aus
+                const noTextHint = document.getElementById('noTextRecognizedHint');
+                if (noTextHint) {
+                    noTextHint.style.display = 'none';
+                }
+            } else {
+                // Wenn kein Text erkannt wurde, zeige einen entsprechenden Hinweis
+                // und biete direktes manuelles Eingabeformular an
+                
+                textContainer.innerHTML = '<div class="no-text-detected">Kein Text im Bild erkannt.</div>';
+                
+                // Blende Touch-Hinweis aus
+                const touchHint = document.getElementById('touchSelectionHint');
+                if (touchHint) {
+                    touchHint.style.display = 'none';
+                }
+                
+                // Zeige "Kein Text" Hinweis an
+                const noTextHint = document.getElementById('noTextRecognizedHint');
+                if (noTextHint) {
+                    noTextHint.style.display = 'block';
+                    noTextHint.innerHTML = `
+                        <div class="no-text-hint">
+                            <strong>Kein Text erkannt!</strong> 
+                            <p>Bitte geben Sie die Namen direkt ein oder versuchen Sie es mit einem besser belichteten Bild.</p>
+                        </div>
+                    `;
+                }
+                
+                // Aktiviere direkt das manuelle Namenseingabeformular
+                this.activateManualNameEntry();
+            }
+        } catch (error) {
+            console.error('Fehler beim Anzeigen des OCR-Volltextmodals:', error);
+            Toast.show('Fehler beim Anzeigen des erkannten Textes', 'error');
+        }
     },
 
     attachEventListeners(content, names, resolve) {
@@ -480,6 +475,53 @@ export const OCRModalManager = {
         } catch (error) {
             console.error('Fehler beim Prüfen auf existierende Bewohner:', error);
             return false; // Im Zweifelsfall erlauben wir das Speichern
+        }
+    },
+
+    // Verarbeitet manuell eingegebene Namen und übergibt sie zur Suche
+    processManuallyEnteredNames() {
+        try {
+            // Sammle alle Namenspaare
+            const nameRows = document.querySelectorAll('.name-input-row');
+            const names = [];
+            
+            nameRows.forEach(row => {
+                const firstNameInput = row.querySelector('.firstName-input');
+                const lastNameInput = row.querySelector('.lastName-input');
+                
+                if (firstNameInput && lastNameInput) {
+                    const firstName = firstNameInput.value.trim();
+                    const lastName = lastNameInput.value.trim();
+                    
+                    // Nur gültige Namen hinzufügen (beide Felder müssen ausgefüllt sein)
+                    if (firstName && lastName) {
+                        names.push({
+                            firstName,
+                            lastName,
+                            confidence: 1.0, // Manuell eingegebene Namen haben höchste Konfidenz
+                            manuallyEntered: true
+                        });
+                    }
+                }
+            });
+            
+            // Prüfe, ob Namen eingegeben wurden
+            if (names.length === 0) {
+                Toast.show('Bitte geben Sie mindestens einen vollständigen Namen ein', 'warning');
+                return;
+            }
+            
+            // Namen zur Suche übergeben
+            console.log('Manuell eingegebene Namen:', names);
+            
+            // Modal schließen und Ergebnisse anzeigen
+            Modal.hide('fullTextModal');
+            
+            // OCRManager.showResults aufrufen mit den manuell eingegebenen Namen
+            this.showResults(names, []);
+        } catch (error) {
+            console.error('Fehler bei der Verarbeitung manuell eingegebener Namen:', error);
+            Toast.show('Fehler bei der Namensverarbeitung', 'error');
         }
     }
 }; 
