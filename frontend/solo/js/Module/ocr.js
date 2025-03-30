@@ -9,11 +9,17 @@ export const OCRManager = {
             // Lade-Anzeige anzeigen
             Toast.show('Bild wird verarbeitet...', 'info', 5000);
             
+            // Debug-Ausgabe
+            console.log('Verarbeite Bild:', imageFile);
+            console.log('Bildgröße:', imageFile.size, 'Bytes');
+            console.log('Bildtyp:', imageFile.type);
+            
             // FormData für den Upload vorbereiten
             const formData = new FormData();
             formData.append('image', imageFile);
 
             // OCR-API aufrufen
+            console.log('Sende Bild an API...');
             const response = await fetch('/api/solo/ocr/process', {
                 method: 'POST',
                 body: formData
@@ -24,20 +30,32 @@ export const OCRManager = {
                 throw new Error(error.message || 'Fehler bei der Texterkennung');
             }
 
+            console.log('API-Antwort erhalten');
             const result = await response.json();
+            console.log('OCR-Ergebnis:', result);
             
-            if (!result.success || !result.text) {
-                throw new Error('Kein Text erkannt');
-            }
-
             // Ladekreisel ausblenden, nachdem Text erkannt wurde
             UploadManager.hideLoadingOverlay();
             
-            // Speichere den erkannten Text für die manuelle Auswahl
-            OCRModalManager.lastRecognizedText = result.text;
+            // Auch wenn kein Text erkannt wurde, speichern wir das Ergebnis (leerer String)
+            const recognizedText = result.text || '';
+            console.log('Erkannter Text:', recognizedText || 'Kein Text erkannt');
+            OCRModalManager.lastRecognizedText = recognizedText;
+            
+            if (!result.success || !recognizedText) {
+                // Zeige einen deutlicheren Hinweis und öffne direkt das Volltext-Modal
+                Toast.show('Kein Text erkannt. Bitte manuell Namen eingeben.', 'warning', 5000);
+                
+                // Kurze Verzögerung, damit der Toast sichtbar ist, dann direkt zum Volltext-Modal
+                setTimeout(() => {
+                    OCRModalManager.showFullTextModal('');
+                }, 800);
+                return [];
+            }
 
             // Extrahiere Namen aus dem erkannten Text
-            const names = this.extractNames(result.text);
+            const names = this.extractNames(recognizedText);
+            console.log('Extrahierte Namen:', names.length > 0 ? names : 'Keine Namen erkannt');
             
             // Prüfe auf Duplikate
             const duplicates = await this.checkDuplicates(names);
@@ -47,9 +65,13 @@ export const OCRManager = {
                 // Zeige die erkannten Namen im OCR-Modal an
                 await OCRModalManager.showResults(names, duplicates);
             } else {
-                // Wenn keine Namen erkannt wurden, zeige den vollständigen Text an
-                OCRModalManager.showFullTextModal(result.text);
-                Toast.show('Keine Namen automatisch erkannt. Bitte markieren Sie die Namen manuell.', 'info');
+                // Wenn keine Namen erkannt wurden, zeige Hinweis und dann den vollständigen Text an
+                Toast.show('Keine Namen im Dokument gefunden. Bitte markieren Sie die Namen manuell.', 'warning', 5000);
+                
+                // Kurze Verzögerung, damit der Toast sichtbar ist
+                setTimeout(() => {
+                    OCRModalManager.showFullTextModal(recognizedText);
+                }, 800);
             }
             
             return names;
@@ -57,7 +79,15 @@ export const OCRManager = {
             console.error('Fehler bei der OCR-Verarbeitung:', error);
             // Stelle sicher, dass der Ladekreisel auch bei Fehlern ausgeblendet wird
             UploadManager.hideLoadingOverlay();
-            Toast.show(error.message || 'Fehler bei der Texterkennung', 'error');
+            
+            // Zeige einen deutlichen Toast mit dem Fehler
+            Toast.show(error.message || 'Fehler bei der Texterkennung', 'error', 5000);
+            
+            // Bei Fehlern trotzdem das Volltext-Modal öffnen, damit der Benutzer manuell Namen eingeben kann
+            setTimeout(() => {
+                OCRModalManager.showFullTextModal('');
+            }, 1000);
+            
             return [];
         }
     },

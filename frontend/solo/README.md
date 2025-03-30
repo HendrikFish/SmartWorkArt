@@ -19,7 +19,7 @@ Das Backend-Verzeichnis ist die zentrale Datenverwaltung des Systems und besteht
      - `old/`: Historische Daten entlassener Bewohner
    - Ermöglicht die Nachverfolgung von Bewohnerhistorie
    - Sichert die Datenpersistenz
-   -Dient als Backup um versehentlich gelöschte Personen zurück in `upToDate/` zu bringen wenn benötigt
+   - Dient als Backup um versehentlich gelöschte Personen zurück in `upToDate/` zu bringen wenn benötigt
 
 ### Hauptfunktionen
 
@@ -34,6 +34,7 @@ Das Backend-Verzeichnis ist die zentrale Datenverwaltung des Systems und besteht
    - Extraktion von Bewohnerinformationen
    - Unterstützung für verschiedene Dokumentformate
    - Integration mit bestehenden Bewohnerdaten
+   - Erkennung bereits existierender Bewohner
 
 3. **Essensplanung**
    - Erfassung der Essensorte (Saal, 1. OG, 2. OG, 3. OG)
@@ -45,7 +46,13 @@ Das Backend-Verzeichnis ist die zentrale Datenverwaltung des Systems und besteht
    - Individuelle Einstellungen pro Bereich
    - Mehrsprachige Unterstützung
 
-5. **Benutzerfreundlichkeit**
+5. **Filter-System**
+   - Filterung nach Bereichen und Feldern
+   - Dynamische Gruppierung von Bewohnern
+   - Übersichtliche Darstellung der gefilterten Ergebnisse
+   - Klare Anzeige des aktiven Filters
+
+6. **Benutzerfreundlichkeit**
    - Intuitive Bedienung
    - Übersichtliche Darstellung
    - Schnelle Erfassung von Daten
@@ -103,6 +110,8 @@ Die Filter-Logik ist in zwei Hauptkomponenten aufgeteilt:
    - Verarbeitet die aktiven Filter
    - Zeigt gefilterte Bewohner an
    - Unterstützt kombinierte Filter (mehrere Bereiche gleichzeitig)
+   - Gruppiert Bewohner nach Filterkriterien
+   - Zeigt deutlich den aktiven Filter an
 
 #### Filter-Typen
 
@@ -113,6 +122,20 @@ Die Filter-Logik ist in zwei Hauptkomponenten aufgeteilt:
 2. **Bereichs-Filter**
    - Filtert nach konfigurierten Bereichen
    - Berücksichtigt die Einstellungen des Bereichs (Mehrfachauswahl, etc.)
+
+#### Filter-Anzeige
+
+1. **Banner für aktiven Filter**
+   - Zeigt den Namen des aktiven Filters prominent an
+   - Bietet eine einfache Möglichkeit, den Filter zurückzusetzen
+   - Maximiert die Platznutzung der Bewohnerliste
+
+2. **Gruppierung der Ergebnisse**
+   - Sortiert Ergebnisse in logischer Reihenfolge:
+     - Textbasierte Einträge zuerst
+     - Numerische Einträge in aufsteigender Reihenfolge
+     - "Keine Informationen vorhanden" immer am Ende
+   - Verbesserte Übersichtlichkeit für Benutzer
 
 ### Beispiel-Konfiguration
 
@@ -156,6 +179,7 @@ Die Filter-Logik ist in zwei Hauptkomponenten aufgeteilt:
 2. **Filter aktivieren**
    - Wählen Sie "Menü-Filter" für Bereiche, die als Filter verwendet werden sollen
    - Die gefilterten Bewohner werden automatisch angezeigt
+   - Ein Banner zeigt den aktiven Filter deutlich an
 
 3. **Mehrfachauswahl**
    - Aktivieren Sie "Mehrfachauswahl erlauben" für Bereiche, die mehrere Optionen erlauben sollen
@@ -488,10 +512,47 @@ ResidentDetailModal.show(resident, () => {
 
 # Seniorenheim-Management-System
 
-## OCR-System (Texterkennung)
+## OCR-System (Texterkennung) mit erweiterter Erkennung
 
 ### Überblick
-Das OCR-System ermöglicht die automatische Erkennung von Text aus Dokumenten und Bildern, insbesondere zur Erfassung neuer Bewohner. Das System ist besonders nützlich für die schnelle Aufnahme von Bewohnerdaten aus offiziellen Dokumenten.
+Das OCR-System ermöglicht die automatische Erkennung von Text aus Dokumenten und Bildern, insbesondere zur Erfassung neuer Bewohner. Es bietet nun erweiterte Funktionen zur Erkennung bereits existierender Bewohner und vermeidet Duplikate.
+
+### Verbesserte Erkennung existierender Bewohner
+
+#### Automatische Prüfung gegen Datenbank
+Bei der Verarbeitung von Dokumenten prüft das System automatisch, ob erkannte Namen bereits in der Datenbank existieren:
+
+1. **Farbliche Kennzeichnung**
+   - Bereits existierende Bewohner werden rot markiert
+   - Einträge enthalten den Hinweis "Person existiert bereits im System"
+   - Checkboxen werden automatisch deaktiviert
+
+2. **Intelligente Namensüberprüfung**
+   - Vergleich unabhängig von Groß-/Kleinschreibung
+   - Normalisierung von Sonderzeichen
+   - Exakte Übereinstimmung von Vor- und Nachname erforderlich
+
+3. **Verbesserte Fehlerbehandlung**
+   - Keine Fehlermeldungen beim Versuch, existierende Bewohner zu speichern
+   - Klare Benutzerbenachrichtigungen über übersprungene Einträge
+   - Differenzierte Erfolgsmeldungen
+
+#### Benutzerfreundliche Oberfläche
+
+1. **Visuelles Feedback**
+   - Rot markierte Einträge für existierende Bewohner
+   - Farblich abgeschwächte Einträge für mögliche Duplikate
+   - Klare Warnhinweise direkt unter den Namen
+
+2. **Optimierte Checkbox-Steuerung**
+   - Vorselektierte Checkboxen nur für neue Bewohner
+   - Automatisch deaktivierte Checkboxen für existierende Bewohner
+   - "Alle auswählen"-Button ignoriert existierende Bewohner
+
+3. **Verbesserte Erfolgsmeldungen**
+   - Anzeige der Anzahl neu erstellter Bewohner
+   - Information über übersprungene existierende Bewohner
+   - Spezifische Meldungen für verschiedene Szenarien
 
 ### Komponenten des OCR-Systems
 
@@ -526,28 +587,23 @@ Verwaltet die Benutzeroberfläche für die OCR-Ergebnisse:
 export const OCRModalManager = {
     lastRecognizedText: '', // Speichert den letzten erkannten Text
     
-    showResults(names, duplicates) {
-        // Zeigt erkannte Namen in einem Modal an
-        // Markiert mögliche Duplikate
-        // Erlaubt die Auswahl und Bearbeitung vor dem Speichern
+    async showResults(names, duplicates) {
+        // Prüfe, welche Namen bereits existieren
+        const existingResidentsMap = {};
+        // Lade aktuelle Bewohner aus der Datenbank
+        // Markiere existierende Bewohner in der Oberfläche
+        // ...
     },
     
-    showFullTextModal(text) {
-        // Zeigt den vollständigen erkannten Text an
-        // Präsentiert Text als klickbare Wort-Buttons
-        // Ermöglicht manuelle Auswahl von Namen
-    },
-    
-    attachFullTextModalListeners(content) {
-        // Fügt Event-Listener zu den Wort-Buttons hinzu
-        // Implementiert ein Wechselsystem zwischen Vorname und Nachname
-        // Ermöglicht die direkte Übernahme von Wörtern in die Namensfelder
-    },
-    
-    createResidentFromNames(firstName, lastName) {
-        // Erstellt neue Bewohner aus ausgewählten Namen
-        // Prüft auf bereits existierende Bewohner
-        // Aktualisiert die Bewohnerliste nach erfolgreicher Erstellung
+    attachEventListeners(content, names, resolve) {
+        // Zähler für erfolgreich erstellte und übersprungene Bewohner
+        let createdCount = 0;
+        let skippedCount = 0;
+        
+        // Intelligente Verarbeitung der ausgewählten Namen
+        // Überspringen existierender Bewohner
+        // Anzeige differenzierter Erfolgsmeldungen
+        // ...
     }
 }
 ```
@@ -661,6 +717,19 @@ Das OCR-System verwendet spezielle CSS-Klassen für ein konsistentes Erscheinung
     background-color: #fff5f5;
     opacity: 0.7;
 }
+
+/* Markierung existierender Bewohner */
+.ocr-result-item.existing-resident {
+    background-color: #fff0f0;
+    border-left: 3px solid #e53e3e;
+}
+
+.ocr-existing-warning {
+    color: #e53e3e;
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 500;
+}
 ```
 
 ### Technische Implementierung
@@ -697,186 +766,101 @@ Das OCR-System verwendet spezielle CSS-Klassen für ein konsistentes Erscheinung
    - Fallback-Mechanismen für nicht unterstützte Browser implementieren
    - Sicherheitsrichtlinien für Kamerazugriff beachten
 
-## Filter-System
+## Filter-System mit verbesserter Darstellung
 
-### Filter-Konfiguration
-Die Filter-Konfiguration wird in `backend/data/solo/config/filter.json` gespeichert und enthält:
-- `fields`: Array von Feld-Filtern (z.B. "Alter")
-- `areas`: Array von Bereichs-Filtern (z.B. "Wo wird das Essen eingetragen!")
+### Verbessertes Filter-Banner
+Die aktiven Filter werden nun in einem auffälligen Banner angezeigt:
 
-### Filter-Funktionalität
-Das System unterstützt zwei Arten von Filtern:
-1. **Feld-Filter**: Filtert nach spezifischen Feldern wie Alter
-2. **Bereichs-Filter**: Filtert nach Bereichen wie Essenszeiten oder Allergenen
+1. **Volle Seitenbreite**
+   - Nutzt den verfügbaren Platz optimal
+   - Verbesserte Sichtbarkeit des aktiven Filters
 
-### Filter-UI
-Die Filter-Optionen werden in der `filterOptions`-Sektion angezeigt:
-```html
-<div id="filterOptions">
-    <div class="filter-section">
-        <h4>Nach Feld filtern</h4>
-        <div class="filter-options">
-            <!-- Feld-Filter -->
-        </div>
-    </div>
-    <div class="filter-section">
-        <h4>Nach Bereich filtern</h4>
-        <div class="filter-options">
-            <!-- Bereichs-Filter -->
-        </div>
-    </div>
-</div>
+2. **Klares Feedback**
+   - Zeigt den Namen des aktiven Filters prominent an
+   - Bietet einen deutlichen "Filter zurücksetzen"-Button
+   - Responsive Design für alle Gerätetypen
+
+3. **Platzoptimierung**
+   - Ersetzt die Liste der Bewohner, wenn ein Filter aktiv ist
+   - Maximiert den verfügbaren Platz für die gefilterten Ergebnisse
+   - Verbesserte Textumbrüche für lange Filternamen
+
+### Verbesserte Sortierung der Filterergebnisse
+Die gefilterten Bewohner werden nun intelligent sortiert:
+
+1. **Optimierte Reihenfolge**
+   - Textbasierte Einträge zuerst
+   - Numerische Einträge in aufsteigender Reihenfolge (z.B. "1. OG", "2. OG")
+   - "Kein Informationen vorhanden" immer am Ende
+
+2. **Konsistente Darstellung**
+   - Alphabetische Sortierung innerhalb der Gruppen
+   - Klar abgegrenzte Gruppenbereiche
+   - Deutliche Überschriften mit Anzahl der Bewohner
+
+### CSS-Styling
+
+```css
+/* Filter-Banner Styles */
+.active-filter-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0;
+    margin-bottom: 1rem;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    width: calc(100% + 4rem);
+    box-sizing: border-box;
+}
+
+.active-filter-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    white-space: nowrap;
+}
+
+.filter-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 ```
 
-### Filter-Management
-- Filter werden beim Start der Website aus der `filter.json` geladen
-- Aktive Filter werden in der UI durch aktivierte Switches angezeigt
-- Filter-Änderungen werden automatisch in der `filter.json` gespeichert
-- Die Bewohnerliste wird bei Filter-Änderungen automatisch aktualisiert
+## Zusammenfassung der neuen Funktionen
 
-### Filter-Logik
-1. **Feld-Filter**:
-   - Filtert Bewohner basierend auf spezifischen Feldern
-   - Unterstützt verschiedene Feldtypen (Text, Zahlen, etc.)
+Die Solo-Anwendung wurde um folgende Hauptfunktionen erweitert:
 
-2. **Bereichs-Filter**:
-   - Filtert Bewohner basierend auf ausgewählten Bereichen
-   - Unterstützt Mehrfachauswahl für bestimmte Bereiche
-   - Zeigt Bewohner in gruppierten Spalten an
+1. **Verbesserte OCR-Erkennung existierender Bewohner**
+   - Automatische Erkennung und Markierung existierender Bewohner
+   - Intelligente Überprüfung gegen die Bewohnerdatenbank
+   - Verbesserte Fehlerbehandlung und Benutzerbenachrichtigungen
 
-### Filter-Anzeige
-- Aktive Filter werden in der UI durch aktivierte Switches angezeigt
-- Die gefilterten Bewohner werden in gruppierten Spalten dargestellt
-- Jede Spalte zeigt den Filter-Namen und die zugehörigen Bewohner
+2. **Optimierte Filter-Darstellung**
+   - Deutliches Filter-Banner über die gesamte Seitenbreite
+   - Verbesserte Sortierlogik für Filter-Ergebnisse
+   - Intelligente Gruppierung und Anzeige der gefilterten Bewohner
 
-### Filter-Persistenz
-- Filter-Einstellungen werden in `filter.json` gespeichert
-- Beim Neuladen der Seite werden die letzten Filter-Einstellungen automatisch wiederhergestellt
-- Filter-Änderungen werden sofort gespeichert und angewendet
+3. **Verbesserte Benutzeroberfläche**
+   - Klareres visuelles Feedback
+   - Optimierte Platznutzung
+   - Responsive Anpassungen für alle Gerätetypen
 
-## Modulare Architektur
-
-### Frontend-Module
-
-Die Anwendung ist in folgende JavaScript-Module aufgeteilt:
-
-#### 1. `script.js`
-- Haupteinstiegspunkt der Anwendung
-- Initialisiert alle anderen Module
-- Verwaltet den globalen Anwendungszustand
-
-#### 2. `filter.js`
-- Enthält das `FilterManager`-Objekt
-- Verwaltet Filteroptionen und -logik
-- Aktualisiert die Bewohnerliste basierend auf Filtern
-
-#### 3. `ocr.js` und `ocr-modal.js`
-- Implementiert die OCR-Funktionalität
-- Verarbeitet Dokumentenbilder und extrahiert Text
-- Zeigt Ergebnisse und ermöglicht Benutzerinteraktion
-
-#### 4. `upload.js`
-- Verwaltet Datei-Uploads und Kamerafunktionalität
-- Integriert sich mit dem OCR-System
-- Unterstützt Desktop- und Mobile-Geräte
-
-#### 5. `resident-detail.js`
-- Implementiert den Bewohner-Detail-Modal
-- Ermöglicht das Anzeigen und Bearbeiten von Bewohnerdaten
-- Interagiert mit der API für Datenpersistenz
-
-#### 6. `save.js`
-- Enthält das `SaveManager`-Objekt
-- Stellt Funktionen zum Speichern und Aktualisieren von Bewohnern bereit
-- Handhabt API-Kommunikation für Bewohnerdaten
-
-#### 7. `config.js`
-- Verwaltet die Systemkonfiguration
-- Bietet UI für Konfigurationsänderungen
-- Speichert Konfigurationsdaten persistent
-
-### Startreihenfolge und Abhängigkeiten
-
-Die Module werden in folgender Reihenfolge initialisiert:
-
-1. `script.js` lädt als Haupteinstiegspunkt
-2. Konfiguration wird aus `config.json` geladen
-3. `FilterManager` wird initialisiert
-4. Bewohnerdaten werden über API geladen
-5. Event-Listener für UI-Elemente werden registriert
-6. Andere Module (OCR, Upload) werden bei Bedarf geladen
-
-### Wichtige JavaScript-Objekte
-
-#### `ResidentManager`
-Verwaltet die Bewohnerdaten und -anzeige:
-```javascript
-export const ResidentManager = {
-    loadResidents() {
-        // Lädt Bewohner über API
-    },
-    displayResidents(residents) {
-        // Zeigt Bewohner in der UI an
-    },
-    createResidentCard(resident) {
-        // Erstellt eine Bewohnerkarte für die UI
-    }
-};
-```
-
-#### `FilterManager`
-Verwaltet die Filter-Logik:
-```javascript
-export const FilterManager = {
-    currentFilters: {
-        fields: [],
-        areas: []
-    },
-    
-    initFilterListeners() {
-        // Initialisiert Event-Listener für Filter
-    },
-    
-    handleFilterButtonClick(button) {
-        // Verarbeitet Filterbutton-Klicks
-    },
-    
-    updateFilterUI() {
-        // Aktualisiert die Filter-UI basierend auf aktuellen Filtern
-    }
-};
-```
-
-#### `SaveManager`
-Verwaltet das Speichern von Bewohnerdaten:
-```javascript
-export const SaveManager = {
-    saveResident(resident) {
-        // Speichert Änderungen an einem Bewohner
-    },
-    
-    createResident(data) {
-        // Erstellt einen neuen Bewohner
-    },
-    
-    dismissResident(name) {
-        // Entlässt einen Bewohner
-    },
-    
-    resurrectResident(name) {
-        // Stellt einen entlassenen Bewohner wieder her
-    }
-};
-```
-
-## Zusammenfassung
-
-Die Solo-Anwendung ist ein umfassendes Managementsystem für Seniorenheime mit folgenden Hauptfunktionen:
-
-1. **Bewohnerverwaltung**: Erfassung und Bearbeitung von Bewohnerdaten
-2. **OCR-Dokumentenerkennung**: Automatische Extraktion von Bewohnerdaten aus Dokumenten
-3. **Flexible Filterfunktionen**: Konfigurierbare Filter für effiziente Bewohnersuche
-4. **Bereichskonfiguration**: Anpassbare Bereiche und Buttons für verschiedene Anwendungsfälle
-5. **Responsive Benutzeroberfläche**: Optimiert für Desktop- und Mobile-Nutzung
-
-Die modulare Architektur ermöglicht einfache Wartung und Erweiterbarkeit. Die Anwendung ist für tägliche Arbeitsabläufe in Seniorenheimen optimiert und bietet eine intuitive Benutzeroberfläche für Pflegepersonal und Verwaltung. 
+Die Anwendung bietet nun eine noch intuitivere Benutzeroberfläche für Pflegepersonal und Verwaltung und optimiert die täglichen Arbeitsabläufe in Seniorenheimen. 

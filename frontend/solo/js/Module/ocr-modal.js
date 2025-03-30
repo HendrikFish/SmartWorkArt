@@ -147,43 +147,50 @@ export const OCRModalManager = {
     // Zeige den Volltext-Modal an mit dem erkannten Text
     showFullTextModal(text) {
         // Speichere den aktuellen Text für spätere Verwendung
-        this.lastRecognizedText = text;
+        this.lastRecognizedText = text || '';
         // Zurücksetzen der gespeicherten Modal-Position
         this.modalPosition = null;
         
         const modal = document.getElementById('ocrResultsModal');
         const content = modal.querySelector('.modal-content');
         
+        // Prüfen, ob Text überhaupt vorhanden ist
+        const hasText = text && text.trim().length > 0;
+        
         // Formatiere den Text und wandle Wörter in Buttons um
-        const words = text.split(/\s+/);
-        const buttonsHtml = words.map(word => {
-            // Ignoriere leere Wörter oder Sonderzeichen
-            if (word.length <= 1 || !/[a-zA-ZäöüÄÖÜß]/.test(word)) {
-                return '';
-            }
-            
-            // Bereinige das Wort von unerwünschten Zeichen
-            const cleanWord = word.replace(/[^a-zA-ZäöüÄÖÜß\-]/g, '');
-            if (cleanWord.length <= 1) {
-                return '';
-            }
-            
-            return `<button type="button" class="word-button">${cleanWord}</button>`;
-        }).filter(button => button !== '').join(' ');
+        let buttonsHtml = '';
+        if (hasText) {
+            const words = text.split(/\s+/);
+            buttonsHtml = words.map(word => {
+                // Ignoriere leere Wörter oder Sonderzeichen
+                if (word.length <= 1 || !/[a-zA-ZäöüÄÖÜß]/.test(word)) {
+                    return '';
+                }
+                
+                // Bereinige das Wort von unerwünschten Zeichen
+                const cleanWord = word.replace(/[^a-zA-ZäöüÄÖÜß\-]/g, '');
+                if (cleanWord.length <= 1) {
+                    return '';
+                }
+                
+                return `<button type="button" class="word-button">${cleanWord}</button>`;
+            }).filter(button => button !== '').join(' ');
+        }
         
         content.innerHTML = `
             <div class="modal-header">
-                <h2>Erkannter Text</h2>
+                <h2>${hasText ? 'Erkannter Text' : 'Manueller Eintrag'}</h2>
                 <div class="header-actions">
                     <button type="button" class="icon-btn close-modal">×</button>
                 </div>
             </div>
-            <div class="ocr-scroll-container">
-                <div class="ocr-full-text">${buttonsHtml}</div>
+            <div class="ocr-scroll-container" ${!hasText ? 'style="display: none;"' : ''}>
+                ${hasText ? `<div class="ocr-full-text">${buttonsHtml}</div>` : ''}
             </div>
             <div class="name-selection-form">
-                <h3>Bitte wählen Sie Vor- und Nachnamen</h3>
-                <p class="touch-hint">Tippen Sie auf ein Wort, um es auszuwählen</p>
+                <h3>${hasText ? 'Bitte wählen Sie Vor- und Nachnamen' : 'Bitte geben Sie den Namen manuell ein'}</h3>
+                ${hasText ? '<p class="touch-hint">Tippen Sie auf ein Wort, um es auszuwählen</p>' : 
+                '<p class="no-text-hint">Es wurde kein Text erkannt. Bitte geben Sie den Namen manuell ein.</p>'}
                 <div class="form-group">
                     <label for="firstName">Vorname</label>
                     <input type="text" id="firstName" class="form-control" placeholder="Vorname eingeben">
@@ -199,8 +206,10 @@ export const OCRModalManager = {
             </div>
         `;
 
-        // Event-Listener für die Buttons im Text
-        this.attachFullTextModalListeners(content);
+        // Event-Listener für die Buttons im Text, nur wenn Text vorhanden ist
+        if (hasText) {
+            this.attachFullTextModalListeners(content);
+        }
         
         // Styles fixieren
         content.style.overflow = 'hidden'; // Verhindert horizontales Scrollen
@@ -210,6 +219,14 @@ export const OCRModalManager = {
         
         // Modal stabilisieren
         this.stabilizeModal();
+        
+        // Setze automatisch den Fokus auf das Vorname-Feld
+        setTimeout(() => {
+            const firstNameInput = content.querySelector('#firstName');
+            if (firstNameInput) {
+                firstNameInput.focus();
+            }
+        }, 300);
     },
 
     attachEventListeners(content, names, resolve) {

@@ -80,6 +80,9 @@ export const UploadManager = {
                 this.stopCamera(this.currentStream);
             }
 
+            // Vollständig neue Buttons erstellen statt nur Inhalte zu leeren
+            this.recreateCameraButtons();
+
             // Konfiguriere Kamera mit aktueller Ausrichtung und höchster verfügbarer Auflösung
             const constraints = { 
                 video: { 
@@ -110,6 +113,9 @@ export const UploadManager = {
             // Optimiere Vollbildmodus auf Mobilgeräten
             this.optimizeForMobile();
             
+            // Füge Event-Listener für die Kamera-Steuerelemente hinzu
+            this.addCameraControlsListeners();
+            
             console.log(`Kamera initialisiert mit Modus: ${this.currentFacingMode}`);
             return stream;
         } catch (error) {
@@ -117,6 +123,100 @@ export const UploadManager = {
             Toast.show('Fehler beim Zugriff auf die Kamera', 'error');
             return null;
         }
+    },
+
+    // Neue Methode zum vollständigen Neuerstellen der Kamera-Buttons
+    recreateCameraButtons() {
+        const container = document.querySelector('.camera-controls');
+        if (!container) return;
+
+        // Rechteckige Buttons mit Schwarz-Weiß-Symbolen
+        container.innerHTML = `
+            <button type="button" id="captureBtn" class="camera-control-btn">
+                <span style="font-size: 18px; color: #000;">⬤</span>
+            </button>
+            <button type="button" id="switchCameraBtn" class="camera-control-btn">
+                <span style="font-size: 18px; color: #000;">↻</span>
+            </button>
+        `;
+        
+        // Verbessere die Button-Styles direkt
+        const captureBtn = document.getElementById('captureBtn');
+        const switchBtn = document.getElementById('switchCameraBtn');
+        
+        if (captureBtn) {
+            // Stil für den Aufnahme-Button (rechteckig)
+            captureBtn.style.width = '80px';
+            captureBtn.style.height = '50px';
+            captureBtn.style.borderRadius = '8px';
+            captureBtn.style.backgroundColor = '#ffffff';
+            captureBtn.style.border = '2px solid #3b82f6';
+            captureBtn.style.cursor = 'pointer';
+            captureBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+            captureBtn.style.display = 'flex';
+            captureBtn.style.alignItems = 'center';
+            captureBtn.style.justifyContent = 'center';
+            captureBtn.style.transition = 'all 0.2s ease';
+            
+            // Hover-Effekt manuell hinzufügen
+            captureBtn.addEventListener('mouseover', () => {
+                captureBtn.style.backgroundColor = '#f0f9ff';
+                captureBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+            });
+            
+            captureBtn.addEventListener('mouseout', () => {
+                captureBtn.style.backgroundColor = '#ffffff';
+                captureBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+            });
+            
+            captureBtn.addEventListener('mousedown', () => {
+                captureBtn.style.transform = 'translateY(2px)';
+                captureBtn.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
+            });
+            
+            captureBtn.addEventListener('mouseup', () => {
+                captureBtn.style.transform = 'translateY(0)';
+                captureBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+            });
+        }
+        
+        if (switchBtn) {
+            // Stil für den Wechsel-Button (rechteckig)
+            switchBtn.style.width = '60px';
+            switchBtn.style.height = '50px';
+            switchBtn.style.borderRadius = '8px';
+            switchBtn.style.backgroundColor = '#ffffff';
+            switchBtn.style.border = '2px solid #64748b';
+            switchBtn.style.cursor = 'pointer';
+            switchBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+            switchBtn.style.display = 'flex';
+            switchBtn.style.alignItems = 'center';
+            switchBtn.style.justifyContent = 'center';
+            switchBtn.style.transition = 'all 0.2s ease';
+            
+            // Hover-Effekt manuell hinzufügen
+            switchBtn.addEventListener('mouseover', () => {
+                switchBtn.style.backgroundColor = '#f8fafc';
+                switchBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+            });
+            
+            switchBtn.addEventListener('mouseout', () => {
+                switchBtn.style.backgroundColor = '#ffffff';
+                switchBtn.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+            });
+            
+            switchBtn.addEventListener('mousedown', () => {
+                switchBtn.style.transform = 'translateY(2px)';
+                switchBtn.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
+            });
+            
+            switchBtn.addEventListener('mouseup', () => {
+                switchBtn.style.transform = 'translateY(0)';
+                switchBtn.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.25)';
+            });
+        }
+        
+        console.log('Kamera-Buttons wurden mit rechteckigem Design und Schwarz-Weiß-Symbolen neu erstellt');
     },
 
     optimizeForMobile() {
@@ -179,71 +279,85 @@ export const UploadManager = {
         }
     },
 
+    // Optimiere und erfasse ein Bild von der Kamera
     async captureImage() {
         try {
+            // Prüfe, ob die Kamera aktiv ist
             const video = document.getElementById('cameraPreview');
+            if (!video || !video.srcObject) {
+                throw new Error('Kamera ist nicht aktiv');
+            }
+            
+            console.log('Erfasse Bild von Kamera...');
+            
+            // Erstelle ein Canvas, um das Bild zu erfassen
             const canvas = document.createElement('canvas');
+            // Verwende die innere Größe des Videos (natürliche Größe)
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
             
-            // Verwende die tatsächliche Auflösung des Video-Streams
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            // Setze Canvas-Größe auf die Videogröße
+            canvas.width = videoWidth;
+            canvas.height = videoHeight;
             
+            console.log(`Bild wird in Originalgröße erfasst: ${videoWidth}x${videoHeight}`);
+            
+            // Zeichne das aktuelle Videobild auf das Canvas
             const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0);
+            context.drawImage(video, 0, 0, videoWidth, videoHeight);
             
-            // Optimiere das Bild - erhöhe Kontrast und Helligkeit
-            this.optimizeImage(canvas);
+            // Optimiere das Bild für die OCR
+            this.enhanceImageForOCR(canvas, context);
             
-            // Zeige Lade-Overlay an
-            this.showLoadingOverlay();
+            // Konvertiere Canvas zu Blob/File
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
             
-            return new Promise((resolve) => {
-                canvas.toBlob(resolve, 'image/jpeg', 0.95); // Höhere Qualität für bessere OCR-Ergebnisse
-            });
+            console.log('Bild erfolgreich erfasst:', blob.size, 'Bytes');
+            return blob;
         } catch (error) {
             console.error('Fehler beim Erfassen des Bildes:', error);
-            Toast.show('Fehler beim Erfassen des Bildes', 'error');
-            this.hideLoadingOverlay();
+            Toast.show('Fehler beim Erfassen des Bildes', 'error', 5000);
             return null;
         }
     },
     
-    optimizeImage(canvas) {
+    // Verbessere die Bildqualität für die OCR
+    enhanceImageForOCR(canvas, context) {
         try {
-            const context = canvas.getContext('2d');
-            
-            // Lade die Pixel-Daten
             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
             
-            // Parameter für die Optimierung
-            const contrast = 1.3; // Höherer Wert = mehr Kontrast (1.0 = keine Änderung)
-            const brightness = 15; // Wertebereich -255 bis 255
+            console.log('Verbessere Bild für OCR...');
             
-            // Anwenden von Kontrast und Helligkeit
+            // Parameter für die Bildverbesserung
+            const contrast = 1.4;   // Erhöhter Kontrast für bessere Texterkennung
+            const brightness = 10;  // Leicht erhöhte Helligkeit
+            const threshold = 120;  // Schwellwert für Binarisierung (0-255)
+            
+            // Verbessere Kontrast und Helligkeit
             for (let i = 0; i < data.length; i += 4) {
-                // Rot, Grün, Blau Kanäle
-                for (let j = 0; j < 3; j++) {
-                    // Kontrast anwenden
-                    let value = data[i + j];
-                    value = ((value / 255 - 0.5) * contrast + 0.5) * 255;
-                    
-                    // Helligkeit anwenden
-                    value += brightness;
-                    
-                    // Werte auf 0-255 begrenzen
-                    data[i + j] = Math.max(0, Math.min(255, value));
+                // Kontrast und Helligkeit anpassen
+                data[i] = Math.min(255, Math.max(0, (data[i] - 128) * contrast + 128 + brightness));
+                data[i + 1] = Math.min(255, Math.max(0, (data[i + 1] - 128) * contrast + 128 + brightness));
+                data[i + 2] = Math.min(255, Math.max(0, (data[i + 2] - 128) * contrast + 128 + brightness));
+                
+                // Optional: Binarisierung für Text
+                // Konvertiere zu Graustufe und wende Schwellwert an
+                const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                if (gray > threshold) {
+                    data[i] = data[i + 1] = data[i + 2] = 255; // Weiß
+                } else {
+                    data[i] = data[i + 1] = data[i + 2] = 0;   // Schwarz
                 }
-                // Alpha-Kanal (i+3) bleibt unverändert
             }
             
-            // Aktualisierte Daten zurück ins Canvas schreiben
+            // Aktualisiere das Canvas mit den verbesserten Daten
             context.putImageData(imageData, 0, 0);
             
             console.log('Bild wurde optimiert: Kontrast und Helligkeit angepasst');
             return true;
         } catch (error) {
-            console.error('Fehler bei der Bildoptimierung:', error);
+            console.error('Fehler bei der Bildverbesserung:', error);
             return false;
         }
     },
@@ -260,7 +374,16 @@ export const UploadManager = {
                 <div class="loading-text">Text wird erkannt...</div>
             `;
             document.body.appendChild(overlay);
+        } else {
+            // Aktualisiere den Text, falls das Overlay bereits existiert
+            const loadingText = overlay.querySelector('.loading-text');
+            if (loadingText) {
+                loadingText.textContent = 'Text wird erkannt...';
+            }
         }
+        
+        // Stelle sicher, dass das Overlay im Vordergrund angezeigt wird
+        overlay.style.zIndex = '9999';
         
         // Zeige das Overlay an
         overlay.style.display = 'flex';
@@ -354,15 +477,22 @@ export const UploadManager = {
                 this.currentStream = null;
             }
             
+            // Modal schließen, da die Aufnahme erfolgreich war
+            Modal.hide('cameraModal');
+            
+            // Explizit Ladebildschirm anzeigen bevor wir das Bild aufnehmen
+            this.showLoadingOverlay();
+            
+            // Toast anzeigen, dass die Auswertung läuft
+            Toast.show('Auswertung läuft...', 'info', 5000);
+            
             // Bild aufnehmen
             const imageBlob = await this.captureImage();
             if (!imageBlob) {
-                Toast.show('Fehler beim Aufnehmen des Bildes', 'error');
+                Toast.show('Fehler beim Aufnehmen des Bildes', 'error', 5000);
+                this.hideLoadingOverlay();
                 return;
             }
-            
-            // Modal schließen, da die Aufnahme erfolgreich war
-            Modal.hide('cameraModal');
             
             // Erstelle einen File-Objekt aus dem Blob für eine einheitliche Verarbeitung
             const imageFile = new File([imageBlob], "kamera_aufnahme.jpg", {
@@ -372,16 +502,51 @@ export const UploadManager = {
             
             console.log('Bild erfolgreich aufgenommen und als File-Objekt formatiert');
             
+            // Stelle sicher, dass der Ladebildschirm sichtbar ist
+            this.showLoadingOverlay();
+            
             // Verarbeite das Bild genau wie in der Desktop-Version
             await OCRManager.processImage(imageFile);
             
-            // Verstecke Lade-Overlay
-            this.hideLoadingOverlay();
+            // Ladebildschirm nach dem OCR-Prozess ausblenden (als Fallback)
+            // Dies sollte normalerweise bereits im OCR-Manager passieren
+            setTimeout(() => {
+                this.hideLoadingOverlay();
+            }, 500);
             
         } catch (error) {
             console.error('Fehler bei der OCR-Verarbeitung:', error);
-            Toast.show('Fehler bei der OCR-Verarbeitung', 'error');
+            Toast.show('Fehler bei der OCR-Verarbeitung', 'error', 5000);
             this.hideLoadingOverlay();
+        }
+    },
+
+    // Fügt Event-Listener für die Kamera-Steuerelemente hinzu
+    addCameraControlsListeners() {
+        // Listener für den Aufnahme-Button
+        const captureBtn = document.getElementById('captureBtn');
+        if (captureBtn) {
+            // Alten Event-Listener entfernen
+            const newCaptureBtn = captureBtn.cloneNode(true);
+            captureBtn.parentNode.replaceChild(newCaptureBtn, captureBtn);
+            
+            // Neuen Event-Listener hinzufügen
+            newCaptureBtn.addEventListener('click', () => {
+                this.processImageFromCamera();
+            });
+        }
+        
+        // Listener für den Kamera-Wechsel-Button
+        const switchCameraBtn = document.getElementById('switchCameraBtn');
+        if (switchCameraBtn) {
+            // Alten Event-Listener entfernen
+            const newSwitchBtn = switchCameraBtn.cloneNode(true);
+            switchCameraBtn.parentNode.replaceChild(newSwitchBtn, switchCameraBtn);
+            
+            // Neuen Event-Listener hinzufügen
+            newSwitchBtn.addEventListener('click', () => {
+                this.switchCamera();
+            });
         }
     }
 }; 

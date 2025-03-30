@@ -305,25 +305,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         Modal.init();
         await ResidentManager.init();
 
-        // Upload Button - dieser Code ist veraltet und wird durch UploadManager.init() ersetzt,
-        // der bereits in der Initialisierung aufgerufen wird
-
-        // Kamera-Steuerungselementen Listeners hinzufügen
-        const captureBtn = document.getElementById('captureBtn');
-        if (captureBtn) {
-            // Event Listener für den Aufnehmen-Button
-            captureBtn.addEventListener('click', async () => {
-                await UploadManager.processImageFromCamera();
-            });
-        }
-        
-        const switchCameraBtn = document.getElementById('switchCameraBtn');
-        if (switchCameraBtn) {
-            // Event Listener für den Kamerawechsel-Button
-            switchCameraBtn.addEventListener('click', async () => {
-                await UploadManager.switchCamera();
-            });
-        }
+        // Upload-Manager initialisieren (dieser übernimmt alle Kamera-Steuerungselemente)
+        // und fügt die notwendigen Event-Listener für Kamera-Buttons hinzu
+        UploadManager.init();
 
         // Neuer Bewohner Button
         const newResidentBtn = document.getElementById('newResidentBtn');
@@ -469,9 +453,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             console.error('resurrectionBtn nicht gefunden');
         }
-
-        // Upload-Manager initialisieren
-        UploadManager.init();
     } catch (error) {
         console.error('Fehler beim Initialisieren:', error);
         Toast.show('Fehler beim Initialisieren der Anwendung', 'error');

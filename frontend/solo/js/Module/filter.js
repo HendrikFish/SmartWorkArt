@@ -566,7 +566,7 @@ export const FilterManager = {
                 residentsList.innerHTML = `
                     <div class="active-filter-banner">
                         <div class="active-filter-name">
-                            <span class="filter-label">Aktiver Filter:</span> 
+                            <span class="filter-label">Filter:</span> 
                             <span class="filter-value">${activeFilterName}</span>
                         </div>
                         <button class="clear-filter-btn" aria-label="Filter zurücksetzen">×</button>
@@ -587,7 +587,7 @@ export const FilterManager = {
                         residentsList.innerHTML = '';
                     });
                 }
-            } else {
+        } else {
                 // Wenn kein Filter aktiv ist, leere den residentsList
                 residentsList.innerHTML = '';
             }
@@ -612,7 +612,7 @@ export const FilterManager = {
         console.log(`Zeige ${residents.length} gefilterte Bewohner an`);
 
         // Gruppierung der Bewohner basierend auf aktivem Filter
-        const groupedResidents = this.groupResidentsByActiveFilter(residents);
+            const groupedResidents = this.groupResidentsByActiveFilter(residents);
         console.log('Gruppierte Bewohner:', Object.keys(groupedResidents).join(', '));
 
         // Sortiere die Gruppen mit verbesserter Reihenfolge: 
@@ -647,7 +647,7 @@ export const FilterManager = {
             const groupResidents = groupedResidents[groupName];
             
             // Überschrift für die Gruppe
-            const groupHeader = document.createElement('div');
+                const groupHeader = document.createElement('div');
             groupHeader.className = 'filter-group-header';
             groupHeader.textContent = `${groupName} (${groupResidents.length})`;
             residentContainer.appendChild(groupHeader);
