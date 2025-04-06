@@ -67,7 +67,7 @@
      */
     #bewohner-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 0.25rem;
         padding: 0.5rem;
         justify-content: center;
@@ -79,7 +79,7 @@
         max-width: 100%;
         min-width: 0;
         margin: 0;
-        padding: 0.25rem;
+        padding: 0.35rem; /* Etwas mehr Innenabstand */
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -87,9 +87,12 @@
         border-radius: 6px;
         border: 1px solid #ddd;
         height: auto;
+        min-height: 90px; /* Mindesthöhe setzen */
         font-size: 0.75rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
+        position: relative; /* Für absolute Positionierung des Details-Buttons */
+        padding-bottom: 40px; /* Platz für den Button unten */
     }
     
     .bewohner-card:hover,
@@ -98,11 +101,11 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
     
-    /* Auf kleinen Geräten nur den Nachnamen anzeigen */
+    /* Auf kleinen Geräten beide Namen anzeigen */
     .bewohner-card .bewohner-name {
         width: 100%;
-        font-size: 0.7rem;
-        line-height: 1.1;
+        font-size: 0.75rem;
+        line-height: 1.2;
         margin: 0.2rem 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -110,30 +113,43 @@
         font-weight: bold;
     }
     
-    /* Verstecke den Vornamen in der mobilen Ansicht */
+    /* Vorname in der mobilen Ansicht anzeigen */
     .bewohner-card .vorname {
-        display: none;
+        display: inline;
     }
     
-    /* Kompakter Details-Button */
+    /* Kompakter Details-Button für Touch-Bedienung */
     .bewohner-card .details-button {
-        width: 20px;
-        height: 20px;
-        font-size: 0.7rem;
-        margin: 0.1rem 0 0 0;
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+        margin: 0;
         padding: 0;
-        background: transparent;
-        border: none;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
         color: #1976D2;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .bewohner-card .details-button:hover,
+    .bewohner-card .details-button:active {
+        background-color: #e3f2fd;
+        transform: translateX(-50%) scale(1.1);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
     .bewohner-card .details-button::after {
-        content: "⋯";
-        font-size: 1rem;
+        content: "ℹ️";  /* Info-Symbol statt drei Punkten */
+        font-size: 1.2rem;
     }
     
     .bewohner-card .details-button span {
@@ -147,6 +163,20 @@
         margin: 0.1rem 0;
         max-width: 100%;
         display: none;
+    }
+    
+    /* Bewohnerbild anpassen für die mobile Ansicht */
+    .bewohner-card .bewohner-card-img,
+    #bewohner-container .bewohner-card-img,
+    .bewohner-card-img {
+        width: 124px !important;
+        height: 164px !important;
+        object-fit: cover !important;
+        margin-top: 0.75rem !important;
+        margin-bottom: 0.5rem !important;
+        background-color: #e9ecef !important;
+        align-self: center !important;
+        border-radius: 10% !important;
     }
     
     /* Aktive Bewohnerkarte deutlich markieren */
@@ -562,5 +592,37 @@
         overflow: hidden;
         text-overflow: ellipsis;
         padding: 0.35rem 0.3rem;
+    }
+    
+    /* Bewohnerbild noch kleiner auf sehr kleinen Bildschirmen */
+    .bewohner-card .bewohner-card-img,
+    #bewohner-container .bewohner-card-img,
+    .bewohner-card-img {
+        width: 100px !important;
+        height: 124px !important;
+        object-fit: cover !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.4rem !important;
+        background-color: #e9ecef !important;
+        align-self: center !important;
+        border-radius: 4px !important;
+    }
+    
+    /* Details-Button für sehr kleine Bildschirme optimiert */
+    .bewohner-card .details-button {
+        width: 44px;
+        height: 44px;
+        background-color: #e3f2fd;
+        border: 2px solid #1976D2;
+        bottom: 5px;
+    }
+    
+    .bewohner-card .details-button::after {
+        font-size: 1.4rem;
+    }
+    
+    .bewohner-card .details-button:hover,
+    .bewohner-card .details-button:active {
+        transform: translateX(-50%) scale(1.15);
     }
 }

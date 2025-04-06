@@ -2,5 +2,10 @@
   "firstName": "Madubueze",
   "lastName": "Katharina",
   "gender": "Herr",
-  "createdAt": "2025-04-03T06:49:13.205Z"
+  "room": "",
+  "vergin": null,
+  "areas": {
+    "Wo wird das Essen eingetragen!": "1.OG"
+  },
+  "lastModified": "2025-04-06T17:34:29.577Z"
 }

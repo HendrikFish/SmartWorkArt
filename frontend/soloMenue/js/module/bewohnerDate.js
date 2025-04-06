@@ -238,6 +238,13 @@ function zeigeGefilterteBewohner() {
 
         bewohnerCard.appendChild(nameElement);
         
+        // Personenbild hinzufügen
+        const personenBild = document.createElement('img');
+        personenBild.classList.add('bewohner-card-img');
+        personenBild.src = 'img/person.png';
+        personenBild.alt = `${bewohner.firstName} ${bewohner.lastName}`;
+        bewohnerCard.appendChild(personenBild);
+        
         // Platz für Bewohner-Info
         const infoElement = document.createElement('div');
         infoElement.classList.add('bewohner-info');
@@ -270,6 +277,10 @@ function zeigeGefilterteBewohner() {
             // Globale Variable aktualisieren
             globalAktiverBewohnerId = bewohnerCard.dataset.id;
             console.log(`Neuer aktiver Bewohner gesetzt: ${globalAktiverBewohnerId}`);
+            
+            // Info-Element immer ausgeblendet lassen
+            const info = bewohnerCard.querySelector('.bewohner-info');
+            if (info) info.style.display = 'none';
             
             // Benutzerdefiniertes Event auslösen
             console.log('Bewohner ausgewählt für andere Funktion:', bewohner);
@@ -331,12 +342,12 @@ function zeigeGefilterteBewohner() {
                 // Info-Anzeige wiederherstellen, falls vorhanden
                 if (aktiveInfoAnzeige) {
                     infoElement.innerHTML = aktiveInfoAnzeige;
-                    infoElement.style.display = 'flex';
-                    console.log('Info-Anzeige wiederhergestellt');
+                    infoElement.style.display = 'none';
+                    console.log('Info-Anzeige wiederhergestellt (aber nicht angezeigt)');
                 } else {
                     // Mindestens leere Info-Anzeige zeigen
                     infoElement.innerHTML = `<span>Essens für: <strong>${bewohner.firstName} ${bewohner.lastName}</strong></span>`;
-                    infoElement.style.display = 'flex';
+                    infoElement.style.display = 'none';
                 }
             }
         }

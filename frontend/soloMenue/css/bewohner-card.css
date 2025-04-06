@@ -1,0 +1,100 @@
+.bewohner-card {
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    background-color: #fff;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.bewohner-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+}
+
+.bewohner-card-header {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    position: relative;
+}
+
+.bewohner-card-body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.bewohner-card-img {
+    width: 164px;
+    height: 164px;
+    object-fit: cover;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: #e9ecef;
+    align-self: center;
+}
+
+.bewohner-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.bewohner-name {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.bewohner-zimmer {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.bewohner-details {
+    margin-top: auto;
+}
+
+.details-button {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.details-button:hover {
+    background-color: #5a6268;
+}
+
+/* Sonderwünsche Abschnitt */
+.sonderwuensche-liste {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.sonderwunsch-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    margin: 0.25rem;
+    border-radius: 0.25rem;
+    background-color: #e9ecef;
+    color: #495057;
+} 

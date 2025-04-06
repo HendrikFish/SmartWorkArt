@@ -2,5 +2,10 @@
   "firstName": "Margreiter",
   "lastName": "Johannes",
   "gender": "Herr",
-  "createdAt": "2025-04-03T06:49:13.223Z"
+  "room": "",
+  "vergin": null,
+  "areas": {
+    "Wo wird das Essen eingetragen!": "1.OG"
+  },
+  "lastModified": "2025-04-06T17:34:34.536Z"
 }

@@ -1,5 +1,11 @@
 {
   "firstName": "Bernhard",
   "lastName": "Johann",
-  "createdAt": "2025-03-30T18:53:20.554Z"
+  "gender": "",
+  "room": "",
+  "vergin": null,
+  "areas": {
+    "Wo wird das Essen eingetragen!": "1.OG"
+  },
+  "lastModified": "2025-04-06T17:42:37.973Z"
 }

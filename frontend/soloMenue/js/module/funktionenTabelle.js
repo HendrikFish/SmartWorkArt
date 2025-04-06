@@ -466,7 +466,7 @@ function aktualisiereNachKalenderwocheAenderung(event) {
                         }
                         
                         // Infoelement anzeigen
-                        infoElement.style.display = 'flex';
+                        infoElement.style.display = 'none';
                     }
                 }
             } catch (error) {

@@ -227,6 +227,16 @@ main {
     margin-bottom: 5px;
 }
 
+.bewohner-card-img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10%;
+    margin: 8px auto;
+    background-color: #f0f0f0;
+    display: block;
+}
+
 .bewohner-bereich {
     font-size: 14px;
     color: #666;
@@ -1126,4 +1136,22 @@ td.auswahl-25,
 .zahnrad-btn:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.details-button {
+    display: inline-block;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 5px 12px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;  /* Von einem oval wirkenden Wert zu einem festen Wert für einen Kreis */
+    transition: background-color 0.2s;
+    width: 40px;          /* Feste Breite */
+    height: 40px;         /* Identische Höhe für einen perfekten Kreis */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 } 

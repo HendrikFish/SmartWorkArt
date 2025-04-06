@@ -17,6 +17,9 @@ import * as BewohnerAnzeiger from './module/BewohnerAnzeiger.js';
 import * as FormularContainer from './module/FormularContainer.js';
 import i18nextAdapter from './module/i18nextAdapter.js';
 
+// Import für das BewohnerKarussell-Modul hinzufügen
+// (Hinweis: Kein Modul-Import nötig, da es sich um ein IIFE handelt, das sich selbst initialisiert)
+
 // Aktuell ausgewählter Bewohner für die Menüplanung
 let aktuellerBewohner = null;
 let aktuelleMenueplanTabelle = null;
@@ -196,6 +199,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             BewohnerButton.initialisiere();
             console.log('BewohnerButton-Modul initialisiert');
         }
+
+        // Das BewohnerKarussell-Modul wird automatisch beim Laden des Skripts initialisiert
+        console.log('BewohnerKarussell-Modul steht zur Verfügung');
 
         // FunktionenTabelle-Modul initialisieren (für Menüplan-Tabelle)
         if (typeof FunktionenTabelle.initialisiere === 'function') {
@@ -630,7 +636,7 @@ document.addEventListener('bewohnerCardClicked', async (event) => {
             }
             
             // Info anzeigen
-            infoElement.style.display = 'flex';
+            infoElement.style.display = 'none';
         }
         
         // Auf mobile Ansicht prüfen und ggf. zur Tabelle scrollen

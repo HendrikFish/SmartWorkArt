@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solo Menü</title>
+    <!-- Bootstrap CSS aus gemeinsamen Verzeichnis laden -->
+    <link rel="stylesheet" href="../bootstrapMain/css/bootstrap.min.css">
+    
+    <!-- Vorhandene CSS-Dateien mit korrektem Pfad -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/panel.css">
     <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/bewohner-card.css">
     <link rel="stylesheet" href="css/smartphone.css">
+    <link rel="stylesheet" href="css/karussell.css">
     <link rel="stylesheet" href="../navbar/navbar.css">
     <!-- Google Fonts wird durch lokales Icon ersetzt -->
     <script src="../navbar/navbar.js"></script>
@@ -17,6 +23,9 @@
     <script src="js/libs/i18nextHttpBackend.min.js"></script>
     <script src="js/EventBus.js"></script>
     <script src="js/i18nextAdapter.js"></script>
+    
+    <!-- Bewohner-Karussell Modul -->
+    <script src="js/module/bewohnerKarussell.js"></script>
 </head>
 <body>
     <main>
@@ -260,7 +269,10 @@
         </div>
     </div>
 
-    <!-- JavaScript Module -->
+    <!-- Bootstrap JS aus gemeinsamen Verzeichnis laden (vor den eigenen Scripts) -->
+    <script src="../bootstrapMain/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script als Modul laden, um Import-Statements zu ermöglichen -->
     <script type="module" src="js/script.js"></script>
     <script>
         // EventBus und i18next explizit initialisieren
