@@ -11,7 +11,7 @@
     {
       "name": "Sexy",
       "multiple": false,
-      "menuFilter": false,
+      "menuFilter": true,
       "changeable": false,
       "buttons": [
         {
@@ -27,9 +27,9 @@
     },
     {
       "name": "Allergene",
-      "multiple": false,
-      "menuFilter": false,
-      "changeable": false,
+      "multiple": true,
+      "menuFilter": true,
+      "changeable": true,
       "buttons": [
         {
           "label": "Laktoseintoleranz"
@@ -51,7 +51,7 @@
     {
       "name": "Frühstück",
       "multiple": false,
-      "menuFilter": false,
+      "menuFilter": true,
       "changeable": false,
       "buttons": [
         {
@@ -71,7 +71,7 @@
     {
       "name": "Mittagessen",
       "multiple": false,
-      "menuFilter": false,
+      "menuFilter": true,
       "changeable": false,
       "buttons": [
         {

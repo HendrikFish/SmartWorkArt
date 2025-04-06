@@ -1,0 +1,1691 @@
+/**
+ * OCR-Manager Modul
+ * Verwaltet die OCR-Funktionalität für die Namenserkennung
+ */
+
+import { ApiService } from './api-service.js';
+import { ToastManager } from './toast-manager.js';
+import { ModalManager } from './modal-manager.js';
+
+export const OCRManager = {
+    selectedWords: [],
+    firstNameSelected: false,
+    lastNameSelected: false,
+    
+    /**
+     * Initialisiert den OCR-Manager
+     * @param {Object} options - Konfigurationsoptionen
+     */
+    init(options = {}) {
+        console.log('OCR-Manager wird initialisiert');
+        
+        // Standardmäßig Optionen setzen
+        this.options = {
+            apiPath: '/api/ocr',
+            ...options
+        };
+        
+        // Leere Datenstrukturen initialisieren
+        this.selectedWords = [];
+        this.firstNameSelected = false;
+        this.lastNameSelected = false;
+        
+        // Event-Listener registrieren
+        this.registerEventListeners();
+        
+        // Verstecke Footer-Buttons beim Start
+        this.hideFooterButtons();
+        
+        console.log('OCR-Manager initialisiert');
+    },
+    
+    /**
+     * Zeigt die Upload-Optionen für OCR an
+     */
+    showUploadOptions() {
+        // Prüfe, ob das Gerät ein Smartphone ist
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Schließe alle offenen Modals
+            this.closeAllModals();
+            
+            // Zeige das Smartphone-Optionsmodal für mobile Geräte
+            const mobileOptionsModal = new bootstrap.Modal(document.getElementById('smartphoneOptionsModal'));
+            mobileOptionsModal.show();
+            
+            // Event-Listener für den "Kamera öffnen"-Button
+            const openCameraBtn = document.getElementById('openCameraBtn');
+            if (openCameraBtn) {
+                openCameraBtn.onclick = () => {
+                    // Ordnungsgemäßes Schließen des Modals vor dem Öffnen der Kamera
+                    mobileOptionsModal.hide();
+                    // Entferne auch Modal-Backdrop
+                    document.querySelector('.modal-backdrop')?.remove();
+                    // Entferne aria-hidden und inert Attribute vom body
+                    document.body.removeAttribute('aria-hidden');
+                    document.body.removeAttribute('inert');
+                    
+                    // Verzögerung, um sicherzustellen, dass das Modal vollständig geschlossen ist
+                    setTimeout(() => {
+                        this.openCamera();
+                    }, 500);
+                };
+            }
+            
+            // Event-Listener für den "Galerie öffnen"-Button
+            const openGalleryBtn = document.getElementById('openGalleryBtn');
+            if (openGalleryBtn) {
+                openGalleryBtn.onclick = () => {
+                    // Ordnungsgemäßes Schließen des Modals vor dem Öffnen der Galerie
+                    mobileOptionsModal.hide();
+                    // Entferne auch Modal-Backdrop
+                    document.querySelector('.modal-backdrop')?.remove();
+                    // Entferne aria-hidden und inert Attribute vom body
+                    document.body.removeAttribute('aria-hidden');
+                    document.body.removeAttribute('inert');
+                    
+                    setTimeout(() => {
+                        // Klicke auf das Dateieingabefeld, um die Galerie zu öffnen
+                        const fileInput = document.getElementById('ocrImageInput');
+                        if (fileInput) {
+                            // Bootstrap-Modal für OCR
+                            const ocrModal = new bootstrap.Modal(document.getElementById('ocrModal'));
+                            ocrModal.show();
+                            
+                            // Nach dem Anzeigen des Modals auf das Dateieingabefeld klicken
+                            document.getElementById('ocrModal').addEventListener('shown.bs.modal', function () {
+                                fileInput.click();
+                            }, { once: true });
+                        }
+                    }, 500);
+                };
+            }
+        } else {
+            // Desktop-Ansicht: Zeige direkt das OCR-Modal
+            // Schließe alle offenen Modals
+            this.closeAllModals();
+            
+            const modal = new bootstrap.Modal(document.getElementById('ocrModal'));
+            
+            // Setze den OCR-Manager zurück
+            this.resetUiState();
+            
+            // Zeige das Modal an
+            modal.show();
+            
+            // Nach dem Anzeigen den Fokus auf das Datei-Input-Element setzen
+            const modalElement = document.getElementById('ocrModal');
+            modalElement.addEventListener('shown.bs.modal', function () {
+                // Fokussiere das Datei-Input-Element
+                const fileInput = document.getElementById('ocrImageInput');
+                if (fileInput) {
+                    fileInput.focus();
+                }
+            }, { once: true }); // Event-Listener nur einmal ausführen
+        }
+    },
+    
+    /**
+     * Schließt alle offenen Modals und entfernt alle Überreste
+     */
+    closeAllModals() {
+        // Finde alle geöffneten Modals
+        const openModals = document.querySelectorAll('.modal.show');
+        
+        // Schließe jedes Modal mit Bootstrap API
+        openModals.forEach(modalElement => {
+            try {
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            } catch (error) {
+                console.error('Fehler beim Schließen des Modals:', error);
+            }
+        });
+        
+        // Entferne alle Modal-Backdrops
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+            backdrop.remove();
+        });
+        
+        // Entferne Klassen und Stile vom Body, die von Bootstrap gesetzt wurden
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right');
+        document.body.removeAttribute('aria-hidden');
+        document.body.removeAttribute('inert');
+    },
+    
+    /**
+     * Öffnet die Kamera für die Dokumentenerfassung
+     */
+    openCamera() {
+        // Schließe alle offenen Modals
+        this.closeAllModals();
+        
+        // Bootstrap-Modal für die Kamera
+        const cameraModal = new bootstrap.Modal(document.getElementById('cameraModal'));
+        cameraModal.show();
+        
+        // Video-Element für die Kameraanzeige
+        const video = document.getElementById('cameraPreview');
+        
+        // Kamera-Hint mit moderner Animation
+        const cameraHint = document.querySelector('.camera-hint');
+        
+        // Aktuelle Kamera-ID
+        let currentCameraId = null;
+        
+        // Verfügbare Kameras
+        let availableCameras = [];
+        
+        // Medienstream
+        let mediaStream = null;
+        
+        // Visuelle Hilfslinien für die Dokumentausrichtung hinzufügen
+        const previewContainer = document.querySelector('.camera-preview-container');
+        if (previewContainer && !document.querySelector('.document-guides')) {
+            const guides = document.createElement('div');
+            guides.className = 'document-guides';
+            guides.innerHTML = `
+                <div class="corner-guide top-left"></div>
+                <div class="corner-guide top-right"></div>
+                <div class="corner-guide bottom-left"></div>
+                <div class="corner-guide bottom-right"></div>
+                <div class="center-message">Dokument hier ausrichten</div>
+            `;
+            previewContainer.appendChild(guides);
+        }
+        
+        // Initialisiere die Kamera nach dem Anzeigen des Modals
+        document.getElementById('cameraModal').addEventListener('shown.bs.modal', async function () {
+            try {
+                // Kamera-ID aus dem lokalen Speicher laden, falls verfügbar
+                currentCameraId = localStorage.getItem('preferredCameraId');
+                
+                // Kameras auflisten mit moderner API
+                if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    availableCameras = devices.filter(device => device.kind === 'videoinput');
+                    console.log('Verfügbare Kameras:', availableCameras);
+                    
+                    // Kamera-Auswahl-UI aktualisieren, falls mehrere Kameras vorhanden
+                    const switchCameraBtn = document.getElementById('switchCameraBtn');
+                    if (switchCameraBtn) {
+                        switchCameraBtn.style.display = availableCameras.length > 1 ? 'block' : 'none';
+                    }
+                }
+                
+                // Kamerastream starten
+                await startCamera();
+                
+                // Kamera-Hint modern ausblenden
+                if (cameraHint) {
+                    cameraHint.style.transition = 'opacity 0.5s ease-out';
+                    cameraHint.style.opacity = '0';
+                    setTimeout(() => {
+                        cameraHint.style.display = 'none';
+                    }, 500);
+                }
+                
+                // Helligkeits- und Kontrast-Optimierung für bessere OCR
+                if (video) {
+                    video.style.filter = 'contrast(1.1) brightness(1.05)';
+                }
+            } catch (error) {
+                console.error('Fehler beim Starten der Kamera:', error);
+                ToastManager.error('Kamera konnte nicht gestartet werden: ' + error.message);
+            }
+        });
+        
+        // Verbesserte Kamera-Start-Funktion
+        async function startCamera() {
+            // Automatische Auswahl der besten Kamera für Dokumentenscans
+            // Bei Mobilgeräten bevorzugt die rückseitige Kamera mit höherer Auflösung
+            const constraints = {
+                video: {
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 },
+                    facingMode: 'environment',
+                    // Moderne Kamera-Einstellungen für bessere Dokumentenerkennung
+                    advanced: [
+                        { zoom: 1.0 },
+                        { focusMode: 'continuous' },
+                        { whiteBalanceMode: 'continuous' }
+                    ]
+                }
+            };
+            
+            // Wenn eine spezifische Kamera ausgewählt wurde
+            if (currentCameraId) {
+                constraints.video.deviceId = { exact: currentCameraId };
+            }
+            
+            try {
+                // Kamerastream anfordern mit moderner Fehlerbehandlung
+                mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                // Stream an das Video-Element binden
+                if (video) {
+                    video.srcObject = mediaStream;
+                    
+                    // Warten bis Video geladen ist
+                    await new Promise(resolve => {
+                        video.onloadedmetadata = resolve;
+                    });
+                    
+                    // Video abspielen
+                    await video.play();
+                    
+                    // Visuelle Rückmeldung, dass Kamera bereit ist
+                    document.querySelector('.camera-preview-container')?.classList.add('camera-ready');
+                }
+            } catch (error) {
+                console.error('Fehler beim Starten der Kamera:', error);
+                
+                // Verbesserte Fehlerbehandlung mit spezifischen Fehlermeldungen
+                if (error.name === 'NotAllowedError') {
+                    ToastManager.error('Kamerazugriff wurde verweigert. Bitte erteilen Sie die Erlaubnis.');
+                } else if (error.name === 'NotFoundError') {
+                    ToastManager.error('Keine Kamera gefunden.');
+                } else {
+                    // Fallback: Versuche es ohne deviceId-Constraint
+                    if (currentCameraId) {
+                        currentCameraId = null;
+                        localStorage.removeItem('preferredCameraId');
+                        await startCamera();
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+        }
+        
+        // Event-Listener für das Schließen des Modals
+        document.getElementById('cameraModal').addEventListener('hidden.bs.modal', function () {
+            // Kamerastream sauber stoppen
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // UI-Elemente zurücksetzen
+            if (cameraHint) {
+                cameraHint.style.display = 'block';
+                cameraHint.style.opacity = '1';
+            }
+            
+            // Kamera-UI zurücksetzen
+            document.querySelector('.camera-preview-container')?.classList.remove('camera-ready');
+            if (video) {
+                video.style.filter = '';
+                video.srcObject = null;
+            }
+        });
+        
+        // Verbesserte Kamera-Wechsel-Funktionalität
+        const switchCameraBtn = document.getElementById('switchCameraBtn');
+        if (switchCameraBtn) {
+            // Alte Event-Listener entfernen
+            switchCameraBtn.replaceWith(switchCameraBtn.cloneNode(true));
+            
+            // Neuen Button holen
+            const newSwitchBtn = document.getElementById('switchCameraBtn');
+            newSwitchBtn.addEventListener('click', async () => {
+                // Visuelles Feedback für den Kamerawechsel
+                newSwitchBtn.disabled = true;
+                newSwitchBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                
+                try {
+                    // Nur verfügbar, wenn mehrere Kameras vorhanden sind
+                    if (availableCameras.length <= 1) {
+                        ToastManager.info('Keine weiteren Kameras verfügbar');
+                        return;
+                    }
+                    
+                    // Aktuelle Kamera finden
+                    const currentIndex = availableCameras.findIndex(camera => camera.deviceId === currentCameraId);
+                    
+                    // Nächste Kamera auswählen (zyklisch)
+                    const nextIndex = (currentIndex + 1) % availableCameras.length;
+                    currentCameraId = availableCameras[nextIndex].deviceId;
+                    
+                    // Kamera-Präferenz speichern
+                    localStorage.setItem('preferredCameraId', currentCameraId);
+                    
+                    // Aktuellen Stream sauber stoppen
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    // Neue Kamera starten
+                    await startCamera();
+                    
+                    // Visuelles Feedback für erfolgreichen Wechsel
+                    ToastManager.success('Kamera gewechselt');
+                } catch (error) {
+                    console.error('Fehler beim Wechseln der Kamera:', error);
+                    ToastManager.error('Fehler beim Wechseln der Kamera');
+                } finally {
+                    // UI zurücksetzen
+                    newSwitchBtn.disabled = false;
+                    newSwitchBtn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Kamera wechseln';
+                }
+            });
+        }
+        
+        // Moderne Foto-Aufnahme mit Bildoptimierung
+        const takePictureBtn = document.getElementById('takePictureBtn');
+        if (takePictureBtn) {
+            // Alte Event-Listener entfernen
+            takePictureBtn.replaceWith(takePictureBtn.cloneNode(true));
+            
+            // Neuen Button holen
+            const newTakeBtn = document.getElementById('takePictureBtn');
+            newTakeBtn.addEventListener('click', async () => {
+                // Visuelles Feedback beim Aufnehmen
+                newTakeBtn.disabled = true;
+                newTakeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verarbeite...';
+                
+                try {
+                    // Prüfe, ob die Kamera läuft
+                    if (!mediaStream || !video) {
+                        ToastManager.error('Kamera nicht verfügbar');
+                        return;
+                    }
+                    
+                    // Blitzeffekt für visuelles Feedback
+                    const flashEffect = document.createElement('div');
+                    flashEffect.className = 'camera-flash';
+                    document.querySelector('.camera-preview-container').appendChild(flashEffect);
+                    
+                    // Kamera-Sound abspielen (wenn erlaubt)
+                    try {
+                        const shutterSound = new Audio('img/camera-shutter.mp3');
+                        await shutterSound.play();
+                    } catch (e) {
+                        // Sound konnte nicht abgespielt werden - ignorieren
+                    }
+                    
+                    // Canvas für das Foto erstellen mit hoher Qualität
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    
+                    // Foto aufnehmen
+                    const context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Bildoptimierung für bessere OCR-Erkennung
+                    try {
+                        // Kontrast erhöhen
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        const data = imageData.data;
+                        
+                        // Erhöhe Kontrast für bessere Texterkennung
+                        const contrast = 1.2; // Kontrastfaktor
+                        const intercept = 128 * (1 - contrast);
+                        
+                        for (let i = 0; i < data.length; i += 4) {
+                            // RGB-Werte mit erhöhtem Kontrast
+                            data[i] = data[i] * contrast + intercept;     // Rot
+                            data[i + 1] = data[i + 1] * contrast + intercept; // Grün  
+                            data[i + 2] = data[i + 2] * contrast + intercept; // Blau
+                        }
+                        
+                        context.putImageData(imageData, 0, 0);
+                    } catch (e) {
+                        console.warn('Bildoptimierung fehlgeschlagen, verwende Originalbild:', e);
+                    }
+                    
+                    // Flash-Effekt entfernen
+                    setTimeout(() => {
+                        flashEffect.remove();
+                    }, 300);
+                    
+                    // Foto als Datei konvertieren mit hoher Qualität
+                    canvas.toBlob(async (blob) => {
+                        try {
+                            // Kameramodal schließen
+                            cameraModal.hide();
+                            
+                            // Datei erstellen
+                            const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+                            
+                            // OCR-Modal öffnen
+                            const ocrModal = new bootstrap.Modal(document.getElementById('ocrModal'));
+                            ocrModal.show();
+                            
+                            // Vorschau des aufgenommenen Bildes anzeigen
+                            const previewContainer = document.getElementById('imagePreviewContainer');
+                            if (previewContainer) {
+                                const img = document.createElement('img');
+                                img.src = URL.createObjectURL(blob);
+                                img.className = 'img-fluid mb-3 captured-image-preview';
+                                
+                                // Altes Vorschaubild entfernen
+                                const oldPreview = previewContainer.querySelector('img');
+                                if (oldPreview) oldPreview.remove();
+                                
+                                previewContainer.appendChild(img);
+                                previewContainer.classList.remove('d-none');
+                            }
+                            
+                            // Datei an das Datei-Input-Element anhängen
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            
+                            const fileInput = document.getElementById('ocrImageInput');
+                            if (fileInput) {
+                                fileInput.files = dataTransfer.files;
+                                
+                                // OCR automatisch starten mit kurzer Verzögerung
+                                setTimeout(() => {
+                                    const startOcrBtn = document.getElementById('startOcrBtn');
+                                    if (startOcrBtn) {
+                                        startOcrBtn.click();
+                                    }
+                                }, 500);
+                            }
+                        } catch (error) {
+                            console.error('Fehler beim Verarbeiten des Fotos:', error);
+                            ToastManager.error('Foto konnte nicht verarbeitet werden');
+                        }
+                    }, 'image/jpeg', 0.95); // Hohe Qualität für bessere OCR
+                } catch (error) {
+                    console.error('Fehler bei der Bildaufnahme:', error);
+                    ToastManager.error('Fehler bei der Bildaufnahme');
+                } finally {
+                    // UI zurücksetzen
+                    newTakeBtn.disabled = false;
+                    newTakeBtn.innerHTML = '<i class="fas fa-camera me-2"></i>Foto aufnehmen';
+                }
+            });
+        }
+    },
+    
+    /**
+     * Registriert Event-Listener für OCR-Buttons
+     */
+    registerEventListeners() {
+        // Event-Listener für den "OCR starten"-Button
+        const startOcrBtn = document.getElementById('startOcrBtn');
+        if (startOcrBtn) {
+            startOcrBtn.addEventListener('click', () => {
+                this.startOcr();
+            });
+        }
+        
+        // Event-Listener für den "Zurücksetzen"-Button
+        const resetOcrBtn = document.getElementById('resetOcrBtn');
+        if (resetOcrBtn) {
+            resetOcrBtn.addEventListener('click', () => {
+                this.resetOcr();
+            });
+        }
+        
+        // Event-Listener für den "Namen übernehmen"-Button
+        const useNameBtn = document.getElementById('useNameBtn');
+        if (useNameBtn) {
+            useNameBtn.addEventListener('click', () => {
+                this.useSelectedName();
+            });
+        }
+    },
+    
+    /**
+     * Startet den OCR-Prozess
+     */
+    async startOcr() {
+        try {
+            // Hole das Bild-Input-Element
+            const imageInput = document.getElementById('ocrImageInput');
+            
+            if (!imageInput || !imageInput.files || imageInput.files.length === 0) {
+                ToastManager.error('Bitte wählen Sie ein Bild aus');
+                return;
+            }
+            
+            // Hole die Datei
+            const file = imageInput.files[0];
+            
+            // Debug-Ausgabe für Bild
+            console.log('Starte OCR für Bild:', file.name, 'Größe:', (file.size / 1024).toFixed(2), 'KB');
+            
+            // Alles zurücksetzen und sicherstellen, dass wir bei Schritt 1 starten
+            this.resetUiState();
+            
+            // Zeige den Ladezustand an
+            this.showProcessingState();
+            
+            // Log für UI-Zustand
+            console.log('OCR Processing State aktiv, Ergebnisliste ausgeblendet');
+            
+            try {
+                // Sende das Bild an den Server
+                const result = await ApiService.processOcrImage(file);
+                
+                if (!result || !result.text) {
+                    throw new Error('Keine Texterkennung möglich');
+                }
+                
+                console.log('OCR-Text erhalten:', result.text.substring(0, 100) + '...');
+                
+                // Verstecke den Ladezustand
+                this.hideProcessingState();
+                
+                // Erkannter Text für die manuelle Auswahl
+                const fullText = result.text;
+                
+                // Erstelle hidden div für ocrFullText, falls nicht vorhanden
+                if (!document.getElementById('ocrFullText')) {
+                    const hiddenTextContainer = document.createElement('div');
+                    hiddenTextContainer.id = 'ocrFullText';
+                    hiddenTextContainer.style.display = 'none';
+                    document.body.appendChild(hiddenTextContainer);
+                }
+                
+                // Speichere den vollständigen Text für spätere Verwendung
+                const ocrFullTextElement = document.getElementById('ocrFullText');
+                if (ocrFullTextElement) {
+                    ocrFullTextElement.textContent = fullText;
+                }
+                
+                // WICHTIG: Reihenfolge der Schritte klar definieren
+                
+                // 1. Verstecke alle UI-Elemente zuerst
+                this.hideAllOcrUiComponents();
+                
+                // 2. Verstecke die Footer-Buttons (werden bei erfolgreicher Namenserkennung angezeigt)
+                this.hideFooterButtons();
+                
+                // 3. WICHTIG: NICHT den erkannten Text anzeigen zunächst, nur die Namen
+                // Verstecke den Ergebniscontainer explizit
+                const ocrResultContainer = document.getElementById('ocrResultContainer');
+                if (ocrResultContainer) {
+                    ocrResultContainer.innerHTML = '';
+                    ocrResultContainer.classList.add('d-none');
+                }
+                
+                // 4. Sicherstellen, dass das OCR-Modal nicht geschlossen wird
+                const ocrModal = document.getElementById('ocrModal');
+                if (ocrModal && !ocrModal.classList.contains('show')) {
+                    const modalInstance = new bootstrap.Modal(ocrModal);
+                    modalInstance.show();
+                }
+                
+                // 5. Event-Listener für die Buttons im OCR-Modal
+                this.setupOcrResultButtons();
+                
+                // 6. Zeige die erkannten Namen an
+                await this.detectNames(fullText);
+                
+                console.log('OCR-Prozess abgeschlossen');
+            } catch (error) {
+                console.error('Fehler bei der OCR-Verarbeitung:', error);
+                ToastManager.error('Fehler bei der OCR-Verarbeitung: ' + error.message);
+                
+                // Verstecke den Ladezustand
+                this.hideProcessingState();
+                
+                // Verstecke Footer-Buttons bei Fehler
+                this.hideFooterButtons();
+                
+                // Zeige die Fehlermeldung im Ergebniscontainer an
+                const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+                if (ocrResultsListContainer) {
+                    ocrResultsListContainer.classList.add('d-none');
+                }
+                
+                const ocrInitialMessage = document.getElementById('ocrInitialMessage');
+                if (ocrInitialMessage) {
+                    ocrInitialMessage.classList.remove('d-none');
+                    ocrInitialMessage.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Fehler bei der Texterkennung: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error('Unerwarteter Fehler im OCR-Prozess:', error);
+            ToastManager.error('Ein unerwarteter Fehler ist aufgetreten');
+        }
+    },
+    
+    /**
+     * Setzt den UI-Zustand zurück
+     */
+    resetUiState() {
+        // Verstecke alle UI-Komponenten
+        this.hideAllOcrUiComponents();
+        
+        // Verstecke die Footer-Buttons
+        this.hideFooterButtons();
+        
+        // Leere die Ergebnisliste
+        const ocrResultsList = document.getElementById('ocrResultsList');
+        if (ocrResultsList) {
+            ocrResultsList.innerHTML = '';
+        }
+        
+        // Leere den Ergebniscontainer
+        const ocrResultContainer = document.getElementById('ocrResultContainer');
+        if (ocrResultContainer) {
+            ocrResultContainer.innerHTML = '';
+        }
+        
+        console.log('OCR UI-Zustand zurückgesetzt');
+    },
+    
+    /**
+     * Versteckt alle OCR-UI-Komponenten
+     */
+    hideAllOcrUiComponents() {
+        // Verstecke initiale Nachricht
+        const ocrInitialMessage = document.getElementById('ocrInitialMessage');
+        if (ocrInitialMessage) {
+            ocrInitialMessage.classList.add('d-none');
+        }
+        
+        // Verstecke Ergebnisliste
+        const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+        if (ocrResultsListContainer) {
+            ocrResultsListContainer.classList.add('d-none');
+        }
+        
+        // Verstecke Verarbeitungsanimation
+        const ocrProcessingContainer = document.getElementById('ocrProcessingContainer');
+        if (ocrProcessingContainer) {
+            ocrProcessingContainer.classList.add('d-none');
+        }
+        
+        console.log('Alle OCR UI-Komponenten ausgeblendet');
+    },
+    
+    /**
+     * Zeigt den Verarbeitungszustand während der OCR an
+     */
+    showProcessingState() {
+        console.log('Zeige OCR-Verarbeitungszustand...');
+        
+        // Verstecke initiale Nachricht
+        const ocrInitialMessage = document.getElementById('ocrInitialMessage');
+        if (ocrInitialMessage) {
+            ocrInitialMessage.classList.add('d-none');
+        }
+        
+        // Verstecke Ergebnisliste
+        const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+        if (ocrResultsListContainer) {
+            ocrResultsListContainer.classList.add('d-none');
+        }
+        
+        // Zeige Verarbeitungsanimation
+        const ocrProcessingContainer = document.getElementById('ocrProcessingContainer');
+        if (ocrProcessingContainer) {
+            ocrProcessingContainer.classList.remove('d-none');
+            console.log('Verarbeitungsanimation sichtbar:', !ocrProcessingContainer.classList.contains('d-none'));
+        } else {
+            console.error('Verarbeitungscontainer nicht gefunden!');
+        }
+        
+        // Verstecke Footer-Buttons während der Verarbeitung
+        this.hideFooterButtons();
+    },
+    
+    /**
+     * Versteckt den Verarbeitungszustand nach der OCR
+     */
+    hideProcessingState() {
+        console.log('Verstecke OCR-Verarbeitungszustand...');
+        
+        // Verstecke Verarbeitungsanimation
+        const ocrProcessingContainer = document.getElementById('ocrProcessingContainer');
+        if (ocrProcessingContainer) {
+            ocrProcessingContainer.classList.add('d-none');
+            console.log('Verarbeitungsanimation ausgeblendet');
+        } else {
+            console.error('Verarbeitungscontainer nicht gefunden!');
+        }
+        
+        // Zeige die Ergebnisliste an, falls vorhanden
+        const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+        if (ocrResultsListContainer) {
+            ocrResultsListContainer.classList.remove('d-none');
+            console.log('Ergebnisliste eingeblendet');
+        }
+    },
+    
+    /**
+     * Zeigt das OCR-Ergebnis an
+     * @param {string} text - Erkannter Text
+     */
+    displayOcrResult(text) {
+        // Container für das OCR-Ergebnis
+        const ocrResultContainer = document.getElementById('ocrResultContainer');
+        
+        if (!ocrResultContainer) return;
+        
+        // Leere den Container
+        ocrResultContainer.innerHTML = '';
+        
+        // Wenn kein Text erkannt wurde
+        if (!text || text.trim() === '') {
+            ocrResultContainer.innerHTML = `
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Kein Text erkannt. Bitte versuchen Sie es mit einem anderen Bild.
+                </div>
+            `;
+            return;
+        }
+        
+        // Container für den erkannten Text
+        const textContainer = document.createElement('div');
+        textContainer.className = 'card';
+        
+        // Karten-Header
+        const cardHeader = document.createElement('div');
+        cardHeader.className = 'card-header d-flex justify-content-between align-items-center';
+        cardHeader.innerHTML = `
+            <h5 class="mb-0">Erkannter Text</h5>
+            <span class="badge bg-success">OCR erfolgreich</span>
+        `;
+        
+        // Karten-Body
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+        
+        // Teile den Text in Wörter auf
+        const words = text.split(/\s+/);
+        
+        // Container für die Wörter
+        const wordsContainer = document.createElement('div');
+        wordsContainer.className = 'd-flex flex-wrap gap-2 mb-3';
+        
+        // Füge jedes Wort als Button hinzu
+        words.forEach((word, index) => {
+            // Ignoriere leere Wörter
+            if (!word.trim()) return;
+            
+            const wordButton = document.createElement('button');
+            wordButton.className = 'btn btn-sm btn-outline-secondary word-btn';
+            wordButton.textContent = word;
+            wordButton.setAttribute('data-word', word);
+            wordButton.setAttribute('data-index', index);
+            
+            // Event-Listener für die Wortauswahl
+            wordButton.addEventListener('click', () => {
+                this.handleWordButtonClick(wordButton);
+            });
+            
+            wordsContainer.appendChild(wordButton);
+        });
+        
+        // Hinweis zur Verwendung
+        const usageInfo = document.createElement('div');
+        usageInfo.className = 'alert alert-info mt-3';
+        usageInfo.innerHTML = `
+            <p class="mb-0"><i class="fas fa-info-circle me-2"></i> 
+            Klicken Sie auf die Wörter, um Vor- und Nachnamen auszuwählen.</p>
+        `;
+        
+        // Mehrere Personen erstellen können - Neuer Container
+        const multipleNamesContainer = document.createElement('div');
+        multipleNamesContainer.className = 'mt-4 border p-3 rounded bg-light';
+        multipleNamesContainer.innerHTML = `
+            <h6 class="mb-3">Ausgewählte Namen:</h6>
+            <div id="selectedNamesContainer" class="mb-3">
+                <div class="alert alert-secondary">
+                    Noch keine Namen ausgewählt. Klicken Sie auf Wörter, um Namen zu erstellen.
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="input-group">
+                    <span class="input-group-text">Vorname</span>
+                    <input type="text" class="form-control" id="selectedFirstName" placeholder="Vorname auswählen">
+                    <span class="input-group-text">Nachname</span>
+                    <input type="text" class="form-control" id="selectedLastName" placeholder="Nachname auswählen">
+                </div>
+                <button class="btn btn-success" id="addNameBtn" disabled>
+                    <i class="fas fa-plus"></i> Hinzufügen
+                </button>
+            </div>
+            <button class="btn btn-primary w-100" id="createMultipleNamesBtn" disabled>
+                <i class="fas fa-save me-1"></i> Alle Namen speichern (<span id="selectedNamesCount">0</span>)
+            </button>
+        `;
+        
+        // Füge alles zusammen
+        cardBody.appendChild(wordsContainer);
+        cardBody.appendChild(usageInfo);
+        
+        textContainer.appendChild(cardHeader);
+        textContainer.appendChild(cardBody);
+        
+        ocrResultContainer.appendChild(textContainer);
+        ocrResultContainer.appendChild(multipleNamesContainer);
+        
+        // Initialisiere die UI für mehrere Namen
+        this.setupMultipleNamesUI();
+    },
+    
+    /**
+     * Initialisiert die Benutzeroberfläche für mehrere Namen
+     */
+    setupMultipleNamesUI() {
+        // Speichert die Liste der ausgewählten Namen
+        this.selectedNames = [];
+        
+        // Aktualisiere die Anzahl der ausgewählten Namen
+        const updateSelectedNamesCount = () => {
+            const countElement = document.getElementById('selectedNamesCount');
+            if (countElement) {
+                countElement.textContent = this.selectedNames.length.toString();
+            }
+            
+            // Aktiviere/Deaktiviere den Speichern-Button
+            const createBtn = document.getElementById('createMultipleNamesBtn');
+            if (createBtn) {
+                createBtn.disabled = this.selectedNames.length === 0;
+            }
+        };
+        
+        // Aktualisiere die Anzeige der ausgewählten Namen
+        const updateSelectedNamesContainer = () => {
+            const container = document.getElementById('selectedNamesContainer');
+            if (!container) return;
+            
+            if (this.selectedNames.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-secondary">
+                        Noch keine Namen ausgewählt. Klicken Sie auf Wörter, um Namen zu erstellen.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Erstelle HTML für die Namen
+            container.innerHTML = '';
+            this.selectedNames.forEach((name, index) => {
+                const nameElement = document.createElement('div');
+                nameElement.className = 'alert alert-info d-flex justify-content-between align-items-center mb-2';
+                nameElement.innerHTML = `
+                    <span>${name.firstName} ${name.lastName}</span>
+                    <button class="btn btn-sm btn-outline-danger remove-name-btn" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(nameElement);
+            });
+            
+            // Event-Listener für Remove-Buttons
+            const removeButtons = container.querySelectorAll('.remove-name-btn');
+            removeButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.getAttribute('data-index'));
+                    this.selectedNames.splice(index, 1);
+                    updateSelectedNamesContainer();
+                    updateSelectedNamesCount();
+                });
+            });
+        };
+        
+        // Event-Listener für den Hinzufügen-Button
+        const addNameBtn = document.getElementById('addNameBtn');
+        if (addNameBtn) {
+            addNameBtn.addEventListener('click', () => {
+                const firstNameInput = document.getElementById('selectedFirstName');
+                const lastNameInput = document.getElementById('selectedLastName');
+                
+                if (firstNameInput && lastNameInput && firstNameInput.value && lastNameInput.value) {
+                    // Füge den Namen zur Liste hinzu
+                    this.selectedNames.push({
+                        firstName: firstNameInput.value.trim(),
+                        lastName: lastNameInput.value.trim()
+                    });
+                    
+                    // Aktualisiere die Anzeige
+                    updateSelectedNamesContainer();
+                    updateSelectedNamesCount();
+                    
+                    // Setze die Eingabefelder zurück
+                    firstNameInput.value = '';
+                    lastNameInput.value = '';
+                    addNameBtn.disabled = true;
+                }
+            });
+        }
+        
+        // Event-Listener für den Speichern-Button
+        const createMultipleNamesBtn = document.getElementById('createMultipleNamesBtn');
+        if (createMultipleNamesBtn) {
+            createMultipleNamesBtn.addEventListener('click', () => {
+                this.createMultipleResidents();
+            });
+        }
+        
+        // Event-Listener für Eingabefelder
+        const firstNameInput = document.getElementById('selectedFirstName');
+        const lastNameInput = document.getElementById('selectedLastName');
+        
+        const checkInputs = () => {
+            if (addNameBtn) {
+                addNameBtn.disabled = !(firstNameInput && firstNameInput.value.trim() && 
+                                     lastNameInput && lastNameInput.value.trim());
+            }
+        };
+        
+        if (firstNameInput) {
+            firstNameInput.addEventListener('input', checkInputs);
+        }
+        
+        if (lastNameInput) {
+            lastNameInput.addEventListener('input', checkInputs);
+        }
+        
+        // Initialisiere die Anzeige
+        updateSelectedNamesContainer();
+        updateSelectedNamesCount();
+    },
+    
+    /**
+     * Behandelt Klicks auf Wort-Buttons
+     * @param {HTMLElement} wordButton - Geklickter Button
+     */
+    handleWordButtonClick(wordButton) {
+        const word = wordButton.getAttribute('data-word');
+        
+        // Erstelle einen ausgewählten Stil für den Button
+        if (!wordButton.classList.contains('selected')) {
+            wordButton.classList.add('selected');
+            wordButton.classList.remove('btn-outline-secondary');
+            wordButton.classList.add('btn-primary');
+            
+            // Füge das Wort zum entsprechenden Eingabefeld hinzu
+            const firstNameInput = document.getElementById('selectedFirstName');
+            const lastNameInput = document.getElementById('selectedLastName');
+            
+            if (firstNameInput && !firstNameInput.value) {
+                firstNameInput.value = word;
+            } else if (lastNameInput && !lastNameInput.value) {
+                lastNameInput.value = word;
+            }
+            
+            // Prüfe, ob der "Hinzufügen"-Button aktiviert werden kann
+            const addNameBtn = document.getElementById('addNameBtn');
+            if (addNameBtn) {
+                addNameBtn.disabled = !(firstNameInput && firstNameInput.value && 
+                                     lastNameInput && lastNameInput.value);
+            }
+        } else {
+            // Bereits ausgewählt, also aufheben
+            wordButton.classList.remove('selected');
+            wordButton.classList.remove('btn-primary');
+            wordButton.classList.add('btn-outline-secondary');
+            
+            // Entferne das Wort aus dem entsprechenden Eingabefeld
+            const firstNameInput = document.getElementById('selectedFirstName');
+            const lastNameInput = document.getElementById('selectedLastName');
+            
+            if (firstNameInput && firstNameInput.value === word) {
+                firstNameInput.value = '';
+            } else if (lastNameInput && lastNameInput.value === word) {
+                lastNameInput.value = '';
+            }
+            
+            // Deaktiviere den "Hinzufügen"-Button, wenn ein Feld leer ist
+            const addNameBtn = document.getElementById('addNameBtn');
+            if (addNameBtn) {
+                addNameBtn.disabled = !(firstNameInput && firstNameInput.value && 
+                                     lastNameInput && lastNameInput.value);
+            }
+        }
+    },
+    
+    /**
+     * Erstellt mehrere Bewohner basierend auf der Liste der ausgewählten Namen
+     */
+    async createMultipleResidents() {
+        try {
+            if (!this.selectedNames || this.selectedNames.length === 0) {
+                ToastManager.error('Keine Namen ausgewählt');
+                return;
+            }
+            
+            // Zeige Ladeindikator
+            const createBtn = document.getElementById('createMultipleNamesBtn');
+            if (createBtn) {
+                const originalText = createBtn.innerHTML;
+                createBtn.disabled = true;
+                createBtn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Speichere...
+                `;
+                
+                try {
+                    // Erstelle jeden Bewohner einzeln
+                    const creationPromises = this.selectedNames.map(name => {
+                        const residentData = {
+                            firstName: name.firstName,
+                            lastName: name.lastName
+                        };
+                        
+                        return ApiService.createResident(residentData);
+                    });
+                    
+                    const results = await Promise.all(creationPromises);
+                    
+                    // Zeige Erfolgsmeldung
+                    ToastManager.success(`${results.length} Bewohner erfolgreich erstellt`);
+                    
+                    // Aktualisiere die Bewohnerliste
+                    await ResidentManager.loadResidents();
+                    
+                    // Schließe das OCR-Modal
+                    this.closeAllModals();
+                    
+                } catch (error) {
+                    console.error('Fehler beim Erstellen der Bewohner:', error);
+                    ToastManager.error(`Fehler beim Erstellen der Bewohner: ${error.message}`);
+                } finally {
+                    // Stelle den Button wieder her
+                    if (createBtn) {
+                        createBtn.disabled = false;
+                        createBtn.innerHTML = originalText;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Fehler beim Erstellen der Bewohner:', error);
+            ToastManager.error(`Fehler beim Erstellen der Bewohner: ${error.message}`);
+        }
+    },
+    
+    /**
+     * Versteckt die Footer-Buttons im OCR-Modal
+     */
+    hideFooterButtons() {
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
+        const manualSelectBtn = document.getElementById('manualSelectBtn');
+        
+        if (selectAllBtn) selectAllBtn.style.display = 'none';
+        if (confirmOcrResultsBtn) confirmOcrResultsBtn.style.display = 'none';
+        if (manualSelectBtn) manualSelectBtn.style.display = 'none';
+        
+        console.log('Footer-Buttons ausgeblendet');
+    },
+    
+    /**
+     * Zeigt die Footer-Buttons im OCR-Modal
+     */
+    showFooterButtons() {
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
+        const manualSelectBtn = document.getElementById('manualSelectBtn');
+        
+        if (selectAllBtn) selectAllBtn.style.display = 'inline-block';
+        if (confirmOcrResultsBtn) confirmOcrResultsBtn.style.display = 'inline-block';
+        if (manualSelectBtn) manualSelectBtn.style.display = 'inline-block';
+        
+        console.log('Footer-Buttons eingeblendet');
+    },
+    
+    /**
+     * Zeigt die manuelle Textauswahl direkt im OCR-Modal an
+     */
+    showManualTextSelection() {
+        // Hole den OCR-Text
+        const ocrText = document.getElementById('ocrFullText') ? 
+                        document.getElementById('ocrFullText').textContent : '';
+        
+        if (!ocrText || ocrText.trim() === '') {
+            ToastManager.error('Kein Text für die manuelle Auswahl verfügbar');
+            return;
+        }
+        
+        // Verstecke die Ergebnisliste
+        const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+        if (ocrResultsListContainer) {
+            ocrResultsListContainer.classList.add('d-none');
+        }
+        
+        // Zeige den Textauswahl-Bereich
+        const ocrResultContainer = document.getElementById('ocrResultContainer');
+        if (ocrResultContainer) {
+            ocrResultContainer.classList.remove('d-none');
+            
+            // Zeige erkannten Text an
+            this.displayOcrResult(ocrText);
+        }
+        
+        // Ändere die Footer-Buttons
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
+        const manualSelectBtn = document.getElementById('manualSelectBtn');
+        
+        if (selectAllBtn) selectAllBtn.style.display = 'none';
+        if (confirmOcrResultsBtn) confirmOcrResultsBtn.style.display = 'none';
+        if (manualSelectBtn) manualSelectBtn.style.display = 'none';
+        
+        // Füge einen "Zurück"-Button hinzu, falls noch nicht vorhanden
+        if (!document.getElementById('backToListBtn')) {
+            const modalFooter = document.querySelector('#ocrModal .modal-footer');
+            if (modalFooter) {
+                const backButton = document.createElement('button');
+                backButton.id = 'backToListBtn';
+                backButton.type = 'button';
+                backButton.className = 'btn btn-outline-secondary';
+                backButton.innerHTML = '<i class="fas fa-arrow-left me-1"></i> Zurück zur Liste';
+                backButton.addEventListener('click', () => this.showNamesList());
+                
+                // Einfügen als erstes Element
+                modalFooter.prepend(backButton);
+            }
+        } else {
+            // Zeige den Button, falls er bereits existiert
+            const backButton = document.getElementById('backToListBtn');
+            if (backButton) backButton.style.display = 'inline-block';
+        }
+    },
+    
+    /**
+     * Zeigt die Liste der erkannten Namen wieder an
+     */
+    showNamesList() {
+        // Verstecke den Textauswahl-Bereich
+        const ocrResultContainer = document.getElementById('ocrResultContainer');
+        if (ocrResultContainer) {
+            ocrResultContainer.classList.add('d-none');
+        }
+        
+        // Zeige die Ergebnisliste
+        const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+        if (ocrResultsListContainer) {
+            ocrResultsListContainer.classList.remove('d-none');
+        }
+        
+        // Ändere die Footer-Buttons zurück
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
+        const manualSelectBtn = document.getElementById('manualSelectBtn');
+        const backToListBtn = document.getElementById('backToListBtn');
+        
+        if (selectAllBtn) selectAllBtn.style.display = 'inline-block';
+        if (confirmOcrResultsBtn) confirmOcrResultsBtn.style.display = 'inline-block';
+        if (manualSelectBtn) manualSelectBtn.style.display = 'inline-block';
+        if (backToListBtn) backToListBtn.style.display = 'none';
+    },
+    
+    /**
+     * Erkennt Namen im OCR-Text und zeigt sie als Checkboxen an
+     * @param {string} text - Erkannter OCR-Text
+     */
+    async detectNames(text) {
+        try {
+            // Debug-Ausgabe des OCR-Texts (nur die ersten 200 Zeichen)
+            console.log('Erkannter Text für Namenserkennung:', text.substring(0, 200) + '...');
+            
+            if (!text || text.trim() === '') {
+                console.warn('Kein Text für die Namenserkennung vorhanden');
+                
+                // Zeige eine Meldung an
+                const ocrResultsList = document.getElementById('ocrResultsList');
+                if (ocrResultsList) {
+                    ocrResultsList.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Kein Text erkannt oder zu wenig Text für die Namenserkennung.
+                        </div>
+                    `;
+                }
+                
+                // Zeige den Ergebniscontainer an
+                const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+                if (ocrResultsListContainer) {
+                    ocrResultsListContainer.classList.remove('d-none');
+                }
+                
+                // KEINE Footer-Buttons anzeigen
+                this.hideFooterButtons();
+                
+                return [];
+            }
+            
+            // Einfacher Ansatz zur Namenserkennung: Suche nach Wortpaaren, die wie Namen aussehen
+            const detectedNames = [];
+            
+            // Teile den Text in Zeilen und Wörter auf
+            const lines = text.split('\n');
+            
+            // Für jede Zeile
+            lines.forEach(line => {
+                // Suche nach Wörtern mit Großbuchstaben am Anfang
+                const words = line.split(/\s+/);
+                
+                // Fenster über den Wörtern schieben und nach Namenspaaren suchen
+                for (let i = 0; i < words.length - 1; i++) {
+                    const word1 = words[i].trim();
+                    const word2 = words[i + 1].trim();
+                    
+                    // Prüfe, ob beide Wörter mit Großbuchstaben beginnen und mindestens 2 Zeichen lang sind
+                    if (word1.length >= 2 && word2.length >= 2 && 
+                        /^[A-ZÄÖÜ]/.test(word1) && /^[A-ZÄÖÜ]/.test(word2)) {
+                        
+                        // Bereinige die Wörter (entferne Sonderzeichen am Anfang und Ende)
+                        const cleanWord1 = word1.replace(/^[^a-zA-ZäöüÄÖÜß]+|[^a-zA-ZäöüÄÖÜß]+$/g, '');
+                        const cleanWord2 = word2.replace(/^[^a-zA-ZäöüÄÖÜß]+|[^a-zA-ZäöüÄÖÜß]+$/g, '');
+                        
+                        // Prüfe nach der Bereinigung erneut
+                        if (cleanWord1.length >= 2 && cleanWord2.length >= 2 && 
+                            /^[A-ZÄÖÜ]/.test(cleanWord1) && /^[A-ZÄÖÜ]/.test(cleanWord2)) {
+                            
+                            // Füge als potenzielles Namenspaar hinzu
+                            detectedNames.push({
+                                firstName: cleanWord1,
+                                lastName: cleanWord2
+                            });
+                        }
+                    }
+                }
+            });
+            
+            console.log('Erkannte Namen:', detectedNames);
+            
+            // Wenn keine Namen erkannt wurden
+            if (detectedNames.length === 0) {
+                console.warn('Keine Namen erkannt');
+                
+                // Zeige eine Meldung an
+                const ocrResultsList = document.getElementById('ocrResultsList');
+                if (ocrResultsList) {
+                    ocrResultsList.innerHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Keine Namen im Text erkannt. Bitte verwenden Sie die manuelle Auswahl.
+                        </div>
+                    `;
+                }
+                
+                // Zeige den Ergebniscontainer an
+                const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+                if (ocrResultsListContainer) {
+                    ocrResultsListContainer.classList.remove('d-none');
+                }
+                
+                // Zeige nur den "Manuell"-Button an
+                this.hideFooterButtons();
+                const manualSelectBtn = document.getElementById('manualSelectBtn');
+                if (manualSelectBtn) {
+                    manualSelectBtn.style.display = 'inline-block';
+                }
+                
+                return [];
+            }
+            
+            // Prüfe, welche Namen bereits existieren
+            const namesWithExistence = await this.checkExistingResidents(detectedNames);
+            
+            // Zeige die erkannten Namen als Liste an
+            await this.renderNames(namesWithExistence);
+            
+            // Alle Footer-Buttons anzeigen, wenn Namen gefunden wurden
+            this.showFooterButtons();
+            
+            // Gib die erkannten Namen zurück
+            return namesWithExistence;
+        } catch (error) {
+            console.error('Fehler bei der Namenserkennung:', error);
+            
+            // Zeige Fehlermeldung
+            const ocrResultsList = document.getElementById('ocrResultsList');
+            if (ocrResultsList) {
+                ocrResultsList.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Fehler bei der Namenserkennung: ${error.message}
+                    </div>
+                `;
+            }
+            
+            // Zeige den Ergebniscontainer an
+            const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+            if (ocrResultsListContainer) {
+                ocrResultsListContainer.classList.remove('d-none');
+            }
+            
+            // KEINE Footer-Buttons anzeigen
+            this.hideFooterButtons();
+            
+            return [];
+        }
+    },
+    
+    /**
+     * Fügt CSS-Stile für die Markierung existierender Bewohner hinzu
+     */
+    addExistingResidentStyles() {
+        // Prüfe, ob die Stile bereits vorhanden sind
+        if (!document.getElementById('ocr-existing-styles')) {
+            const style = document.createElement('style');
+            style.id = 'ocr-existing-styles';
+            style.textContent = `
+                .existing-resident {
+                    background-color: #fff0f0;
+                    border-left: 3px solid #e53e3e;
+                }
+                .existing-resident .form-check-label {
+                    color: #e53e3e;
+                    font-weight: 500;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    },
+    
+    /**
+     * Rendert Namen ohne Prüfung auf Existenz (Fallback)
+     */
+    renderNamesWithoutCheck(detectedNames, container) {
+        detectedNames.forEach((name, index) => {
+            const nameItem = document.createElement('div');
+            nameItem.className = 'list-group-item';
+            
+            // Formatierter Name
+            const formattedName = name.gender ? 
+                `${name.gender} ${name.firstName} ${name.lastName}` : 
+                `${name.firstName} ${name.lastName}`;
+            
+            // Checkbox für die Auswahl
+            nameItem.innerHTML = `
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="nameCheck${index}" checked>
+                    <label class="form-check-label" for="nameCheck${index}">
+                        ${formattedName}
+                    </label>
+                    <input type="hidden" name="firstName" value="${name.firstName}">
+                    <input type="hidden" name="lastName" value="${name.lastName}">
+                    <input type="hidden" name="gender" value="${name.gender || ''}">
+                </div>
+            `;
+            
+            container.appendChild(nameItem);
+        });
+    },
+    
+    /**
+     * Prüft, welche Namen bereits in der Datenbank existieren
+     * @param {Array} names - Liste der erkannten Namen
+     * @returns {Promise<Object>} - Map der existierenden Namen
+     */
+    async checkExistingResidents(names) {
+        try {
+            // Lade existierende Bewohner
+            const existingResidents = await ApiService.getResidents();
+            
+            // Erstelle Map für schnellen Zugriff
+            const existingResidentsMap = {};
+            
+            // Prüfe jeden erkannten Namen gegen die Datenbank
+            names.forEach(name => {
+                const nameKey = `${name.firstName.toLowerCase()}_${name.lastName.toLowerCase()}`;
+                
+                // Prüfe, ob dieser Name bereits existiert
+                const exists = existingResidents.some(resident => 
+                    resident.firstName.toLowerCase() === name.firstName.toLowerCase() && 
+                    resident.lastName.toLowerCase() === name.lastName.toLowerCase()
+                );
+                
+                existingResidentsMap[nameKey] = exists;
+            });
+            
+            return existingResidentsMap;
+        } catch (error) {
+            console.error('Fehler beim Laden existierender Bewohner:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Erstellt Bewohner aus den ausgewählten OCR-Ergebnissen
+     */
+    async createResidentsFromOcrResults() {
+        try {
+            // Container für die erkannten Namen
+            const ocrResultsList = document.getElementById('ocrResultsList');
+            if (!ocrResultsList) return;
+            
+            // Ausgewählte Namen sammeln
+            const selectedNames = [];
+            const checkboxes = ocrResultsList.querySelectorAll('input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const listItem = checkbox.closest('.list-group-item');
+                const firstName = listItem.querySelector('input[name="firstName"]').value;
+                const lastName = listItem.querySelector('input[name="lastName"]').value;
+                const gender = listItem.querySelector('input[name="gender"]').value;
+                
+                selectedNames.push({ firstName, lastName, gender });
+            });
+            
+            // Wenn keine Namen ausgewählt wurden
+            if (selectedNames.length === 0) {
+                ToastManager.info('Keine Namen ausgewählt');
+                return;
+            }
+            
+            // Ordnungsgemäßes Schließen des OCR-Modals
+            this.closeAllModals();
+            
+            // Lade existierende Bewohner zur Überprüfung
+            const existingResidents = await ApiService.getResidents();
+            
+            // Anzahl erfolgreich erstellter Bewohner
+            let createdCount = 0;
+            let skippedCount = 0;
+            
+            // Erstelle jeden ausgewählten Bewohner
+            for (const name of selectedNames) {
+                try {
+                    // Überprüfe, ob der Bewohner bereits existiert
+                    const exists = existingResidents.some(resident => 
+                        resident.firstName.toLowerCase() === name.firstName.toLowerCase() && 
+                        resident.lastName.toLowerCase() === name.lastName.toLowerCase()
+                    );
+                    
+                    if (exists) {
+                        console.log(`Bewohner existiert bereits: ${name.firstName} ${name.lastName}`);
+                        skippedCount++;
+                        continue;
+                    }
+                    
+                    // Erstelle den Bewohner
+                    const residentData = {
+                        firstName: name.firstName,
+                        lastName: name.lastName,
+                        gender: name.gender || '',
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    await ApiService.createResident(residentData);
+                    createdCount++;
+                } catch (error) {
+                    console.error(`Fehler beim Erstellen von ${name.firstName} ${name.lastName}:`, error);
+                }
+            }
+            
+            // Erfolgsmeldung anzeigen
+            if (createdCount > 0) {
+                ToastManager.success(`${createdCount} Bewohner erfolgreich erstellt`);
+                
+                // Bewohnerliste aktualisieren
+                await ResidentManager.loadResidents();
+                await ResidentManager.displayAllResidents();
+            }
+            
+            if (skippedCount > 0) {
+                ToastManager.info(`${skippedCount} Bewohner bereits vorhanden und übersprungen`);
+            }
+        } catch (error) {
+            console.error('Fehler beim Erstellen der Bewohner:', error);
+            ToastManager.error('Fehler beim Erstellen der Bewohner: ' + error.message);
+        }
+    },
+    
+    /**
+     * Richtet Event-Listener für die Buttons im OCR-Ergebnisbereich ein
+     */
+    setupOcrResultButtons() {
+        // Event-Listener für den "Alle auswählen"-Button
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        if (selectAllBtn) {
+            selectAllBtn.onclick = () => {
+                const checkboxes = document.querySelectorAll('#ocrResultsList input[type="checkbox"]:not([disabled])');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+            };
+        }
+        
+        // Event-Listener für den "Speichern"-Button
+        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
+        if (confirmOcrResultsBtn) {
+            confirmOcrResultsBtn.onclick = () => {
+                this.createResidentsFromOcrResults();
+            };
+        }
+        
+        // Event-Listener für den "Manuell"-Button - GEÄNDERT: Zeigt jetzt nur den erkannten Text
+        const manualSelectBtn = document.getElementById('manualSelectBtn');
+        if (manualSelectBtn) {
+            manualSelectBtn.onclick = () => {
+                // Statt Modal zu öffnen, zeigen wir jetzt den Textbereich an
+                this.showManualTextSelection();
+            };
+        }
+        
+        // Event-Listener für den "Abbrechen"-Button
+        const cancelOcrResultsBtn = document.getElementById('cancelOcrResults');
+        if (cancelOcrResultsBtn) {
+            cancelOcrResultsBtn.onclick = () => {
+                // Bootstrap-Modal für OCR schließen
+                this.closeAllModals();
+            };
+        }
+        
+        console.log('OCR-Ergebnisbuttons initialisiert');
+    },
+    
+    /**
+     * Rendert die erkannten Namen als Liste mit Checkboxen
+     * @param {Object} namesWithExistence - Objekt mit erkannten Namen und ihrer Existenz
+     */
+    async renderNames(namesWithExistence) {
+        try {
+            console.log('Rendere erkannte Namen mit Existenzprüfung:', namesWithExistence);
+            
+            // Container für die Ergebnisliste
+            const ocrResultsList = document.getElementById('ocrResultsList');
+            if (!ocrResultsList) {
+                console.error('Container für OCR-Ergebnisliste nicht gefunden');
+                return;
+            }
+            
+            // Leere die Ergebnisliste
+            ocrResultsList.innerHTML = '';
+            
+            // Hole die erkannten Namen
+            const detectedNames = Object.keys(namesWithExistence).map(key => {
+                const [firstName, lastName] = key.split('_');
+                return {
+                    firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+                    lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+                    exists: namesWithExistence[key]
+                };
+            });
+            
+            // Zeige jeden erkannten Namen als Listenelement an
+            detectedNames.forEach((name, index) => {
+                const nameItem = document.createElement('div');
+                nameItem.className = 'list-group-item';
+                
+                // Falls der Name bereits existiert, füge zusätzliche Klasse hinzu
+                if (name.exists) {
+                    nameItem.classList.add('existing-resident');
+                }
+                
+                // Formatierter Name
+                const formattedName = `${name.firstName} ${name.lastName}`;
+                
+                // Checkbox für die Auswahl
+                nameItem.innerHTML = `
+                    <div class="form-check d-flex align-items-start">
+                        <input class="form-check-input mt-2" type="checkbox" value="" 
+                            id="nameCheck${index}" ${name.exists ? 'disabled' : 'checked'}>
+                        <label class="form-check-label ms-2 ${name.exists ? 'text-danger' : ''}" for="nameCheck${index}">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">${formattedName}</span>
+                                ${name.exists ? '<span class="text-danger small">Bereits im System vorhanden</span>' : ''}
+                            </div>
+                        </label>
+                        <input type="hidden" name="firstName" value="${name.firstName}">
+                        <input type="hidden" name="lastName" value="${name.lastName}">
+                        <input type="hidden" name="gender" value="">
+                    </div>
+                `;
+                
+                ocrResultsList.appendChild(nameItem);
+            });
+            
+            // Stil für existierende Bewohner
+            this.addExistingResidentStyles();
+            
+            // Anzahl der existierenden Bewohner zählen
+            const existingCount = detectedNames.filter(name => name.exists).length;
+            
+            // Zusammenfassungs-Badge hinzufügen
+            const summaryBadge = document.createElement('div');
+            summaryBadge.className = 'alert alert-info mt-3';
+            summaryBadge.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>${detectedNames.length}</strong> Namen erkannt, 
+                        <strong>${existingCount}</strong> davon bereits im System
+                    </span>
+                    <button class="btn btn-sm btn-outline-primary" id="toggleExistingBtn">
+                        Existierende einblenden
+                    </button>
+                </div>
+            `;
+            ocrResultsList.appendChild(summaryBadge);
+            
+            // Toggle für existierende Bewohner
+            const toggleBtn = document.getElementById('toggleExistingBtn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    const existingItems = document.querySelectorAll('.existing-resident');
+                    existingItems.forEach(item => {
+                        item.classList.toggle('d-none');
+                    });
+                    
+                    toggleBtn.textContent = toggleBtn.textContent.includes('Existierende ein') ? 
+                        'Existierende ausblenden' : 'Existierende einblenden';
+                });
+            }
+            
+            // Zeige den Ergebniscontainer an
+            const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
+            if (ocrResultsListContainer) {
+                ocrResultsListContainer.classList.remove('d-none');
+                console.log('Ergebnisliste nach Namenerkennung sichtbar gemacht');
+            }
+        } catch (error) {
+            console.error('Fehler beim Rendern der Namen:', error);
+            throw error;
+        }
+    }
+}; 

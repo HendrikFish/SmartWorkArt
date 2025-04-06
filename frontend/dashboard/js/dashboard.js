@@ -41,6 +41,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 description: 'Individuelle Planungen'
             },
             {
+                id: 'SoloNew',
+                icon: 'fa-user-plus',
+                title: 'Bewohner-Verwaltung NEU',
+                description: 'Verbesserte Bewohnerverwaltung'
+            },
+            {
                 id: 'soloPlan-static',
                 icon: 'fa-calendar-alt',
                 title: 'Solo Planung',

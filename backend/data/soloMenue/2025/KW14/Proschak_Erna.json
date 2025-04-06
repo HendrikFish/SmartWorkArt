@@ -1,0 +1,49 @@
+{
+  "name": "Proschak_Erna",
+  "Montag": {
+    "menue1": {
+      "category": "menue1",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Dienstag": {
+    "dessert": {
+      "category": "dessert",
+      "selected": true,
+      "portion": "100%",
+      "meals": [],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": false
+    }
+  },
+  "Mittwoch": {},
+  "Donnerstag": {
+    "extra_kaltePlatte": {
+      "category": "extra_kaltePlatte",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Kalte Platte Deluxe",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": ""
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

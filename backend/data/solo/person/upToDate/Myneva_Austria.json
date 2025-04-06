@@ -1,0 +1,14 @@
+{
+  "firstName": "Myneva",
+  "lastName": "Austria",
+  "gender": "",
+  "room": "",
+  "vergin": null,
+  "areas": {
+    "Allergene": [
+      "Nussallergie",
+      "Breikost"
+    ]
+  },
+  "lastModified": "2025-04-05T18:16:29.256Z"
+}

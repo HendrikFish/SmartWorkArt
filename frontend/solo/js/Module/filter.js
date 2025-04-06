@@ -421,7 +421,7 @@ export const FilterManager = {
         this.loadAndDisplayResidents();
     },
 
-    loadAndDisplayResidents() {
+    async loadAndDisplayResidents() {
         console.log('Lade und zeige Bewohner mit aktivem Filter:', 
             JSON.stringify({
                 fields: this.currentFilters.fields,
@@ -434,114 +434,151 @@ export const FilterManager = {
             loadingIndicator.style.display = 'block';
         }
 
-        // API-Aufruf zum Laden der Bewohner
-        fetch('/api/solo/residents')
-            .then(response => {
+        try {
+            // API-Aufruf zum Laden der Bewohner
+            const response = await fetch('/api/solo/residents');
             if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Prüfe verschiedene mögliche Datenformate
-                let residents = [];
-                
-                if (Array.isArray(data)) {
-                    // Fall 1: Direkt ein Array von Bewohnern
-                    residents = data;
-                    console.log('Datenformat: Direktes Array von Bewohnern');
-                } else if (data && typeof data === 'object' && Array.isArray(data.residents)) {
-                    // Fall 2: Ein Objekt mit einem residents-Array
-                    residents = data.residents;
-                    console.log('Datenformat: Objekt mit residents-Array');
-                } else {
-                    // Fall 3: Unbekanntes Format
-                    console.error('Ungültiges Datenformat erhalten:', data);
-                    throw new Error('Ungültiges Datenformat für Bewohner erhalten');
-                }
-                
-                if (!residents.length) {
-                    console.log('Keine Bewohner in den Daten gefunden');
-                } else {
-                    console.log(`${residents.length} Bewohner geladen`);
-                }
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            
+            // Prüfe verschiedene mögliche Datenformate
+            let residents = [];
+            
+            if (Array.isArray(data)) {
+                // Fall 1: Direkt ein Array von Bewohnern
+                residents = data;
+                console.log('Datenformat: Direktes Array von Bewohnern');
+            } else if (data && typeof data === 'object' && Array.isArray(data.residents)) {
+                // Fall 2: Ein Objekt mit einem residents-Array
+                residents = data.residents;
+                console.log('Datenformat: Objekt mit residents-Array');
+            } else {
+                // Fall 3: Unbekanntes Format
+                console.error('Ungültiges Datenformat erhalten:', data);
+                throw new Error('Ungültiges Datenformat für Bewohner erhalten');
+            }
+            
+            if (!residents.length) {
+                console.log('Keine Bewohner in den Daten gefunden');
+            } else {
+                console.log(`${residents.length} Bewohner geladen`);
+            }
 
-                // Debug: Aktive Filter vor dem Filtern
-                console.log('Aktive Filter vor dem Filtern:', 
-                    JSON.stringify({
-                        fields: this.currentFilters.fields,
-                        areas: this.currentFilters.areas
-                    })
-                );
+            // Debug: Aktive Filter vor dem Filtern
+            console.log('Aktive Filter vor dem Filtern:', 
+                JSON.stringify({
+                    fields: this.currentFilters.fields,
+                    areas: this.currentFilters.areas
+                })
+            );
 
-                // Bewohner filtern basierend auf den aktuellen Filtern
-            const filteredResidents = this.filterResidents(residents);
-                console.log(`${filteredResidents.length} Bewohner nach Filterung`);
+            // Bewohner filtern basierend auf den aktuellen Filtern
+            const filteredResidents = await this.filterResidents(residents);
+            console.log(`${filteredResidents.length} Bewohner nach Filterung`);
 
-                // Debug: Aktive Filter nach dem Filtern (sollten gleich sein)
-                console.log('Aktive Filter nach dem Filtern:', 
-                    JSON.stringify({
-                        fields: this.currentFilters.fields,
-                        areas: this.currentFilters.areas
-                    })
-                );
+            // Debug: Aktive Filter nach dem Filtern (sollten gleich sein)
+            console.log('Aktive Filter nach dem Filtern:', 
+                JSON.stringify({
+                    fields: this.currentFilters.fields,
+                    areas: this.currentFilters.areas
+                })
+            );
 
-                // Gefilterte Bewohner anzeigen
+            // Gefilterte Bewohner anzeigen
             this.displayFilteredResidents(filteredResidents);
 
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
-            })
-            .catch(error => {
+        } catch (error) {
             console.error('Fehler beim Laden der Bewohner:', error);
-                
-                const residentContainer = document.getElementById('residentContainer');
-                if (residentContainer) {
-                    residentContainer.innerHTML = `
-                        <div class="error-message">
-                            <p>Fehler beim Laden der Bewohner:</p>
-                            <p>${error.message}</p>
-                        </div>
-                    `;
-                }
-                
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
-            });
+            
+            const residentContainer = document.getElementById('residentContainer');
+            if (residentContainer) {
+                residentContainer.innerHTML = `
+                    <div class="error-message">
+                        <p>Fehler beim Laden der Bewohner:</p>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        } finally {
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+        }
     },
 
-    filterResidents(residents) {
-        console.log('Filtere Bewohner mit Filter:', JSON.stringify(this.currentFilters));
-        
-        // Wenn keine Filter aktiv sind, zeige alle Bewohner an
-        if (this.currentFilters.fields.length === 0 && this.currentFilters.areas.length === 0) {
-            return residents;
-        }
+    async filterResidents(residents) {
+        try {
+            if (!Array.isArray(residents)) {
+                console.warn('filterResidents: Ungültige Bewohnerdaten erhalten');
+                return [];
+            }
 
-        // WICHTIG: Bei aktiven Filtern müssen ALLE Bewohner zurückgegeben werden,
-        // damit die "Kein Informationen vorhanden"-Gruppe richtig gefüllt wird.
-        // Die tatsächliche Gruppierung erfolgt in groupResidentsByActiveFilter.
-        
-        // Die Filterung wird nur verwendet, um zu prüfen, welche Bewohner 
-        // für den aktiven Filter relevant sind (auch mit fehlenden Informationen).
-        
-        // Bei Bereichs-Filtern ALLE Bewohner zurückgeben, da die Gruppierung
-        // in groupResidentsByActiveFilter eine "Kein Informationen vorhanden"-Gruppe erstellt
-        if (this.currentFilters.areas.length > 0) {
-            console.log('Bereichs-Filter aktiv, gebe alle Bewohner für Gruppierung zurück');
+            // Validiere die Bewohnernamen
+            const invalidResidents = residents.filter(resident => {
+                const hasNumbers = /\d/.test(resident.firstName) || /\d/.test(resident.lastName);
+                if (hasNumbers) {
+                    console.warn(`Bewohner mit ungültigem Namen gefunden: ${resident.firstName} ${resident.lastName}`);
+                }
+                return hasNumbers;
+            });
+
+            if (invalidResidents.length > 0) {
+                console.warn(`${invalidResidents.length} Bewohner mit ungültigen Namen gefunden`);
+            }
+
+            // Filtere Bewohner mit ungültigen Namen aus
+            const validResidents = residents.filter(resident => 
+                !/\d/.test(resident.firstName) && !/\d/.test(resident.lastName)
+            );
+
+            // Hole die aktuelle Konfiguration
+            const response = await fetch('/api/solo/config');
+            if (!response.ok) {
+                throw new Error('Fehler beim Laden der Konfiguration');
+            }
+            const config = await response.json();
+
+            // Validiere die Bereichs-Filter
+            const areaFilters = this.currentFilters.areas || [];
+            const validAreaFilters = areaFilters.filter(area => {
+                const exists = config.areas.some(configArea => configArea.name === area);
+                if (!exists) {
+                    console.warn(`Ungültiger Bereichs-Filter gefunden: ${area}`);
+                }
+                return exists;
+            });
+
+            // Wenn ungültige Filter gefunden wurden, setze die Filter zurück
+            if (validAreaFilters.length !== areaFilters.length) {
+                console.warn('Ungültige Bereichs-Filter gefunden, setze Filter zurück');
+                this.currentFilters.areas = validAreaFilters;
+                await this.saveFiltersInBackground();
+            }
+
+            // Filtere die Bewohner basierend auf den gültigen Filtern
+            let filteredResidents = validResidents;
+
+            // Feld-Filter anwenden
+            if (this.currentFilters.fields && this.currentFilters.fields.length > 0) {
+                filteredResidents = filteredResidents.filter(resident => {
+                    return this.currentFilters.fields.every(field => {
+                        const value = resident[field];
+                        return value !== undefined && value !== null && value !== '';
+                    });
+                });
+            }
+
+            // Bereichs-Filter anwenden - hier nicht mehr filtern, da wir alle Bewohner anzeigen wollen
+            // Die Gruppierung erfolgt später in groupResidentsByActiveFilter
+
+            console.log(`${filteredResidents.length} Bewohner nach Filterung`);
+            return filteredResidents;
+
+        } catch (error) {
+            console.error('Fehler beim Filtern der Bewohner:', error);
             return residents;
         }
-        
-        // Bei Feld-Filtern auch alle Bewohner zurückgeben
-        if (this.currentFilters.fields.length > 0) {
-            console.log('Feld-Filter aktiv, gebe alle Bewohner für Gruppierung zurück');
-            return residents;
-        }
-        
-        // Fallback (sollte nie erreicht werden)
-        return residents;
     },
 
     displayFilteredResidents(residents) {
@@ -704,138 +741,53 @@ export const FilterManager = {
     },
 
     groupResidentsByActiveFilter(residents) {
-        console.log('Gruppiere Bewohner nach aktivem Filter');
-        if (!residents || residents.length === 0) {
-            console.log('Keine Bewohner zum Gruppieren');
-            return {};
-        }
-
-        // Die Anzahl der Bewohner vor der Gruppierung ausgeben
-        console.log(`Gruppiere ${residents.length} Bewohner`);
-
-        // Standardgruppe für Bewohner ohne Informationen erstellen
-        const groups = {
-            'Kein Informationen vorhanden': []
-        };
-
-        // Kein aktiver Filter
-        if (this.currentFilters.areas.length === 0 && this.currentFilters.fields.length === 0) {
-            console.log('Kein aktiver Filter - keine Gruppierung');
-            return { 'Alle Bewohner': residents };
-        }
-
-        // Gruppierung nach aktivem Filter
-        const activeFilter = this.currentFilters.areas[0] || this.currentFilters.fields[0];
-        console.log('Aktiver Filter für Gruppierung:', activeFilter);
-
-        residents.forEach(resident => {
-            let value = null;
-            
-            // Debug für den aktuellen Bewohner
-            console.log(`Gruppiere Bewohner: ${resident.name || 'Unbekannt'}`);
-
-            // Wert für Bereichsfilter holen
-            if (this.currentFilters.areas.length > 0) {
-                const area = this.currentFilters.areas[0];
-                
-                // Prüfen, ob der Bewohner überhaupt Bereiche hat
-                if (!resident.areas) {
-                    console.log(`Bewohner ${resident.name} hat keine Bereiche`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
-                }
-                
-                // Prüfen, ob der Bereich vorhanden ist
-                if (!(area in resident.areas)) {
-                    console.log(`Bewohner ${resident.name} hat keinen Bereich ${area}`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
-                }
-                
-                value = resident.areas[area];
-                console.log(`Bewohner ${resident.name}, Bereich ${area}: "${value}"`);
-                
-                // Prüfen, ob der Wert leer oder nur Whitespace ist
-                if (!value || value.trim() === '') {
-                    console.log(`Bewohner ${resident.name} hat einen leeren Wert für Bereich ${area}`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
-                }
-            } 
-            // Wert für Feldfilter holen
-            else if (this.currentFilters.fields.length > 0) {
-                const field = this.currentFilters.fields[0];
-                
-                // Prüfen, ob das Feld existiert
-                if (!(field in resident)) {
-                    console.log(`Bewohner ${resident.name} hat kein Feld ${field}`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
-                }
-                
-                value = resident[field];
-                console.log(`Bewohner ${resident.name}, Feld ${field}: "${value}"`);
-                
-                // Prüfen, ob der Wert leer oder nur Whitespace ist
-                if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
-                    console.log(`Bewohner ${resident.name} hat einen leeren Wert für Feld ${field}`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
-                }
+        try {
+            if (!Array.isArray(residents)) {
+                console.warn('groupResidentsByActiveFilter: Ungültige Bewohnerdaten erhalten');
+                return {};
             }
 
-            // Wenn kein Wert gefunden wurde (sollte nie passieren)
-            if (value === null || value === undefined) {
-                console.log(`Bewohner ${resident.name} hat keinen Wert für Filter ${activeFilter}`);
-                groups['Kein Informationen vorhanden'].push(resident);
-                return; // Nächster Bewohner
+            const activeFilter = this.getActiveFilterName();
+            if (!activeFilter) {
+                console.log('Kein aktiver Filter gefunden, zeige alle Bewohner');
+                return { 'Alle Bewohner': residents };
             }
 
-            // Bei mehreren Werten (durch Komma getrennt) jeden als eigene Gruppe behandeln
-            if (typeof value === 'string' && value.includes(',')) {
-                const values = value.split(',').map(v => v.trim()).filter(v => v !== '');
+            // Gruppiere die Bewohner
+            const groups = {};
+            residents.forEach(resident => {
+                let groupName = 'Kein Informationen vorhanden';
                 
-                if (values.length === 0) {
-                    // Wenn nach dem Trimmen keine Werte übrig bleiben
-                    console.log(`Bewohner ${resident.name} hat nur leere Werte nach Kommatrennung`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
+                // Prüfe, ob der Bewohner den aktiven Filter hat
+                if (resident.areas && resident.areas[activeFilter]) {
+                    const value = resident.areas[activeFilter];
+                    // Wenn der Wert ein Array ist, nehme den ersten Wert
+                    groupName = Array.isArray(value) ? value[0] : value;
                 }
-                
-                values.forEach(val => {
-                    if (!groups[val]) {
-                        groups[val] = [];
-                    }
-                    groups[val].push(resident);
+
+                // Füge den Bewohner zur entsprechenden Gruppe hinzu
+                if (!groups[groupName]) {
+                    groups[groupName] = [];
+                }
+                groups[groupName].push(resident);
+            });
+
+            // Sortiere die Bewohner innerhalb jeder Gruppe alphabetisch nach Namen
+            Object.keys(groups).forEach(groupName => {
+                groups[groupName].sort((a, b) => {
+                    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+                    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+                    return nameA.localeCompare(nameB);
                 });
-            } else {
-                // Einzelner Wert
-                const displayValue = value.toString().trim();
-                
-                if (displayValue === '') {
-                    console.log(`Bewohner ${resident.name} hat einen leeren Wert nach Trimmen`);
-                    groups['Kein Informationen vorhanden'].push(resident);
-                    return; // Nächster Bewohner
-                }
-                
-                if (!groups[displayValue]) {
-                    groups[displayValue] = [];
-                }
-                groups[displayValue].push(resident);
-            }
-        });
+            });
 
-        // Leere Gruppen entfernen (außer "Kein Informationen vorhanden")
-        Object.keys(groups).forEach(key => {
-            if (key !== 'Kein Informationen vorhanden' && groups[key].length === 0) {
-                delete groups[key];
-            }
-        });
+            console.log('Gruppierte Bewohner:', Object.keys(groups).join(', '));
+            return groups;
 
-        // Debug-Ausgabe nach der Gruppierung
-        console.log('Gruppen nach Filterung:', Object.keys(groups).map(key => `${key}: ${groups[key].length} Bewohner`).join(', '));
-        
-        return groups;
+        } catch (error) {
+            console.error('Fehler beim Gruppieren der Bewohner:', error);
+            return { 'Fehler bei der Gruppierung': residents };
+        }
     },
 
     showResidentDetails(resident) {

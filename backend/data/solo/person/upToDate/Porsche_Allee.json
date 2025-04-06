@@ -1,5 +1,17 @@
 {
   "firstName": "Porsche",
   "lastName": "Allee",
-  "createdAt": "2025-03-30T18:53:20.514Z"
+  "gender": "",
+  "room": "",
+  "vergin": null,
+  "areas": {
+    "Allergene": [
+      "Laktoseintoleranz",
+      "Fruktoseunverträglichkeit"
+    ],
+    "Frühstück": "2. OG",
+    "Abendessen": "Saal",
+    "Wo wird das Essen eingetragen!": "1.OG"
+  },
+  "lastModified": "2025-04-05T18:44:35.506Z"
 }

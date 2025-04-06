@@ -53,6 +53,7 @@ const staticModules = [
     { route: '/soloPlan-static', dir: '../frontend/soloPlan' },
     { route: '/soloSelect-static', dir: '../frontend/soloSelect' },
     { route: '/soloMenue-static', dir: '../frontend/soloMenue' },
+    { route: '/soloNew-static', dir: '../frontend/SoloNew' },
     { route: '/login-static', dir: '../frontend/login' },
     { route: '/dashboard-static', dir: '../frontend/dashboard' },
     { route: '/customer-static', dir: '../frontend/customer' },
@@ -116,10 +117,11 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             connectSrc: ["'self'", config.API_BASE_URL, process.env.FRONTEND_URL || '*'],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:"],
-            imgSrc: ["'self'", "data:", "https:"]
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https:"],
+            scriptSrcElem: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"]
         }
     }
 }));

@@ -12,6 +12,27 @@ export const OCRModalManager = {
     isProcessingClick: false,
     // Position und Größe des Modals speichern
     modalPosition: null,
+    // Modals Referenzen
+    modals: {
+        fullTextModal: null,
+        ocrResultsModal: null
+    },
+
+    // Neue Eigenschaft für die Verwaltung der ausgewählten Namen
+    selectedNames: [],
+
+    // Initialisiere die Modal-Referenzen
+    initializeModals() {
+        this.modals.fullTextModal = document.getElementById('fullTextModal');
+        this.modals.ocrResultsModal = document.getElementById('ocrResultsModal');
+        
+        if (!this.modals.fullTextModal) {
+            console.error('Volltext-Modal nicht gefunden');
+        }
+        if (!this.modals.ocrResultsModal) {
+            console.error('OCR-Ergebnisse-Modal nicht gefunden');
+        }
+    },
 
     // Neue Hilfsfunktion zur Stabilisierung des Modals
     stabilizeModal() {
@@ -147,10 +168,37 @@ export const OCRModalManager = {
     // Zeige den Volltext-Modal an mit dem erkannten Text
     showFullTextModal(text) {
         try {
-            // Wende Modal-Zuweisung zu DOM-Variablen an, falls noch nicht vorhanden
             if (!this.modals.fullTextModal) {
                 this.initializeModals();
             }
+
+            const modal = document.getElementById('fullTextModal');
+            if (!modal) {
+                console.error('Volltext-Modal nicht gefunden');
+                return;
+            }
+
+            // Setze den Auswahlmodus zurück
+            this.selectionMode = 'firstName';
+            this.currentSelection = {
+                firstName: null,
+                lastName: null
+            };
+
+            // Leere die Liste der ausgewählten Namen
+            const selectedNamesList = document.getElementById('selectedNamesList');
+            if (selectedNamesList) {
+                selectedNamesList.innerHTML = '';
+            }
+
+            // Aktualisiere den Modus-Indikator
+            const modeText = modal.querySelector('.mode-text');
+            if (modeText) {
+                modeText.textContent = 'Vorname auswählen';
+            }
+
+            // Zeige das Modal
+            Modal.show('fullTextModal');
 
             // Hole den Container für den Text
             const textContainer = document.getElementById('ocrFullText');
@@ -159,12 +207,8 @@ export const OCRModalManager = {
                 return;
             }
 
-            // Zeige das Modal
-            Modal.show('fullTextModal');
-
             // Prüfe, ob Text erkannt wurde
             if (text && text.trim().length > 0) {
-                // Wenn Text vorhanden, normalen Ablauf fortsetzen - zeige Wortauswahl
                 textContainer.innerHTML = ''; // Container leeren
                 
                 // Erstelle klickbare Wörter
@@ -174,53 +218,314 @@ export const OCRModalManager = {
                         const wordSpan = document.createElement('span');
                         wordSpan.className = 'word-button';
                         wordSpan.textContent = word;
-                        wordSpan.addEventListener('click', () => this.toggleWordSelection(wordSpan));
+                        
+                        // Event-Listener für die Wort-Buttons
+                        wordSpan.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            this.handleWordButtonClick(word, wordSpan);
+                        });
+
                         textContainer.appendChild(wordSpan);
                         textContainer.appendChild(document.createTextNode(' '));
                     }
                 });
-                
-                // Zeige Hinweis für Touch-Geräte
-                const touchHint = document.getElementById('touchSelectionHint');
-                if (touchHint) {
-                    touchHint.style.display = 'block';
-                }
-                
-                // Blende "Kein Text" Hinweis aus
-                const noTextHint = document.getElementById('noTextRecognizedHint');
-                if (noTextHint) {
-                    noTextHint.style.display = 'none';
-                }
             } else {
-                // Wenn kein Text erkannt wurde, zeige einen entsprechenden Hinweis
-                // und biete direktes manuelles Eingabeformular an
-                
                 textContainer.innerHTML = '<div class="no-text-detected">Kein Text im Bild erkannt.</div>';
-                
-                // Blende Touch-Hinweis aus
-                const touchHint = document.getElementById('touchSelectionHint');
-                if (touchHint) {
-                    touchHint.style.display = 'none';
-                }
-                
-                // Zeige "Kein Text" Hinweis an
-                const noTextHint = document.getElementById('noTextRecognizedHint');
-                if (noTextHint) {
-                    noTextHint.style.display = 'block';
-                    noTextHint.innerHTML = `
-                        <div class="no-text-hint">
-                            <strong>Kein Text erkannt!</strong> 
-                            <p>Bitte geben Sie die Namen direkt ein oder versuchen Sie es mit einem besser belichteten Bild.</p>
-                        </div>
-                    `;
-                }
-                
-                // Aktiviere direkt das manuelle Namenseingabeformular
-                this.activateManualNameEntry();
             }
+
+            // Event-Listener für die Buttons im Modal-Footer
+            this.attachFullTextModalListeners();
         } catch (error) {
             console.error('Fehler beim Anzeigen des OCR-Volltextmodals:', error);
             Toast.show('Fehler beim Anzeigen des erkannten Textes', 'error');
+        }
+    },
+
+    // Neue Validierungsfunktion für Bewohnernamen
+    validateResidentName(firstName, lastName) {
+        // Entferne ungültige Zeichen und trimme
+        const cleanFirstName = firstName.trim().replace(/[<>:"/\\|?*]/g, '');
+        const cleanLastName = lastName.trim().replace(/[<>:"/\\|?*]/g, '');
+        
+        // Prüfe auf leere Namen
+        if (!cleanFirstName || !cleanLastName) {
+            throw new Error('Vor- und Nachname dürfen nicht leer sein');
+        }
+        
+        // Prüfe auf ungültige Zeichen
+        if (cleanFirstName.includes(':') || cleanLastName.includes(':')) {
+            throw new Error('Namen dürfen keine Doppelpunkte enthalten');
+        }
+        
+        return {
+            firstName: cleanFirstName,
+            lastName: cleanLastName
+        };
+    },
+
+    // Aktualisierte createResidentFromNames Methode
+    async createResidentFromNames(firstName, lastName) {
+        try {
+            // Validiere die Namen
+            const { firstName: cleanFirstName, lastName: cleanLastName } = this.validateResidentName(firstName, lastName);
+            
+            // Prüfe zuerst, ob der Bewohner bereits existiert
+            const existingResidents = await this.checkResidentExists(cleanFirstName, cleanLastName);
+            
+            if (existingResidents) {
+                Toast.show(`Bewohner ${cleanFirstName} ${cleanLastName} existiert bereits!`, 'warning');
+                return false;
+            }
+            
+            // Speichere den neuen Bewohner
+            await SaveManager.createResident({ firstName: cleanFirstName, lastName: cleanLastName });
+            Toast.show(`Bewohner ${cleanFirstName} ${cleanLastName} wurde erfolgreich angelegt`, 'success');
+            
+            // Aktualisiere die Bewohnerliste
+            await window.ResidentManager.loadResidents();
+            return true;
+        } catch (error) {
+            // Bei Fehler vom Typ "existiert bereits" keinen Fehler werfen
+            if (error.message && error.message.includes('existiert bereits')) {
+                console.log(`Bewohner ${firstName} ${lastName} existiert bereits, wird übersprungen`);
+                Toast.show(`Bewohner ${firstName} ${lastName} existiert bereits!`, 'warning');
+                return false;
+            }
+            
+            // Bei Validierungsfehlern
+            if (error.message && (error.message.includes('dürfen nicht leer sein') || 
+                                error.message.includes('dürfen keine Doppelpunkte enthalten'))) {
+                Toast.show(error.message, 'error');
+                return false;
+            }
+            
+            console.error('Fehler beim Speichern des Bewohners:', error);
+            Toast.show('Fehler beim Speichern des Bewohners', 'error');
+            throw error;
+        }
+    },
+
+    // Aktualisierte handleWordButtonClick Methode
+    handleWordButtonClick(word, wordSpan) {
+        // Wenn das Wort bereits verwendet wurde, zeige eine Warnung
+        if (wordSpan.classList.contains('used')) {
+            Toast.show('Dieser Name wurde bereits verwendet', 'warning');
+                return;
+            }
+
+        // Validiere das Wort
+        if (!word || word.trim().length === 0) {
+            Toast.show('Ungültiger Name', 'error');
+            return;
+        }
+
+        // Wenn wir im Vornamen-Modus sind
+        if (this.selectionMode === 'firstName') {
+            this.currentSelection.firstName = word;
+            this.selectionMode = 'lastName';
+            
+            // Aktualisiere den Modus-Indikator
+            const modeText = document.querySelector('.mode-text');
+            if (modeText) {
+                modeText.textContent = 'Nachname auswählen';
+            }
+            
+            // Markiere das Wort als verwendet
+            wordSpan.classList.add('used');
+            
+            // Zeige eine Vorschau des ausgewählten Vornamens
+            const selectedNamesList = document.getElementById('selectedNamesList');
+            if (selectedNamesList) {
+                const nameTag = document.createElement('div');
+                nameTag.className = 'selected-name-tag';
+                nameTag.innerHTML = `${word} [Nachname auswählen]`;
+                selectedNamesList.appendChild(nameTag);
+            }
+        }
+        // Wenn wir im Nachnamen-Modus sind
+        else if (this.selectionMode === 'lastName') {
+            this.currentSelection.lastName = word;
+            
+            // Validiere den vollständigen Namen
+            try {
+                const { firstName, lastName } = this.validateResidentName(
+                    this.currentSelection.firstName,
+                    this.currentSelection.lastName
+                );
+                
+                // Füge den vollständigen Namen zur Liste hinzu
+                this.addSelectedName(firstName, lastName);
+                
+                // Setze den Modus zurück
+                this.selectionMode = 'firstName';
+                this.currentSelection = { firstName: null, lastName: null };
+                
+                // Aktualisiere den Modus-Indikator
+                const modeText = document.querySelector('.mode-text');
+                if (modeText) {
+                    modeText.textContent = 'Vorname auswählen';
+                }
+                
+                // Markiere das Wort als verwendet
+                wordSpan.classList.add('used');
+        } catch (error) {
+                Toast.show(error.message, 'error');
+                // Setze den Modus zurück bei Fehler
+                this.selectionMode = 'firstName';
+                this.currentSelection = { firstName: null, lastName: null };
+            }
+        }
+    },
+
+    attachFullTextModalListeners() {
+        // "Namen übernehmen" Button
+        const submitBtn = document.getElementById('submitOcrTextBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async (e) => {
+                // Verhindere das Standard-Verhalten des Buttons
+                e.preventDefault();
+                e.stopPropagation();
+
+                const selectedNamesList = document.getElementById('selectedNamesList');
+                if (!selectedNamesList) {
+                    Toast.show('Keine Namen ausgewählt', 'warning');
+                    return;
+                }
+
+                const nameTags = selectedNamesList.querySelectorAll('.selected-name-tag');
+                if (nameTags.length === 0) {
+                    Toast.show('Bitte wählen Sie mindestens einen Namen aus', 'warning');
+                    return;
+                }
+
+                try {
+                    let createdCount = 0;
+                    let skippedCount = 0;
+                    let results = [];
+
+                    for (const nameTag of nameTags) {
+                        const nameText = nameTag.textContent.trim().replace('×', '').trim();
+                        // Prüfe, ob der Name vollständig ist (kein [Nachname auswählen] mehr)
+                        if (nameText.includes('[Nachname auswählen]')) {
+                            Toast.show('Bitte vervollständigen Sie alle Namen', 'warning');
+                            return;
+                        }
+                        const [firstName, lastName] = nameText.split(' ');
+
+                        // Prüfe, ob der Bewohner bereits existiert
+                        const response = await fetch('/api/solo/residents');
+                        if (response.ok) {
+                            const residents = await response.json();
+                            const exists = residents.some(resident => 
+                                resident.firstName.toLowerCase() === firstName.toLowerCase() && 
+                                resident.lastName.toLowerCase() === lastName.toLowerCase()
+                            );
+                            
+                        if (exists) {
+                                results.push({
+                                    name: `${firstName} ${lastName}`,
+                                    status: 'skipped',
+                                    message: 'existiert bereits'
+                                });
+                                skippedCount++;
+                                continue;
+                            }
+                        }
+
+                        try {
+                        // Speichere den neuen Bewohner
+                            await SaveManager.createResident({ 
+                                firstName: firstName.trim(), 
+                                lastName: lastName.trim() 
+                            });
+                            results.push({
+                                name: `${firstName} ${lastName}`,
+                                status: 'created',
+                                message: 'erfolgreich angelegt'
+                            });
+                            createdCount++;
+                        } catch (saveError) {
+                            console.error(`Fehler beim Speichern von ${firstName} ${lastName}:`, saveError);
+                            results.push({
+                                name: `${firstName} ${lastName}`,
+                                status: 'error',
+                                message: 'Fehler beim Speichern'
+                            });
+                        }
+                    }
+
+                    // Zeige die Ergebnisse an
+                    const resultsContainer = document.createElement('div');
+                    resultsContainer.className = 'ocr-results-summary';
+                    resultsContainer.style.marginTop = '1rem';
+                    resultsContainer.style.padding = '1rem';
+                    resultsContainer.style.backgroundColor = '#f8f9fa';
+                    resultsContainer.style.borderRadius = '4px';
+                    resultsContainer.style.transition = 'opacity 0.5s ease-out';
+
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.style.color = result.status === 'created' ? '#28a745' : 
+                                                result.status === 'skipped' ? '#ffc107' : '#dc3545';
+                        resultItem.style.marginBottom = '0.5rem';
+                        resultItem.textContent = `${result.name}: ${result.message}`;
+                        resultsContainer.appendChild(resultItem);
+                    });
+
+                    // Füge die Ergebnisse nach der selected-names-container ein
+                    const selectedNamesContainer = document.querySelector('.selected-names-container');
+                    if (selectedNamesContainer) {
+                        selectedNamesContainer.parentNode.insertBefore(resultsContainer, selectedNamesContainer.nextSibling);
+                        
+                        // Entferne die Ergebnisse nach 3 Sekunden
+                        setTimeout(() => {
+                            resultsContainer.style.opacity = '0';
+                            setTimeout(() => {
+                                resultsContainer.remove();
+                            }, 500);
+                        }, 3000);
+                    }
+
+                    // Aktualisiere die Bewohnerliste nur wenn mindestens ein Bewohner erfolgreich gespeichert wurde
+                    if (createdCount > 0) {
+                        await window.ResidentManager.loadResidents();
+                    }
+                    
+                    // Leere die Liste der ausgewählten Namen
+                    selectedNamesList.innerHTML = '';
+                    
+                    // Setze die Auswahl zurück
+                    this.currentSelection = {
+                        firstName: null,
+                        lastName: null
+                    };
+                    this.selectionMode = 'firstName';
+                    
+                    // Aktualisiere den Modus-Indikator
+                    const modeText = document.querySelector('.mode-text');
+                    if (modeText) {
+                        modeText.textContent = 'Vorname auswählen';
+                    }
+                    
+                    // Entferne die "used" Klasse von allen Wörtern
+                    document.querySelectorAll('.word-button').forEach(btn => {
+                        btn.classList.remove('used');
+                    });
+                    
+                } catch (error) {
+                    console.error('Fehler beim Speichern der Bewohner:', error);
+                    Toast.show('Fehler beim Speichern der Bewohner', 'error');
+                }
+            });
+        }
+
+        // "Abbrechen" Button
+        const cancelBtn = document.getElementById('cancelOcrTextBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                Modal.hide('fullTextModal');
+            });
         }
     },
 
@@ -229,6 +534,53 @@ export const OCRModalManager = {
         content.querySelector('#selectAllBtn').addEventListener('click', () => {
             content.querySelectorAll('.ocr-result-item:not(.duplicate) input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = true;
+            });
+        });
+        
+        // Input-Überwachung für Echtzeit-Validierung
+        const nameInputs = content.querySelectorAll('.ocr-name-input');
+        nameInputs.forEach(input => {
+            input.addEventListener('input', async (event) => {
+                const item = event.target.closest('.ocr-result-item');
+                const firstName = item.querySelector('.ocr-name-input.firstName').value.trim();
+                const lastName = item.querySelector('.ocr-name-input.lastName').value.trim();
+                
+                // Nur prüfen, wenn sowohl Vorname als auch Nachname eingegeben wurden
+                if (firstName && lastName) {
+                    // Bestehende Warnungen entfernen
+                    const existingWarning = item.querySelector('.ocr-existing-warning');
+                    if (existingWarning) {
+                        existingWarning.remove();
+                    }
+                    
+                    // CSS-Klasse entfernen, um den Zustand zurückzusetzen
+                    item.classList.remove('existing-resident');
+                    
+                    // Prüfen, ob der Bewohner bereits existiert
+                    try {
+                        const residentExists = await this.checkResidentExists(firstName, lastName);
+                        
+                        if (residentExists) {
+                            console.log(`Bewohner ${firstName} ${lastName} existiert bereits`);
+                            
+                            // CSS-Klasse für existierenden Bewohner hinzufügen
+                            item.classList.add('existing-resident');
+                            
+                            // Hinzufügen der Warnung innerhalb des ocr-result-name Elements
+                            const nameContainer = item.querySelector('.ocr-result-name');
+                            
+                            // Sicherstellen, dass keine doppelten Warnungen erzeugt werden
+                            if (!nameContainer.querySelector('.ocr-existing-warning')) {
+                                const warningElement = document.createElement('div');
+                                warningElement.className = 'ocr-existing-warning';
+                                warningElement.textContent = 'Person existiert bereits im System';
+                                nameContainer.appendChild(warningElement);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Fehler bei der Prüfung auf existierende Bewohner:', error);
+                    }
+                }
             });
         });
         
@@ -340,123 +692,10 @@ export const OCRModalManager = {
         });
     },
     
-    attachFullTextModalListeners(content) {
-        // Variable für den Wechsel zwischen Vorname und Nachname
-        let isFirstNameNext = true;
-        
-        // Event-Listener für die Wort-Buttons
-        const wordButtons = content.querySelectorAll('.word-button');
-        wordButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const selectedText = button.textContent;
-                
-                // Abhängig vom Status in das entsprechende Feld eintragen
-                if (isFirstNameNext) {
-                    content.querySelector('#firstName').value = selectedText;
-                    // Fokus auf das Nachnamenfeld setzen
-                    content.querySelector('#lastName').focus();
-                } else {
-                    content.querySelector('#lastName').value = selectedText;
-                    // Fokus auf den "Namen übernehmen" Button setzen
-                    content.querySelector('#confirmNameBtn').focus();
-                }
-                
-                // Status umschalten für das nächste Feld
-                isFirstNameNext = !isFirstNameNext;
-                
-                // Visuelles Feedback für den Button
-                button.classList.add('selected');
-                setTimeout(() => {
-                    button.classList.remove('selected');
-                }, 500);
-            });
-        });
-
-        // Bestätigungs-Button (Namen übernehmen)
-        content.querySelector('#confirmNameBtn').addEventListener('click', async () => {
-            // Verhindere mehrfaches Klicken
-            if (this.isProcessingClick) return;
-            this.isProcessingClick = true;
-            
-            // Stabilisiere das Modal vor der Verarbeitung
-            this.stabilizeModal();
-            
-            const firstName = content.querySelector('#firstName').value.trim();
-            const lastName = content.querySelector('#lastName').value.trim();
-            
-            if (firstName && lastName) {
-                try {
-                    // Speichere den Bewohner
-                    await this.createResidentFromNames(firstName, lastName);
-                    
-                    // Felder leeren für den nächsten Namen
-                    content.querySelector('#firstName').value = '';
-                    content.querySelector('#lastName').value = '';
-                    
-                    // Fokus zurück auf das Vornamenfeld setzen
-                    content.querySelector('#firstName').focus();
-                    
-                    // Status für den nächsten Klick zurücksetzen
-                    isFirstNameNext = true;
-                    
-                    // Stelle sicher, dass das Modal seine Position behält
-                    this.stabilizeModal();
-                    
-                    // Status zurücksetzen
-                    this.isProcessingClick = false;
-                } catch (error) {
-                    console.error('Fehler beim Speichern:', error);
-                    this.isProcessingClick = false;
-                    // Auch bei Fehlern sollte das Modal stabil bleiben
-                    this.stabilizeModal();
-                }
-            } else {
-                Toast.show('Bitte geben Sie Vor- und Nachnamen ein', 'warning');
-                this.isProcessingClick = false;
-                // Auch bei Validierungsfehlern sollte das Modal stabil bleiben
-                this.stabilizeModal();
-            }
-        });
-
-        // Abbrechen-Button
-        content.querySelector('#cancelOcrBtn').addEventListener('click', () => {
-            Modal.hide('ocrResultsModal');
-        });
-    },
-    
-    async createResidentFromNames(firstName, lastName) {
-        try {
-            // Prüfe zuerst, ob der Bewohner bereits existiert
-            const existingResidents = await this.checkResidentExists(firstName, lastName);
-            
-            if (existingResidents) {
-                Toast.show(`Bewohner ${firstName} ${lastName} existiert bereits!`, 'warning');
-                return false;
-            }
-            
-            // Speichere den neuen Bewohner
-            await SaveManager.createResident({ firstName, lastName });
-            Toast.show(`Bewohner ${firstName} ${lastName} wurde erfolgreich angelegt`, 'success');
-            
-            // Aktualisiere die Bewohnerliste
-            await window.ResidentManager.loadResidents();
-            return true;
-        } catch (error) {
-            // Bei Fehler vom Typ "existiert bereits" keinen Fehler werfen
-            if (error.message && error.message.includes('existiert bereits')) {
-                console.log(`Bewohner ${firstName} ${lastName} existiert bereits, wird übersprungen`);
-                Toast.show(`Bewohner ${firstName} ${lastName} existiert bereits!`, 'warning');
-                return false;
-            }
-            
-            console.error('Fehler beim Speichern des Bewohners:', error);
-            Toast.show('Fehler beim Speichern des Bewohners', 'error');
-            throw error;
-        }
-    },
-    
     async checkResidentExists(firstName, lastName) {
         try {
+            if (!firstName || !lastName) return false;
+            
             // API aufrufen, um zu prüfen, ob der Bewohner existiert
             const response = await fetch('/api/solo/residents');
             if (!response.ok) {
@@ -466,9 +705,13 @@ export const OCRModalManager = {
             const residents = await response.json();
             
             // Prüfe, ob ein Bewohner mit demselben Vor- und Nachnamen existiert
-            const existingResident = residents.find(resident => 
-                resident.firstName.toLowerCase() === firstName.toLowerCase() && 
-                resident.lastName.toLowerCase() === lastName.toLowerCase()
+            // Case-insensitive Vergleich (Kleinschreibung)
+            const fnLower = firstName.toLowerCase();
+            const lnLower = lastName.toLowerCase();
+            
+            const existingResident = residents.some(resident => 
+                resident.firstName.toLowerCase() === fnLower && 
+                resident.lastName.toLowerCase() === lnLower
             );
             
             return existingResident;
@@ -478,50 +721,282 @@ export const OCRModalManager = {
         }
     },
 
-    // Verarbeitet manuell eingegebene Namen und übergibt sie zur Suche
-    processManuallyEnteredNames() {
+    // Neue Methode zum Hinzufügen eines ausgewählten Namens
+    addSelectedName(firstName, lastName) {
+            const selectedNamesList = document.getElementById('selectedNamesList');
+        if (!selectedNamesList) return;
+
+        // Entferne den temporären Tag mit [Nachname auswählen]
+        const tempTag = selectedNamesList.querySelector('.selected-name-tag:last-child');
+        if (tempTag && tempTag.textContent.includes('[Nachname auswählen]')) {
+            tempTag.remove();
+        }
+
+            const nameTag = document.createElement('div');
+            nameTag.className = 'selected-name-tag';
+        
+        // Erstelle den Button ohne onclick Attribut
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.textContent = '×';
+        removeButton.addEventListener('click', () => this.removeSelectedName(removeButton));
+        
+        // Füge den Namen und Button hinzu
+        nameTag.appendChild(document.createTextNode(`${firstName} ${lastName} `));
+        nameTag.appendChild(removeButton);
+
+            selectedNamesList.appendChild(nameTag);
+    },
+
+    // Aktualisierte removeSelectedName Methode
+    removeSelectedName(button) {
+        const nameTag = button.parentElement;
+        const nameText = nameTag.textContent.trim().replace('×', '').trim();
+        const [firstName, lastName] = nameText.split(' ');
+        
+        // Entferne die "used" Klasse von allen Wörtern, die diesem Namen entsprechen
+        document.querySelectorAll('.word-button').forEach(btn => {
+            const btnText = btn.textContent.trim();
+            if (btnText === firstName || btnText === lastName) {
+                btn.classList.remove('used');
+            }
+        });
+
+        nameTag.remove();
+    },
+
+    // Aktualisierte updateSelectedNamesPreview Methode
+    updateSelectedNamesPreview() {
+        const previewList = document.getElementById('selectedNamesList');
+        if (!previewList) return;
+        
+        previewList.innerHTML = ''; // Liste leeren
+        
+        this.selectedNames.forEach(name => {
+            const nameTag = document.createElement('div');
+            nameTag.className = 'selected-name-tag';
+            
+            // Erstelle den Button ohne onclick Attribut
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = '×';
+            removeButton.addEventListener('click', () => this.removeSelectedName(removeButton));
+            
+            // Füge den Namen und Button hinzu
+            nameTag.appendChild(document.createTextNode(`${name.firstName} ${name.lastName} `));
+            nameTag.appendChild(removeButton);
+            
+            previewList.appendChild(nameTag);
+        });
+    },
+
+    // Aktualisierte processManuallyEnteredNames Methode
+    async processManuallyEnteredNames() {
         try {
-            // Sammle alle Namenspaare
+            // Prüfe, ob Namen ausgewählt wurden
+            if (this.selectedNames.length === 0) {
+                Toast.show('Bitte wählen Sie mindestens einen Namen aus', 'warning');
+                return;
+            }
+            
+            // Verarbeite die ausgewählten Namen
+            const names = this.selectedNames.map(name => ({
+                ...name,
+                confidence: 1.0,
+                manuallyEntered: true
+            }));
+            
+            // Prüfe auf Duplikate
+            const duplicates = [];
+            const response = await fetch('/api/solo/residents');
+            if (response.ok) {
+                const residents = await response.json();
+                
+                for (const name of names) {
+                    const exists = residents.some(resident => 
+                        resident.firstName.toLowerCase() === name.firstName.toLowerCase() && 
+                        resident.lastName.toLowerCase() === name.lastName.toLowerCase()
+                    );
+                    
+                    if (exists) {
+                        duplicates.push(name);
+                    }
+                }
+            }
+            
+            // Modal schließen und Ergebnisse anzeigen
+            Modal.hide('fullTextModal');
+            this.showResults(names, duplicates);
+            
+            // Liste der ausgewählten Namen zurücksetzen
+            this.selectedNames = [];
+            
+        } catch (error) {
+            console.error('Fehler bei der Verarbeitung der ausgewählten Namen:', error);
+            Toast.show('Fehler bei der Namensverarbeitung', 'error');
+        }
+    },
+
+    // Neue Methode, um das manuelle Namenseingabeformular zu aktivieren
+    activateManualNameEntry() {
+        try {
+            // Erstelle oder aktualisiere das Namenseingabeformular
+            const formContainer = document.getElementById('manualNameEntry');
+            if (!formContainer) {
+                console.error('Container für manuelle Namenseingabe nicht gefunden');
+                return;
+            }
+            
+            // Formular erstellen/aktualisieren
+            formContainer.innerHTML = `
+                <div class="name-form-container">
+                    <h3>Namen manuell eingeben</h3>
+                    <p class="form-instruction">Geben Sie die Namen der Personen ein, die Sie suchen möchten:</p>
+                    
+                    <div id="nameInputList">
+                        <div class="name-input-row">
+                            <input type="text" class="form-input firstName-input" placeholder="Vorname" autocomplete="off">
+                            <input type="text" class="form-input lastName-input" placeholder="Nachname" autocomplete="off">
+                            <button type="button" class="remove-name-btn icon-btn close-modal" title="Entfernen"></button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="addNameBtn" class="secondary-btn" style="margin-top: 1rem;">
+                        <span>+ Weiteren Namen hinzufügen</span>
+                    </button>
+                </div>
+            `;
+            
+            // Event-Listener für das Hinzufügen neuer Namensfelder
+            const addBtn = document.getElementById('addNameBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => this.addNameInputRow());
+            }
+            
+            // Event-Listener für das Entfernen von Namensfeldern (für die erste Zeile)
+            this.attachRemoveButtonListeners();
+            
+            // Event-Listener für die Namensübermittlung aktualisieren
+            this.updateSubmitButtonListener();
+            
+            // Event-Listener für Echtzeit-Validierung der Namen
+            this.attachNameInputListeners();
+            
+            // Zeige das Formular an
+            formContainer.style.display = 'block';
+            
+            // Fokus auf das erste Eingabefeld setzen
+            setTimeout(() => {
+                const firstInput = formContainer.querySelector('.firstName-input');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }, 300);
+        } catch (error) {
+            console.error('Fehler beim Aktivieren der manuellen Namenseingabe:', error);
+        }
+    },
+    
+    // Neue Methode für die Echtzeit-Validierung bei manueller Namenseingabe
+    attachNameInputListeners() {
+        try {
             const nameRows = document.querySelectorAll('.name-input-row');
-            const names = [];
             
             nameRows.forEach(row => {
                 const firstNameInput = row.querySelector('.firstName-input');
                 const lastNameInput = row.querySelector('.lastName-input');
                 
                 if (firstNameInput && lastNameInput) {
-                    const firstName = firstNameInput.value.trim();
-                    const lastName = lastNameInput.value.trim();
+                    // Entferne bestehende Listener durch Klonen
+                    const newFirstNameInput = firstNameInput.cloneNode(true);
+                    const newLastNameInput = lastNameInput.cloneNode(true);
                     
-                    // Nur gültige Namen hinzufügen (beide Felder müssen ausgefüllt sein)
-                    if (firstName && lastName) {
-                        names.push({
-                            firstName,
-                            lastName,
-                            confidence: 1.0, // Manuell eingegebene Namen haben höchste Konfidenz
-                            manuallyEntered: true
-                        });
-                    }
+                    firstNameInput.parentNode.replaceChild(newFirstNameInput, firstNameInput);
+                    lastNameInput.parentNode.replaceChild(newLastNameInput, lastNameInput);
+                    
+                    // Event-Handler für Änderungen
+                    const validateInputs = async () => {
+                        const firstName = newFirstNameInput.value.trim();
+                        const lastName = newLastNameInput.value.trim();
+                        
+                        // Entferne existierende Warnungen
+                        const existingWarning = row.querySelector('.existing-warning');
+                        if (existingWarning) {
+                            existingWarning.remove();
+                        }
+                        
+                        // Entferne CSS-Klasse
+                        row.classList.remove('existing-resident');
+                        
+                        // Nur prüfen, wenn beide Felder gefüllt sind
+                        if (firstName && lastName) {
+                            try {
+                                const residentExists = await this.checkResidentExists(firstName, lastName);
+                                
+                                if (residentExists) {
+                                    console.log(`Bewohner ${firstName} ${lastName} existiert bereits`);
+                                    
+                                    // CSS-Klasse hinzufügen
+                                    row.classList.add('existing-resident');
+                                    
+                                    // Warnung anzeigen
+                                    if (!row.querySelector('.existing-warning')) {
+                                        const warningElement = document.createElement('div');
+                                        warningElement.className = 'existing-warning';
+                                        warningElement.textContent = 'Person existiert bereits im System';
+                                        warningElement.style.color = 'var(--danger-color)';
+                                        warningElement.style.fontSize = '0.8rem';
+                                        warningElement.style.marginTop = '0.25rem';
+                                        row.appendChild(warningElement);
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Fehler bei der Prüfung auf existierende Bewohner:', error);
+                            }
+                        }
+                    };
+                    
+                    // Event-Listener für beide Felder hinzufügen
+                    newFirstNameInput.addEventListener('input', validateInputs);
+                    newLastNameInput.addEventListener('input', validateInputs);
                 }
             });
-            
-            // Prüfe, ob Namen eingegeben wurden
-            if (names.length === 0) {
-                Toast.show('Bitte geben Sie mindestens einen vollständigen Namen ein', 'warning');
-                return;
-            }
-            
-            // Namen zur Suche übergeben
-            console.log('Manuell eingegebene Namen:', names);
-            
-            // Modal schließen und Ergebnisse anzeigen
-            Modal.hide('fullTextModal');
-            
-            // OCRManager.showResults aufrufen mit den manuell eingegebenen Namen
-            this.showResults(names, []);
         } catch (error) {
-            console.error('Fehler bei der Verarbeitung manuell eingegebener Namen:', error);
-            Toast.show('Fehler bei der Namensverarbeitung', 'error');
+            console.error('Fehler beim Hinzufügen der Namensvalidierungs-Listener:', error);
+        }
+    },
+    
+    // Methode zum Hinzufügen einer neuen Namenszeile anpassen
+    addNameInputRow() {
+        try {
+            const container = document.getElementById('nameInputList');
+            if (!container) return;
+            
+            // Neue Zeile erstellen
+            const newRow = document.createElement('div');
+            newRow.className = 'name-input-row';
+            newRow.innerHTML = `
+                <input type="text" class="form-input firstName-input" placeholder="Vorname" autocomplete="off">
+                <input type="text" class="form-input lastName-input" placeholder="Nachname" autocomplete="off">
+                <button type="button" class="remove-name-btn icon-btn close-modal" title="Entfernen"></button>
+            `;
+            
+            // Zeile zum Container hinzufügen
+            container.appendChild(newRow);
+            
+            // Event-Listener für den Entfernen-Button
+            this.attachRemoveButtonListeners();
+            
+            // Event-Listener für die Namensvalidierung der neuen Zeile
+            this.attachNameInputListeners();
+            
+            // Fokus auf das neue Vorname-Feld setzen
+            setTimeout(() => {
+                const input = newRow.querySelector('.firstName-input');
+                if (input) input.focus();
+            }, 100);
+        } catch (error) {
+            console.error('Fehler beim Hinzufügen einer Namenseingabezeile:', error);
         }
     }
 }; 

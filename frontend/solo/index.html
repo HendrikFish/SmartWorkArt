@@ -7,6 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>Bewohner-Verwaltung</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/frontend/bootstrapMain/css/bootstrap.min.css">
     <!-- Font Awesome für Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Eigene Stylesheets -->
@@ -148,19 +150,25 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Erkannter Text</h2>
-                    <button type="button" class="icon-btn close-modal"></button>
+                    <button type="button" class="icon-btn close-modal" onclick="Modal.hide('fullTextModal')">×</button>
                 </div>
-                <div class="ocr-scroll-container">
-                    <div id="ocrFullText" class="ocr-full-text"></div>
+                <div class="modal-body">
+                    <div class="ocr-selection-mode">
+                        <div class="mode-indicator">
+                            <span class="mode-text">Vorname auswählen</span>
+                        </div>
+                        <div class="selected-names-container">
+                            <h3>Ausgewählte Namen</h3>
+                            <div id="selectedNamesList" class="selected-names-list"></div>
+                        </div>
+                    </div>
+                    <div class="ocr-scroll-container">
+                        <div id="ocrFullText" class="ocr-full-text"></div>
+                    </div>
                 </div>
-                <div id="touchSelectionHint" class="touch-hint">
-                    Tippen Sie auf die Wörter, um Vor- und Nachnamen zu markieren
-                </div>
-                <div id="noTextRecognizedHint"></div>
-                <div id="manualNameEntry" class="name-selection-form"></div>
                 <div class="modal-footer">
-                    <button type="button" id="submitOcrTextBtn" class="primary-btn">Namen übernehmen</button>
-                    <button type="button" id="cancelOcrTextBtn" class="secondary-btn">Abbrechen</button>
+                    <button type="button" class="secondary-btn" id="cancelOcrTextBtn">❌ Abbrechen</button>
+                    <button type="button" class="primary-btn" id="submitOcrTextBtn">✅ Namen übernehmen</button>
                 </div>
             </div>
         </div>
@@ -204,6 +212,8 @@
         </div>
     </div>
 
+    <!-- Bootstrap Bundle mit Popper.js -->
+    <script src="/frontend/bootstrapMain/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript -->
     <script type="module" src="js/init.js"></script>
     <script type="module" src="js/script.js"></script>

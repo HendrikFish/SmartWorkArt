@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'">
+    <title>Bewohner-Verwaltung</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/frontend/bootstrapMain/css/bootstrap.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/navbar-static/navbar.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+    <!-- Toast-Container für Benachrichtigungen -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <div class="container-fluid p-0">
+        <!-- Hauptcontainer -->
+        <div class="main-container p-3">
+            <header class="mb-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <h1 class="text-primary">Bewohner-Verwaltung</h1>
+                    <div class="action-buttons d-flex flex-wrap gap-2">
+                        <button id="newResidentBtn" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Neuer Bewohner
+                        </button>
+                        <button id="uploadBtn" class="btn btn-primary">
+                            <i class="fas fa-camera me-2"></i>Dokumentenerkennung
+                        </button>
+                        <button id="resurrectionBtn" class="btn btn-secondary">
+                            <i class="fas fa-user-plus me-2"></i>Auferstehung
+                        </button>
+                        <button id="configBtn" class="btn btn-secondary">
+                            <i class="fas fa-cog me-2"></i>Konfiguration
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Suchleiste -->
+            <div class="search-container mb-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Bewohner suchen...">
+                </div>
+            </div>
+
+            <!-- Filter-Banner -->
+            <div id="filterBanner" class="alert alert-primary d-flex justify-content-between align-items-center mb-4 d-none">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-filter me-2"></i>
+                    <span id="activeFilterCount">0 Bewohner gefunden</span>
+                </div>
+                <button id="resetFilterBtn" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-times me-1"></i>Filter zurücksetzen
+                </button>
+            </div>
+
+            <!-- Filter-Bereich -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div id="filterContainer" class="filter-container d-flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
+            <!-- Bewohnerliste mit Spinner -->
+            <div id="loadingSpinner" class="text-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Lade...</span>
+                </div>
+                <p class="mt-2">Bewohnerdaten werden geladen...</p>
+            </div>
+            
+            <div id="residentContainer" class="residents-container row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3"></div>
+            
+            <!-- Keine Ergebnisse Anzeige -->
+            <div id="noResults" class="alert alert-info text-center my-5 d-none">
+                <i class="fas fa-info-circle me-2"></i>Keine Bewohner gefunden.
+            </div>
+        </div>
+    </div>
+
+    <!-- Neuer Bewohner Modal -->
+    <div class="modal fade" id="newResidentModal" tabindex="-1" aria-labelledby="newResidentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="newResidentModalLabel">Neuer Bewohner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newResidentForm">
+                        <div class="row g-3">
+                            <!-- Basis-Felder -->
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">Vorname <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                <div class="invalid-feedback">Bitte geben Sie einen Vornamen ein.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Nachname <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                <div class="invalid-feedback">Bitte geben Sie einen Nachnamen ein.</div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label class="form-label">Geschlecht <span class="text-danger">*</span></label>
+                                <div class="btn-group w-100" role="group" aria-label="Geschlecht">
+                                    <input type="radio" class="btn-check" name="gender" id="genderHerr" value="Herr" autocomplete="off" required>
+                                    <label class="btn btn-outline-primary" for="genderHerr">Herr</label>
+                                    
+                                    <input type="radio" class="btn-check" name="gender" id="genderFrau" value="Frau" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="genderFrau">Frau</label>
+                                </div>
+                                <div class="invalid-feedback">Bitte wählen Sie ein Geschlecht aus.</div>
+                            </div>
+                            
+                            <!-- Dynamische Felder -->
+                            <div id="dynamicFields" class="col-12"></div>
+                            
+                            <!-- Dynamische Bereiche -->
+                            <div id="dynamicAreas" class="col-12"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="saveNewResidentBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bewohner Details Modal -->
+    <div class="modal fade" id="residentDetailModal" tabindex="-1" aria-labelledby="residentDetailTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="residentDetailTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="residentDetailForm">
+                        <div class="row g-3">
+                            <!-- Basis-Felder -->
+                            <div class="col-md-6">
+                                <label for="residentDetailFirstName" class="form-label">Vorname <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="residentDetailFirstName" name="firstName" required>
+                                <div class="invalid-feedback">Bitte geben Sie einen Vornamen ein.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="residentDetailLastName" class="form-label">Nachname <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="residentDetailLastName" name="lastName" required>
+                                <div class="invalid-feedback">Bitte geben Sie einen Nachnamen ein.</div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label class="form-label">Geschlecht <span class="text-danger">*</span></label>
+                                <div class="btn-group w-100" role="group" aria-label="Geschlecht">
+                                    <input type="radio" class="btn-check" name="detailGender" id="detailGenderHerr" value="Herr" autocomplete="off" required>
+                                    <label class="btn btn-outline-primary" for="detailGenderHerr">Herr</label>
+                                    
+                                    <input type="radio" class="btn-check" name="detailGender" id="detailGenderFrau" value="Frau" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="detailGenderFrau">Frau</label>
+                                </div>
+                                <div class="invalid-feedback">Bitte wählen Sie ein Geschlecht aus.</div>
+                            </div>
+
+                            <!-- Alter -->
+                            <div class="col-md-12">
+                                <label for="residentDetailAge" class="form-label">Alter</label>
+                                <input type="number" class="form-control" id="residentDetailAge" name="vergin" min="0" max="120">
+                                <div class="invalid-feedback">Bitte geben Sie ein gültiges Alter ein (0-120).</div>
+                            </div>
+
+                            <!-- Dynamische Bereiche -->
+                            <div id="residentDetailAreas" class="col-12"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger me-auto" id="dismissResidentBtn">
+                        <i class="fas fa-user-minus me-1"></i>Entlassen
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="saveResidentBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dokumentenerkennung Modal -->
+    <div class="modal fade" id="ocrModal" tabindex="-1" aria-labelledby="ocrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="ocrModalLabel">Dokumentenerkennung</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="ocrUploadSection">
+                        <!-- Kamera oder Datei-Upload -->
+                        <div class="d-flex justify-content-center mb-4">
+                            <div class="btn-group" role="group" aria-label="OCR-Methode">
+                                <button type="button" class="btn btn-primary active" id="cameraBtn">
+                                    <i class="fas fa-camera me-2"></i>Kamera
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" id="fileBtn">
+                                    <i class="fas fa-file-upload me-2"></i>Datei
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Kamera-Bereich -->
+                        <div id="cameraSection" class="text-center mb-3">
+                            <div class="camera-hint alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Bitte fotografieren Sie das Dokument mit den Bewohnernamen.
+                            </div>
+                            <div class="camera-controls d-flex justify-content-center gap-3 mb-3">
+                                <button class="btn btn-outline-secondary" id="switchCameraBtn">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="btn btn-primary" id="takePictureBtn">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" id="cancelCameraBtn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="ratio ratio-16x9 mb-3">
+                                <video id="cameraPreview" class="border rounded"></video>
+                            </div>
+                            <canvas id="captureCanvas" class="d-none"></canvas>
+                        </div>
+                        
+                        <!-- Datei-Upload Bereich -->
+                        <div id="fileSection" class="text-center mb-3 d-none">
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Bitte wählen Sie ein Bild mit den Bewohnernamen.
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="file" class="form-control" id="ocrFileInput" accept="image/*">
+                                <button class="btn btn-primary" type="button" id="uploadImageBtn">Hochladen</button>
+                            </div>
+                            <div class="image-preview mt-3 d-none">
+                                <img id="imagePreview" class="img-fluid border rounded" alt="Vorschau">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- OCR-Verarbeitung Bereich -->
+                    <div id="ocrProcessingSection" class="text-center d-none">
+                        <div class="alert alert-info mb-4">Dokument wird verarbeitet...</div>
+                        <div class="progress mb-4">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                        </div>
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Verarbeitung läuft...</span>
+                        </div>
+                        <p>Bitte warten, die Texterkennung wird durchgeführt...</p>
+                    </div>
+                    
+                    <!-- OCR-Ergebnis Bereich -->
+                    <div id="ocrResultSection" class="d-none">
+                        <div class="alert alert-success mb-3">
+                            <i class="fas fa-check-circle me-2"></i>Texterkennung abgeschlossen.
+                        </div>
+                        <p class="mb-3">Folgende Namen wurden erkannt:</p>
+                        
+                        <div id="recognizedNames" class="mb-4">
+                            <!-- Hier werden die erkannten Namen angezeigt -->
+                        </div>
+                        
+                        <button id="manualSelectBtn" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i>Manuell auswählen
+                        </button>
+                    </div>
+                    
+                    <!-- Manueller Auswahl-Bereich -->
+                    <div id="manualSelectionSection" class="d-none">
+                        <div class="alert alert-info mb-3" id="selectionInstruction">
+                            Bitte klicken Sie auf den <strong>Vornamen</strong> im erkannten Text.
+                        </div>
+                        
+                        <div class="selected-names-container mb-3">
+                            <div class="mb-2">Ausgewählte Namen:</div>
+                            <div id="selectedNamesList" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+                        
+                        <div id="ocrTextDisplay" class="border rounded p-3 mb-3 word-selection-area"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- Footer für Upload-Bereich -->
+                    <div id="uploadFooter">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    </div>
+                    
+                    <!-- Footer für Ergebnisbereich -->
+                    <div id="resultFooter" class="d-none w-100 d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="selectAllBtn">Alle auswählen</button>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-primary" id="confirmOcrResults">Namen speichern</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer für manuelle Auswahl -->
+                    <div id="manualFooter" class="d-none w-100 d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="backToResultsBtn">Zurück</button>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-primary" id="confirmManualSelection">Namen übernehmen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auferstehungs-Modal -->
+    <div class="modal fade" id="resurrectionModal" tabindex="-1" aria-labelledby="resurrectionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="resurrectionModalLabel">Entlassene Bewohner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-info-circle me-2"></i>Hier finden Sie alle entlassenen Bewohner, die Sie wiederherstellen können.
+                    </div>
+                    
+                    <div id="dismissedResidentsList" class="list-group">
+                        <!-- Hier werden die entlassenen Bewohner angezeigt -->
+                    </div>
+                    
+                    <div id="noDismissedResidents" class="alert alert-warning mt-3 d-none">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Keine entlassenen Bewohner gefunden.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Konfigurations-Modal -->
+    <div class="modal fade" id="configModal" tabindex="-1" aria-labelledby="configModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="configModalLabel">Konfiguration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Bootstrap Tabs -->
+                    <ul class="nav nav-tabs nav-fill mb-3" id="configTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="areas-tab" data-bs-toggle="tab" data-bs-target="#areasTab" 
+                                   type="button" role="tab" aria-controls="areasTab" aria-selected="true">Bereiche</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="filter-tab" data-bs-toggle="tab" data-bs-target="#filterTab" 
+                                   type="button" role="tab" aria-controls="filterTab" aria-selected="false">Filter</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="configTabContent">
+                        <!-- Bereiche Tab -->
+                        <div class="tab-pane fade show active" id="areasTab" role="tabpanel" aria-labelledby="areas-tab">
+                            <div class="sticky-header mb-3">
+                                <button type="button" class="btn btn-primary" id="addAreaBtn">
+                                    <i class="fas fa-plus me-2"></i>Bereich hinzufügen
+                                </button>
+                            </div>
+                            <div id="areasList" class="areas-list"></div>
+                        </div>
+                        
+                        <!-- Filter Tab -->
+                        <div class="tab-pane fade" id="filterTab" role="tabpanel" aria-labelledby="filter-tab">
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Hier können Sie festlegen, welche Bereiche als Filter verwendet werden sollen.
+                            </div>
+                            <div id="filterOptions" class="filter-options">
+                                <!-- Hier werden die Filter dynamisch geladen -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="saveConfigBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Neuer Bereich Modal -->
+    <div class="modal fade" id="newAreaModal" tabindex="-1" aria-labelledby="newAreaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="newAreaModalLabel">Neuer Bereich</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newAreaForm">
+                        <div class="mb-3">
+                            <label for="areaName" class="form-label">Bereichsname <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="areaName" required>
+                            <div class="invalid-feedback">Bitte geben Sie einen Namen für den Bereich ein.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="areaMultiple">
+                                <label class="form-check-label" for="areaMultiple">Mehrfachauswahl</label>
+                            </div>
+                            <small class="form-text text-muted">Ermöglicht die Auswahl mehrerer Optionen in diesem Bereich.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="areaMenuFilter">
+                                <label class="form-check-label" for="areaMenuFilter">Als Filter verwenden</label>
+                            </div>
+                            <small class="form-text text-muted">Stellt diesen Bereich als Filter zur Verfügung.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="areaChangeable">
+                                <label class="form-check-label" for="areaChangeable">Änderbar</label>
+                            </div>
+                            <small class="form-text text-muted">Legt fest, ob der Bereich später noch geändert werden kann.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Optionen <span class="text-danger">*</span></label>
+                            <div id="areaButtonsContainer" class="mb-2">
+                                <!-- Hier werden die Buttons dynamisch hinzugefügt -->
+                                <div class="input-group mb-2 area-button-input">
+                                    <input type="text" class="form-control" placeholder="Optionsname">
+                                    <button class="btn btn-outline-danger remove-option" type="button">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="addOptionBtn">
+                                <i class="fas fa-plus me-1"></i>Option hinzufügen
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="saveAreaBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle mit Popper -->
+    <script src="/frontend/bootstrapMain/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS Module -->
+    <script src="js/app.js" type="module"></script>
+</body>
+</html> 
