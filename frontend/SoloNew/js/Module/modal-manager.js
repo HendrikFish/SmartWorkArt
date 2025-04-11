@@ -56,13 +56,38 @@ export const ModalManager = {
      * Zeigt das Modal für einen neuen Bewohner an
      */
     showNewResidentModal() {
-        // Bootstrap-Modal für neuen Bewohner
-        const modal = new bootstrap.Modal(document.getElementById('newResidentModal'));
-        
-        // Initialisiere das Modal
+        // Initialisiere das Modal für einen neuen Bewohner
         this.initNewResidentModal();
         
-        // Zeige das Modal an
+        // Setze das Standard-Geburtsdatum für neue Bewohner
+        const birthDateInput = document.getElementById('newResidentBirthDate');
+        if (birthDateInput) {
+            try {
+                // Setze das Datum auf den 1. Januar 1950
+                birthDateInput.value = '1950-01-01';
+                birthDateInput.valueAsDate = new Date(1950, 0, 1);
+                
+                // Event-Listener für Fokus auf dem Datumsfeld
+                birthDateInput.addEventListener('focus', function() {
+                    // Wenn kein Datum gesetzt ist, setze 1950-01-01
+                    if (!this.valueAsDate) {
+                        this.valueAsDate = new Date(1950, 0, 1);
+                    }
+                    
+                    // Auf iOS öffnet sich der Datepicker mit einer Verzögerung
+                    setTimeout(() => {
+                        if (!this.valueAsDate) {
+                            this.valueAsDate = new Date(1950, 0, 1);
+                        }
+                    }, 50);
+                });
+            } catch (error) {
+                console.warn('Fehler beim Setzen des Standard-Geburtsdatums:', error);
+            }
+        }
+        
+        // Bootstrap-Modal
+        const modal = new bootstrap.Modal(document.getElementById('newResidentModal'));
         modal.show();
         
         // Nach dem Anzeigen den Fokus auf das erste Formularfeld setzen
@@ -201,10 +226,13 @@ export const ModalManager = {
     async saveNewResident() {
         try {
             // Hole die Formularfelder
-            const firstName = document.getElementById('newResidentFirstName').value.trim();
-            const lastName = document.getElementById('newResidentLastName').value.trim();
-            const gender = document.getElementById('newResidentGender').value;
-            const room = document.getElementById('newResidentRoom').value.trim();
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const gender = document.getElementById('genderHerr').checked ? 'Herr' : (document.getElementById('genderFrau').checked ? 'Frau' : '');
+            
+            // Neue Felder hinzufügen
+            const birthDateInput = document.getElementById('newResidentBirthDate');
+            const birthDate = birthDateInput ? birthDateInput.value : '';
             
             // Validiere die Pflichtfelder
             if (!firstName || !lastName) {
@@ -217,7 +245,7 @@ export const ModalManager = {
                 firstName,
                 lastName,
                 gender,
-                room,
+                birthDate,
                 areas: {}
             };
             
@@ -313,7 +341,40 @@ export const ModalManager = {
         if (lastNameInput) lastNameInput.value = resident.lastName || '';
         if (genderSelect) genderSelect.value = resident.gender || '';
         if (roomInput) roomInput.value = resident.room || '';
-        if (ageInput) ageInput.value = resident.vergin || '';
+        if (ageInput) {
+            // Wenn ein Geburtsdatum vorhanden ist, dieses setzen, sonst den Standardwert (1950-01-01)
+            ageInput.value = resident.birthDate || '1950-01-01';
+
+            // Beim Fokussieren auf das Datumsfeld in mobilen Geräten, das Jahr auf 1950 setzen
+            ageInput.addEventListener('focus', function(event) {
+                // Touch-Ereignis unterbrechen, um das Standard-Verhalten anzupassen
+                try {
+                    if (this.type === 'date' && !this.valueAsDate) {
+                        // Wenn kein Datum gesetzt ist, setze 1950-01-01
+                        this.valueAsDate = new Date(1950, 0, 1);
+                    }
+                    
+                    // Auf iOS öffnet sich der Datepicker mit einem Verzögerung
+                    setTimeout(() => {
+                        // Versuche den Wert erneut zu setzen, da manche Browser den Wert überschreiben
+                        if (!this.valueAsDate) {
+                            this.valueAsDate = new Date(1950, 0, 1);
+                        }
+                    }, 50);
+                } catch (error) {
+                    console.warn('Fehler beim Setzen des Geburtsdatums:', error);
+                }
+            });
+
+            // Stelle sicher, dass ein gültiges Datum gesetzt ist
+            if (!ageInput.valueAsDate) {
+                try {
+                    ageInput.valueAsDate = new Date(1950, 0, 1);
+                } catch (error) {
+                    console.warn('Fehler beim Initialisieren des Geburtsdatums:', error);
+                }
+            }
+        }
 
         // Generiere die dynamischen Bereiche
         const areasContainer = document.getElementById('residentDetailAreas');
@@ -460,12 +521,37 @@ export const ModalManager = {
             const lastName = lastNameInput.value.trim();
             const gender = genderSelect ? genderSelect.value : '';
             const room = roomInput ? roomInput.value.trim() : '';
-            const vergin = ageInput ? ageInput.value : '';
+            const birthDate = ageInput ? ageInput.value : '';
+            
+            // Berechne das Alter aus dem Geburtsdatum
+            let vergin = null;
+            if (birthDate) {
+                const birthDateObj = new Date(birthDate);
+                const today = new Date();
+                vergin = today.getFullYear() - birthDateObj.getFullYear();
+                
+                // Wenn der Geburtstag in diesem Jahr noch nicht war, ein Jahr abziehen
+                if (
+                    today.getMonth() < birthDateObj.getMonth() || 
+                    (today.getMonth() === birthDateObj.getMonth() && today.getDate() < birthDateObj.getDate())
+                ) {
+                    vergin--;
+                }
+            }
             
             // Validiere die Pflichtfelder
             if (!firstName || !lastName) {
                 ToastManager.error('Bitte geben Sie Vor- und Nachnamen ein');
                 return;
+            }
+            
+            // Prüfe, ob der Name geändert wurde
+            const originalName = `${originalResident.firstName}_${originalResident.lastName}`;
+            const newName = `${firstName}_${lastName}`;
+            const nameChanged = originalName !== newName;
+            
+            if (nameChanged) {
+                console.log(`Bewohnername wurde geändert: ${originalName} -> ${newName}`);
             }
             
             // Speichere den aktuellen Filterzustand vor dem Aktualisieren
@@ -491,7 +577,8 @@ export const ModalManager = {
                 lastName,
                 gender,
                 room,
-                vergin: vergin ? parseInt(vergin) : null,
+                vergin: vergin,
+                birthDate: birthDate,
                 areas: {}
             };
             
@@ -543,35 +630,49 @@ export const ModalManager = {
                 return;
             }
             
-            const residentName = ResidentManager.getResidentFullName(originalResident);
-            
-            // Aktualisiere den Bewohner
-            await ResidentManager.updateResident(residentName, updatedResidentData);
-            
-            // Schließe das Modal mit der sicheren Methode
-            this.closeModal('residentDetailModal');
-            
-            // Bewohnerliste aktualisieren unter Berücksichtigung des vorherigen Filterzustands
-            await ResidentManager.loadResidents();
-            
-            // Wenn es einen vorherigen Filterzustand gab, wende diesen wieder an
-            if (currentFilterState) {
-                try {
-                    const { FilterManager } = await import('./filter-manager.js');
-                    console.log('Wende vorherigen Filterzustand wieder an:', currentFilterState);
-                    await FilterManager.applyFilter(currentFilterState.area, currentFilterState.value);
-                } catch (error) {
-                    console.error('Fehler beim Wiederherstellen des Filterzustands:', error);
-                    // Fallback: Alle Bewohner anzeigen
+            try {
+                // Wenn der Name geändert wurde, verwende eine spezielle Logik
+                if (nameChanged) {
+                    // Ersten Schritt: Erstelle einen neuen Bewohner mit den neuen Daten
+                    await ApiService.createResident(updatedResidentData);
+                    
+                    // Zweiten Schritt: Lösche den alten Bewohner
+                    await ApiService.dismissResident(originalName);
+                    
+                    console.log(`Bewohner umbenannt: ${originalName} -> ${newName}`);
+                    ToastManager.success('Bewohner erfolgreich aktualisiert und umbenannt');
+                } else {
+                    // Normales Update, wenn der Name nicht geändert wurde
+                    const residentName = ResidentManager.getResidentFullName(originalResident);
+                    await ResidentManager.updateResident(residentName, updatedResidentData);
+                    ToastManager.success('Bewohner erfolgreich aktualisiert');
+                }
+                
+                // Schließe das Modal mit der sicheren Methode
+                this.closeModal('residentDetailModal');
+                
+                // Bewohnerliste aktualisieren unter Berücksichtigung des vorherigen Filterzustands
+                await ResidentManager.loadResidents();
+                
+                // Wenn es einen vorherigen Filterzustand gab, wende diesen wieder an
+                if (currentFilterState) {
+                    try {
+                        const { FilterManager } = await import('./filter-manager.js');
+                        console.log('Wende vorherigen Filterzustand wieder an:', currentFilterState);
+                        await FilterManager.applyFilter(currentFilterState.area, currentFilterState.value);
+                    } catch (error) {
+                        console.error('Fehler beim Wiederherstellen des Filterzustands:', error);
+                        // Fallback: Alle Bewohner anzeigen
+                        await ResidentManager.displayAllResidents();
+                    }
+                } else {
+                    // Keine vorherige Sortierung, zeige alle Bewohner
                     await ResidentManager.displayAllResidents();
                 }
-            } else {
-                // Keine vorherige Sortierung, zeige alle Bewohner
-                await ResidentManager.displayAllResidents();
+            } catch (error) {
+                console.error('Fehler beim Aktualisieren des Bewohners:', error);
+                ToastManager.error('Fehler beim Aktualisieren des Bewohners: ' + error.message);
             }
-            
-            // Zeige eine Erfolgsmeldung
-            ToastManager.success('Bewohner erfolgreich aktualisiert');
         } catch (error) {
             console.error('Fehler beim Aktualisieren des Bewohners:', error);
             ToastManager.error('Fehler beim Aktualisieren des Bewohners: ' + error.message);
@@ -977,6 +1078,21 @@ export const ModalManager = {
         // Alter, falls verfügbar
         if (resident.vergin) {
             details.push(`Alter: ${resident.vergin}`);
+        } else if (resident.birthDate) {
+            // Berechne das Alter aus dem Geburtsdatum
+            const birthDateObj = new Date(resident.birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birthDateObj.getFullYear();
+            
+            // Wenn der Geburtstag in diesem Jahr noch nicht war, ein Jahr abziehen
+            if (
+                today.getMonth() < birthDateObj.getMonth() || 
+                (today.getMonth() === birthDateObj.getMonth() && today.getDate() < birthDateObj.getDate())
+            ) {
+                age--;
+            }
+            
+            details.push(`Alter: ${age}`);
         }
         
         // Bereiche, falls verfügbar
@@ -1082,129 +1198,16 @@ export const ModalManager = {
             });
         } catch (error) {
             console.error(`Fehler beim Schließen des Modals ${modalId}:`, error);
-            // Fallback-Bereinigung
-            this.cleanupModalBackdrops();
         }
     },
     
     /**
      * Setzt den Fokus auf ein Element außerhalb des Modals
-     * @param {string} modalId - ID des Modals, das geschlossen wird
+     * @param {string} modalId - ID des Modals
      */
     setFocusOutsideModal(modalId) {
-        // Bestimme das Element, das den Fokus erhalten soll, basierend auf dem Modal-Typ
-        let focusTarget = null;
-        
-        switch (modalId) {
-            case 'residentDetailModal':
-                // Bei Bewohnerdetails, fokussiere die Bewohnerkarte, die das Modal geöffnet hat
-                // oder die Liste der Bewohner
-                focusTarget = document.querySelector('.resident-card:focus-within') || 
-                              document.getElementById('residents-container') ||
-                              document.getElementById('app-container');
-                break;
-                
-            case 'newResidentModal':
-                // Bei neuem Bewohner, fokussiere den "Neuer Bewohner"-Button
-                focusTarget = document.getElementById('newResidentBtn');
-                break;
-                
-            case 'resurrectionModal':
-                // Bei Auferstehung, fokussiere den "Entlassene Bewohner"-Button
-                focusTarget = document.getElementById('dismissedResidentsBtn');
-                break;
-                
-            case 'configModal':
-                // Bei Konfiguration, fokussiere den "Konfiguration"-Button
-                focusTarget = document.getElementById('configBtn');
-                break;
-                
-            default:
-                // Fallback: Hauptcontainer oder Body
-                focusTarget = document.getElementById('app-container') || 
-                              document.querySelector('body');
-        }
-        
-        // Setze den Fokus, falls ein Ziel gefunden wurde
-        if (focusTarget) {
-            try {
-                // Stelle sicher, dass das Element fokussierbar ist
-                if (focusTarget.getAttribute('tabindex') === null) {
-                    focusTarget.setAttribute('tabindex', '-1');
-                }
-                
-                // Setze explizit den Fokus
-                focusTarget.focus();
-                console.log(`Fokus auf Element außerhalb von Modal gesetzt: ${focusTarget.id || focusTarget.tagName}`);
-            } catch (e) {
-                console.warn('Konnte Fokus nicht auf Element außerhalb setzen:', e);
-            }
-        }
-    },
-    
-    /**
-     * Verwendet den ausgewählten Namen
-     */
-    useSelectedName() {
-        // Hole die ausgewählten Namen
-        const firstName = this.selectedWords.find(w => w.type === 'firstName');
-        const lastName = this.selectedWords.find(w => w.type === 'lastName');
-        
-        if (!firstName || !lastName) {
-            ToastManager.error('Bitte wählen Sie Vor- und Nachnamen aus');
-            return;
-        }
-        
-        // Setze die Namen in die Eingabefelder
-        const firstNameInput = document.getElementById('newResidentFirstName');
-        const lastNameInput = document.getElementById('newResidentLastName');
-        
-        if (firstNameInput) firstNameInput.value = firstName.word;
-        if (lastNameInput) lastNameInput.value = lastName.word;
-        
-        // Schließe das OCR-Modal mit der sicheren Methode
-        this.closeModal('ocrModal');
-        
-        // Setze den OCR-Manager zurück
-        this.resetOcr();
-        
-        // Zeige eine Erfolgsmeldung
-        ToastManager.success('Name erfolgreich übernommen');
-    },
-    
-    /**
-     * Schließt das Modal für die Bewohnerdetails
-     */
-    closeResidentDetailModal() {
-        try {
-            const modalElement = document.getElementById('residentDetailModal');
-            if (!modalElement) return;
-            
-            // Deaktiviere fokussierbare Elemente im Modal
-            const focusableElements = modalElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-            focusableElements.forEach(el => {
-                el.setAttribute('tabindex', '-1');
-            });
-            
-            // Setze den Fokus auf ein Element außerhalb des Modals
-            this.setFocusOutsideModal('residentDetailModal');
-            
-            // Schließe das Modal mit der sicheren Methode
-            this.closeModal('residentDetailModal');
-            
-            // Aktualisiere die Bewohnerliste
-            setTimeout(async () => {
-                try {
-                    await ResidentManager.loadResidents();
-                    await ResidentManager.displayAllResidents();
-                } catch (error) {
-                    console.error('Fehler beim Aktualisieren der Bewohnerliste:', error);
-                }
-            }, 100);
-        } catch (error) {
-            console.error('Fehler beim Schließen des Bewohnerdetail-Modals:', error);
-            // Fallback-Bereinigung
-            this.cleanupModalBackdrops();
-        }
+        // Setze den Fokus auf ein Element außerhalb des Modals
+        // Dies verhindert Probleme mit dem Fokus nach dem Schließen
+        document.body.focus();
     }
-}; 
+};

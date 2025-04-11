@@ -1,8 +1,10 @@
 {
   "firstName": "Samantha",
   "lastName": "Fischer",
-  "createdAt": "2025-03-28T20:44:56.168Z",
   "gender": "",
-  "vergin": "33",
-  "lastModified": "2025-03-28T20:45:29.033Z"
+  "room": "",
+  "vergin": 12,
+  "birthDate": "2012-04-09",
+  "areas": {},
+  "lastModified": "2025-04-07T15:24:01.664Z"
 }

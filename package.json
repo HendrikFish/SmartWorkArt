@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "multer": "^1.4.5-lts.2"
+    "@agentdeskai/browser-tools-mcp": "^1.2.0",
+    "flowed": "^1.15.0",
+    "multer": "^1.4.5-lts.2",
+    "workflow-engine": "^0.0.0"
   }
 }

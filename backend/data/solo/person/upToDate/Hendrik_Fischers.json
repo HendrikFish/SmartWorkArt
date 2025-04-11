@@ -1,0 +1,18 @@
+{
+  "firstName": "Hendrik",
+  "lastName": "Fischers",
+  "gender": "Herr",
+  "room": "",
+  "vergin": 0,
+  "birthDate": "2025-04-05",
+  "areas": {
+    "Sexy": "Yes",
+    "Allergene": [
+      "Laktoseintoleranz"
+    ],
+    "Frühstück": "3. OG",
+    "Mittagessen": "2. OG",
+    "Abendessen": "1. OG"
+  },
+  "lastModified": "2025-04-07T15:21:51.231Z"
+}

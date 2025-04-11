@@ -3,7 +3,8 @@
   "lastName": "Allee",
   "gender": "",
   "room": "",
-  "vergin": null,
+  "vergin": 74,
+  "birthDate": "1950-08-01",
   "areas": {
     "Allergene": [
       "Laktoseintoleranz",
@@ -13,5 +14,5 @@
     "Abendessen": "Saal",
     "Wo wird das Essen eingetragen!": "1.OG"
   },
-  "lastModified": "2025-04-05T18:44:35.506Z"
+  "lastModified": "2025-04-07T15:35:03.866Z"
 }

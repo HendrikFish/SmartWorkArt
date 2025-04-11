@@ -8,7 +8,7 @@
 const BewohnerKarussell = (function() {
     // Konfiguration
     const CONFIG = {
-        desktopCardsPerPage: 6,  // Desktop: 10 Karten pro Seite
+        desktopCardsPerPage: 6,  // Desktop: 6 Karten pro Seite
         mobileCardsPerPage: 4,    // Mobil: 4 Karten pro Seite
         smallScreenCardsPerPage: 2, // Kleine Bildschirme: 2 Karten pro Seite
         mobileBreakpoint: 1000,

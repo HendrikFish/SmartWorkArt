@@ -430,9 +430,25 @@ export const FilterManager = {
         
         if (resident.vergin) {
             infoParts.push(`Alter: ${resident.vergin}`);
+        } else if (resident.birthDate) {
+            // Berechne das Alter aus dem Geburtsdatum
+            const birthDateObj = new Date(resident.birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birthDateObj.getFullYear();
+            
+            // Wenn der Geburtstag in diesem Jahr noch nicht war, ein Jahr abziehen
+            if (
+                today.getMonth() < birthDateObj.getMonth() || 
+                (today.getMonth() === birthDateObj.getMonth() && today.getDate() < birthDateObj.getDate())
+            ) {
+                age--;
+            }
+            
+            infoParts.push(`Alter: ${age}`);
         }
         
         infoLine.textContent = infoParts.join(' | ');
+        infoLine.classList.add('text-center'); // Mittige Ausrichtung
         
         // Füge nur die In Bewohner Card anzeigen Bereiche als Badges hinzu
         const badgeContainer = document.createElement('div');

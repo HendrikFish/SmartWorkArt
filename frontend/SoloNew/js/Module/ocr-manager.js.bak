@@ -6,6 +6,7 @@
 import { ApiService } from './api-service.js';
 import { ToastManager } from './toast-manager.js';
 import { ModalManager } from './modal-manager.js';
+import { ResidentManager } from './resident-manager.js';
 
 export const OCRManager = {
     selectedWords: [],
@@ -89,7 +90,7 @@ export const OCRManager = {
                         // Klicke auf das Dateieingabefeld, um die Galerie zu öffnen
                         const fileInput = document.getElementById('ocrImageInput');
                         if (fileInput) {
-                            // Bootstrap-Modal für OCR
+        // Bootstrap-Modal für OCR
                             const ocrModal = new bootstrap.Modal(document.getElementById('ocrModal'));
                             ocrModal.show();
                             
@@ -106,23 +107,23 @@ export const OCRManager = {
             // Schließe alle offenen Modals
             this.closeAllModals();
             
-            const modal = new bootstrap.Modal(document.getElementById('ocrModal'));
-            
-            // Setze den OCR-Manager zurück
+        const modal = new bootstrap.Modal(document.getElementById('ocrModal'));
+        
+        // Setze den OCR-Manager zurück
             this.resetUiState();
-            
-            // Zeige das Modal an
-            modal.show();
-            
-            // Nach dem Anzeigen den Fokus auf das Datei-Input-Element setzen
-            const modalElement = document.getElementById('ocrModal');
-            modalElement.addEventListener('shown.bs.modal', function () {
-                // Fokussiere das Datei-Input-Element
-                const fileInput = document.getElementById('ocrImageInput');
-                if (fileInput) {
-                    fileInput.focus();
-                }
-            }, { once: true }); // Event-Listener nur einmal ausführen
+        
+        // Zeige das Modal an
+        modal.show();
+        
+        // Nach dem Anzeigen den Fokus auf das Datei-Input-Element setzen
+        const modalElement = document.getElementById('ocrModal');
+        modalElement.addEventListener('shown.bs.modal', function () {
+            // Fokussiere das Datei-Input-Element
+            const fileInput = document.getElementById('ocrImageInput');
+            if (fileInput) {
+                fileInput.focus();
+            }
+        }, { once: true }); // Event-Listener nur einmal ausführen
         }
     },
     
@@ -166,6 +167,44 @@ export const OCRManager = {
         
         // Bootstrap-Modal für die Kamera
         const cameraModal = new bootstrap.Modal(document.getElementById('cameraModal'));
+        
+        // Prüfe ob das Modal existiert
+        if (!document.getElementById('cameraModal')) {
+            // Erstelle das Modal dynamisch wenn es nicht existiert
+            const modalHTML = `
+                <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cameraModalLabel">Kamera</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="camera-preview-container position-relative">
+                                    <video id="cameraPreview" autoplay playsinline class="w-100"></video>
+                                    <div class="camera-hint text-center p-3">
+                                        <i class="fas fa-camera mb-2"></i>
+                                        <p>Kamera wird initialisiert...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                <button type="button" class="btn btn-primary" id="switchCameraBtn">
+                                    <i class="fas fa-sync-alt me-2"></i>Kamera wechseln
+                                </button>
+                                <button type="button" class="btn btn-success" id="takePictureBtn">
+                                    <i class="fas fa-camera me-2"></i>Foto aufnehmen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        // Zeige das Modal
         cameraModal.show();
         
         // Video-Element für die Kameraanzeige
@@ -174,16 +213,7 @@ export const OCRManager = {
         // Kamera-Hint mit moderner Animation
         const cameraHint = document.querySelector('.camera-hint');
         
-        // Aktuelle Kamera-ID
-        let currentCameraId = null;
-        
-        // Verfügbare Kameras
-        let availableCameras = [];
-        
-        // Medienstream
-        let mediaStream = null;
-        
-        // Visuelle Hilfslinien für die Dokumentausrichtung hinzufügen
+        // Prüfe ob der Preview-Container existiert
         const previewContainer = document.querySelector('.camera-preview-container');
         if (previewContainer && !document.querySelector('.document-guides')) {
             const guides = document.createElement('div');
@@ -197,6 +227,15 @@ export const OCRManager = {
             `;
             previewContainer.appendChild(guides);
         }
+        
+        // Aktuelle Kamera-ID
+        let currentCameraId = null;
+        
+        // Verfügbare Kameras
+        let availableCameras = [];
+        
+        // Medienstream
+        let mediaStream = null;
         
         // Initialisiere die Kamera nach dem Anzeigen des Modals
         document.getElementById('cameraModal').addEventListener('shown.bs.modal', async function () {
@@ -394,18 +433,27 @@ export const OCRManager = {
                         return;
                     }
                     
-                    // Blitzeffekt für visuelles Feedback
-                    const flashEffect = document.createElement('div');
-                    flashEffect.className = 'camera-flash';
-                    document.querySelector('.camera-preview-container').appendChild(flashEffect);
-                    
-                    // Kamera-Sound abspielen (wenn erlaubt)
+                    // Blitzeffekt für visuelles Feedback - verbesserte Version
                     try {
-                        const shutterSound = new Audio('img/camera-shutter.mp3');
-                        await shutterSound.play();
-                    } catch (e) {
-                        // Sound konnte nicht abgespielt werden - ignorieren
+                        const previewContainer = document.querySelector('.camera-preview-container');
+                        if (previewContainer) {
+                            const flashEffect = document.createElement('div');
+                            flashEffect.className = 'camera-flash';
+                            previewContainer.appendChild(flashEffect);
+                            
+                            // Flash-Effekt nach Verzögerung entfernen
+                            setTimeout(() => {
+                                flashEffect.remove();
+                            }, 300);
+                        } else {
+                            console.error('Kamera-Vorschau-Container nicht gefunden');
+                        }
+                    } catch (flashError) {
+                        console.error('Fehler beim Erstellen des Blitzeffekts:', flashError);
                     }
+                    
+                    // Kein Kamera-Sound, da die Datei nicht existiert
+                    // Wir können dies später implementieren, wenn die Datei verfügbar ist
                     
                     // Canvas für das Foto erstellen mit hoher Qualität
                     const canvas = document.createElement('canvas');
@@ -456,19 +504,49 @@ export const OCRManager = {
                             const ocrModal = new bootstrap.Modal(document.getElementById('ocrModal'));
                             ocrModal.show();
                             
-                            // Vorschau des aufgenommenen Bildes anzeigen
-                            const previewContainer = document.getElementById('imagePreviewContainer');
+                            // Stelle sicher, dass der imagePreviewContainer existiert
+                            let previewContainer = document.getElementById('imagePreviewContainer');
+                            
+                            // Falls der Container nicht existiert, erstellen wir ihn dynamisch
+                            if (!previewContainer) {
+                                console.log('Erstelle imagePreviewContainer, da er nicht existiert');
+                                previewContainer = document.createElement('div');
+                                previewContainer.id = 'imagePreviewContainer';
+                                previewContainer.className = 'mb-3 text-center';
+                                
+                                // Finde einen geeigneten Elterncontainer im OCR-Modal
+                                const ocrModalBody = document.querySelector('#ocrModal .modal-body');
+                                if (ocrModalBody) {
+                                    // Container am Anfang des Modal-Body einfügen
+                                    ocrModalBody.insertBefore(previewContainer, ocrModalBody.firstChild);
+                                } else {
+                                    // Fallback: Zum body hinzufügen
+                                    document.body.appendChild(previewContainer);
+                                    console.warn('OCR-Modal-Body nicht gefunden, Container an body angehängt');
+                                }
+                            }
+                            
                             if (previewContainer) {
-                                const img = document.createElement('img');
-                                img.src = URL.createObjectURL(blob);
-                                img.className = 'img-fluid mb-3 captured-image-preview';
-                                
-                                // Altes Vorschaubild entfernen
-                                const oldPreview = previewContainer.querySelector('img');
-                                if (oldPreview) oldPreview.remove();
-                                
-                                previewContainer.appendChild(img);
-                                previewContainer.classList.remove('d-none');
+                                try {
+                                    // Verwende data URL statt Blob URL wegen CSP-Einschränkungen
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        const img = document.createElement('img');
+                                        img.src = e.target.result; // data URL ist CSP-konform
+                                        img.className = 'img-fluid mb-3 captured-image-preview';
+                                        
+                                        // Altes Vorschaubild entfernen
+                                        const oldPreview = previewContainer.querySelector('img');
+                                        if (oldPreview) oldPreview.remove();
+                                        
+                                        previewContainer.appendChild(img);
+                                        previewContainer.classList.remove('d-none');
+                                    };
+                                    reader.readAsDataURL(blob);
+                                } catch (imgError) {
+                                    console.error('Fehler beim Erstellen der Bildvorschau:', imgError);
+                                    ToastManager.warning('Bildvorschau konnte nicht angezeigt werden');
+                                }
                             }
                             
                             // Datei an das Datei-Input-Element anhängen
@@ -531,6 +609,50 @@ export const OCRManager = {
                 this.useSelectedName();
             });
         }
+        
+        // Event-Listener für den "Abbrechen"-Button
+        const cancelOcrResultsBtn = document.getElementById('cancelOcrResults');
+        if (cancelOcrResultsBtn) {
+            cancelOcrResultsBtn.addEventListener('click', () => {
+                // Schließe alle modalen Fenster
+                this.closeAllModals();
+            });
+        }
+    },
+    
+    /**
+     * Initialisiert die Buttons für die OCR-Ergebnisse
+     */
+    setupOcrResultButtons() {
+        // Event-Listener für den "Alle auswählen"-Button
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        if (selectAllBtn) {
+            selectAllBtn.onclick = () => {
+                const checkboxes = document.querySelectorAll('#ocrResultsList input[type="checkbox"]:not([disabled])');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+            };
+        }
+        
+        // Event-Listener für den "Speichern"-Button
+        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
+        if (confirmOcrResultsBtn) {
+            confirmOcrResultsBtn.onclick = () => {
+                this.createResidentsFromOcrResults();
+            };
+        }
+        
+        // Event-Listener für den "Manuell"-Button - GEÄNDERT: Zeigt jetzt nur den erkannten Text
+        const manualSelectBtn = document.getElementById('manualSelectBtn');
+        if (manualSelectBtn) {
+            manualSelectBtn.onclick = () => {
+                // Statt Modal zu öffnen, zeigen wir jetzt den Textbereich an
+                this.showManualTextSelection();
+            };
+        }
+        
+        console.log('OCR-Ergebnisbuttons initialisiert');
     },
     
     /**
@@ -562,13 +684,13 @@ export const OCRManager = {
             console.log('OCR Processing State aktiv, Ergebnisliste ausgeblendet');
             
             try {
-                // Sende das Bild an den Server
-                const result = await ApiService.processOcrImage(file);
-                
-                if (!result || !result.text) {
-                    throw new Error('Keine Texterkennung möglich');
-                }
-                
+            // Sende das Bild an den Server
+            const result = await ApiService.processOcrImage(file);
+            
+            if (!result || !result.text) {
+                throw new Error('Keine Texterkennung möglich');
+            }
+            
                 console.log('OCR-Text erhalten:', result.text.substring(0, 100) + '...');
                 
                 // Verstecke den Ladezustand
@@ -621,17 +743,17 @@ export const OCRManager = {
                 await this.detectNames(fullText);
                 
                 console.log('OCR-Prozess abgeschlossen');
-            } catch (error) {
-                console.error('Fehler bei der OCR-Verarbeitung:', error);
-                ToastManager.error('Fehler bei der OCR-Verarbeitung: ' + error.message);
+        } catch (error) {
+            console.error('Fehler bei der OCR-Verarbeitung:', error);
+            ToastManager.error('Fehler bei der OCR-Verarbeitung: ' + error.message);
                 
                 // Verstecke den Ladezustand
                 this.hideProcessingState();
                 
                 // Verstecke Footer-Buttons bei Fehler
                 this.hideFooterButtons();
-                
-                // Zeige die Fehlermeldung im Ergebniscontainer an
+            
+            // Zeige die Fehlermeldung im Ergebniscontainer an
                 const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
                 if (ocrResultsListContainer) {
                     ocrResultsListContainer.classList.add('d-none');
@@ -641,12 +763,12 @@ export const OCRManager = {
                 if (ocrInitialMessage) {
                     ocrInitialMessage.classList.remove('d-none');
                     ocrInitialMessage.innerHTML = `
-                        <div class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            Fehler bei der Texterkennung: ${error.message}
-                        </div>
-                    `;
-                }
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Fehler bei der Texterkennung: ${error.message}
+                    </div>
+                `;
+            }
             }
         } catch (error) {
             console.error('Unerwarteter Fehler im OCR-Prozess:', error);
@@ -798,23 +920,50 @@ export const OCRManager = {
         const cardBody = document.createElement('div');
         cardBody.className = 'card-body';
         
-        // Teile den Text in Wörter auf
-        const words = text.split(/\s+/);
+        // Teile den Text in Zeilen und Wörter auf
+        const lines = text.split('\n');
         
-        // Container für die Wörter
+        // Container für die Wörter - verwende position: relative als Container
         const wordsContainer = document.createElement('div');
-        wordsContainer.className = 'd-flex flex-wrap gap-2 mb-3';
+        wordsContainer.className = 'position-relative border p-2 mb-3';
+        wordsContainer.style.minHeight = '300px'; // Mindesthöhe für den Container
+        wordsContainer.style.maxHeight = '500px'; // Maximalhöhe hinzugefügt
+        wordsContainer.style.overflowY = 'auto'; // Vertikales Scrollen ermöglichen
+        wordsContainer.style.overflowX = 'hidden'; // Horizontalen Overflow verstecken
+        
+        // Variable für die aktuelle Y-Position
+        let currentY = 10; // Startposition von oben
+        const lineHeight = 40; // Höhe jeder Zeile
+        const wordSpacing = 10; // Horizontaler Abstand zwischen Wörtern
+        
+        // Füge jede Zeile als separate Reihe hinzu
+        lines.forEach((line, lineIndex) => {
+            // Ignoriere leere Zeilen
+            if (!line.trim()) {
+                currentY += lineHeight / 2; // Halber Zeilenabstand für leere Zeilen
+                return;
+            }
+            
+            // Teile die Zeile in Wörter
+            const words = line.split(/\s+/);
+            
+            // Variable für die aktuelle X-Position
+            let currentX = 10; // Startposition von links
         
         // Füge jedes Wort als Button hinzu
-        words.forEach((word, index) => {
+            words.forEach((word, wordIndex) => {
             // Ignoriere leere Wörter
             if (!word.trim()) return;
             
             const wordButton = document.createElement('button');
-            wordButton.className = 'btn btn-sm btn-outline-secondary word-btn';
+                wordButton.className = 'btn btn-sm btn-outline-secondary word-btn position-absolute';
             wordButton.textContent = word;
             wordButton.setAttribute('data-word', word);
-            wordButton.setAttribute('data-index', index);
+                wordButton.setAttribute('data-index', `${lineIndex}-${wordIndex}`);
+                
+                // Positioniere den Button absolut
+                wordButton.style.left = `${currentX}px`;
+                wordButton.style.top = `${currentY}px`;
             
             // Event-Listener für die Wortauswahl
             wordButton.addEventListener('click', () => {
@@ -822,6 +971,15 @@ export const OCRManager = {
             });
             
             wordsContainer.appendChild(wordButton);
+                
+                // Berechne die nächste X-Position (Button-Breite + Abstand)
+                // Wir schätzen die Breite basierend auf der Länge des Wortes
+                const estimatedWidth = word.length * 8 + 24; // 8px pro Zeichen + Padding
+                currentX += estimatedWidth + wordSpacing;
+            });
+            
+            // Nächste Zeile
+            currentY += lineHeight;
         });
         
         // Hinweis zur Verwendung
@@ -829,7 +987,7 @@ export const OCRManager = {
         usageInfo.className = 'alert alert-info mt-3';
         usageInfo.innerHTML = `
             <p class="mb-0"><i class="fas fa-info-circle me-2"></i> 
-            Klicken Sie auf die Wörter, um Vor- und Nachnamen auszuwählen.</p>
+            Klicken Sie auf die Wörter, um Vor- und Nachnamen auszuwählen. Die Anordnung entspricht ungefähr dem Original-Dokument.</p>
         `;
         
         // Mehrere Personen erstellen können - Neuer Container
@@ -867,6 +1025,20 @@ export const OCRManager = {
         
         ocrResultContainer.appendChild(textContainer);
         ocrResultContainer.appendChild(multipleNamesContainer);
+        
+        // Füge CSS für die Hover-Effekte der Wörter hinzu
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            .word-btn:hover {
+                z-index: 100;
+                transform: scale(1.1);
+                transition: transform 0.1s ease-in-out;
+            }
+            .word-btn.selected {
+                z-index: 50;
+            }
+        `;
+        document.head.appendChild(styleElement);
         
         // Initialisiere die UI für mehrere Namen
         this.setupMultipleNamesUI();
@@ -936,25 +1108,66 @@ export const OCRManager = {
         // Event-Listener für den Hinzufügen-Button
         const addNameBtn = document.getElementById('addNameBtn');
         if (addNameBtn) {
-            addNameBtn.addEventListener('click', () => {
+            addNameBtn.addEventListener('click', async () => {
                 const firstNameInput = document.getElementById('selectedFirstName');
                 const lastNameInput = document.getElementById('selectedLastName');
                 
                 if (firstNameInput && lastNameInput && firstNameInput.value && lastNameInput.value) {
-                    // Füge den Namen zur Liste hinzu
-                    this.selectedNames.push({
-                        firstName: firstNameInput.value.trim(),
-                        lastName: lastNameInput.value.trim()
-                    });
+                    const firstName = firstNameInput.value.trim();
+                    const lastName = lastNameInput.value.trim();
                     
-                    // Aktualisiere die Anzeige
-                    updateSelectedNamesContainer();
-                    updateSelectedNamesCount();
+                    // Validierung: Zahlen im Namen
+                    if (/\d/.test(firstName) || /\d/.test(lastName)) {
+                        ToastManager.error('Namen dürfen keine Zahlen enthalten');
+                        return;
+                    }
                     
-                    // Setze die Eingabefelder zurück
-                    firstNameInput.value = '';
-                    lastNameInput.value = '';
-                    addNameBtn.disabled = true;
+                    // Validierung: Zu kurze Namen
+                    if (firstName.length < 2 || lastName.length < 2) {
+                        ToastManager.error('Namen müssen mindestens 2 Zeichen lang sein');
+                        return;
+                    }
+                    
+                    try {
+                        // Existenzprüfung
+                        const existingResidents = await ApiService.getResidents();
+                        const exists = existingResidents.some(resident => 
+                            resident.firstName.toLowerCase() === firstName.toLowerCase() && 
+                            resident.lastName.toLowerCase() === lastName.toLowerCase()
+                        );
+                        
+                        if (exists) {
+                            ToastManager.warning(`${firstName} ${lastName} existiert bereits`);
+                            return;
+                        }
+                        
+                        // Füge den Namen zur Liste hinzu
+                        this.selectedNames.push({
+                            firstName: firstName,
+                            lastName: lastName,
+                            gender: 'Herr' // Standardwert für Geschlecht
+                        });
+                        
+                        // Aktualisiere die Anzeige
+                        updateSelectedNamesContainer();
+                        updateSelectedNamesCount();
+                        
+                        // Setze die Eingabefelder zurück
+                        firstNameInput.value = '';
+                        lastNameInput.value = '';
+                        addNameBtn.disabled = true;
+                        
+                        // Zurücksetzen der ausgewählten Word-Buttons
+                        const selectedButtons = document.querySelectorAll('.word-button.selected');
+                        selectedButtons.forEach(btn => {
+                            btn.classList.remove('selected');
+                            btn.classList.remove('btn-primary');
+                            btn.classList.add('btn-outline-secondary');
+                        });
+                    } catch (error) {
+                        console.error('Fehler bei der Namensvalidierung:', error);
+                        ToastManager.error('Fehler bei der Namensvalidierung');
+                    }
                 }
             });
         }
@@ -1020,7 +1233,7 @@ export const OCRManager = {
                 addNameBtn.disabled = !(firstNameInput && firstNameInput.value && 
                                      lastNameInput && lastNameInput.value);
             }
-        } else {
+            } else {
             // Bereits ausgewählt, also aufheben
             wordButton.classList.remove('selected');
             wordButton.classList.remove('btn-primary');
@@ -1070,7 +1283,8 @@ export const OCRManager = {
                     const creationPromises = this.selectedNames.map(name => {
                         const residentData = {
                             firstName: name.firstName,
-                            lastName: name.lastName
+                            lastName: name.lastName,
+                            gender: name.gender || 'Herr' // Standardwert für Geschlecht
                         };
                         
                         return ApiService.createResident(residentData);
@@ -1144,8 +1358,8 @@ export const OCRManager = {
         
         if (!ocrText || ocrText.trim() === '') {
             ToastManager.error('Kein Text für die manuelle Auswahl verfügbar');
-            return;
-        }
+                return;
+            }
         
         // Verstecke die Ergebnisliste
         const ocrResultsListContainer = document.getElementById('ocrResultsListContainer');
@@ -1466,7 +1680,7 @@ export const OCRManager = {
                 const listItem = checkbox.closest('.list-group-item');
                 const firstName = listItem.querySelector('input[name="firstName"]').value;
                 const lastName = listItem.querySelector('input[name="lastName"]').value;
-                const gender = listItem.querySelector('input[name="gender"]').value;
+                const gender = listItem.querySelector('input[name="gender"]').value || 'Herr'; // Standardwert falls nicht gesetzt
                 
                 selectedNames.push({ firstName, lastName, gender });
             });
@@ -1474,9 +1688,9 @@ export const OCRManager = {
             // Wenn keine Namen ausgewählt wurden
             if (selectedNames.length === 0) {
                 ToastManager.info('Keine Namen ausgewählt');
-                return;
-            }
-            
+            return;
+        }
+        
             // Ordnungsgemäßes Schließen des OCR-Modals
             this.closeAllModals();
             
@@ -1506,10 +1720,11 @@ export const OCRManager = {
                     const residentData = {
                         firstName: name.firstName,
                         lastName: name.lastName,
-                        gender: name.gender || '',
+                        gender: name.gender || 'Herr', // Stelle sicher, dass gender immer einen Wert hat
                         createdAt: new Date().toISOString()
                     };
                     
+                    console.log('Erstelle Bewohner mit Daten:', residentData);
                     await ApiService.createResident(residentData);
                     createdCount++;
                 } catch (error) {
@@ -1533,50 +1748,6 @@ export const OCRManager = {
             console.error('Fehler beim Erstellen der Bewohner:', error);
             ToastManager.error('Fehler beim Erstellen der Bewohner: ' + error.message);
         }
-    },
-    
-    /**
-     * Richtet Event-Listener für die Buttons im OCR-Ergebnisbereich ein
-     */
-    setupOcrResultButtons() {
-        // Event-Listener für den "Alle auswählen"-Button
-        const selectAllBtn = document.getElementById('selectAllBtn');
-        if (selectAllBtn) {
-            selectAllBtn.onclick = () => {
-                const checkboxes = document.querySelectorAll('#ocrResultsList input[type="checkbox"]:not([disabled])');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = true;
-                });
-            };
-        }
-        
-        // Event-Listener für den "Speichern"-Button
-        const confirmOcrResultsBtn = document.getElementById('confirmOcrResults');
-        if (confirmOcrResultsBtn) {
-            confirmOcrResultsBtn.onclick = () => {
-                this.createResidentsFromOcrResults();
-            };
-        }
-        
-        // Event-Listener für den "Manuell"-Button - GEÄNDERT: Zeigt jetzt nur den erkannten Text
-        const manualSelectBtn = document.getElementById('manualSelectBtn');
-        if (manualSelectBtn) {
-            manualSelectBtn.onclick = () => {
-                // Statt Modal zu öffnen, zeigen wir jetzt den Textbereich an
-                this.showManualTextSelection();
-            };
-        }
-        
-        // Event-Listener für den "Abbrechen"-Button
-        const cancelOcrResultsBtn = document.getElementById('cancelOcrResults');
-        if (cancelOcrResultsBtn) {
-            cancelOcrResultsBtn.onclick = () => {
-                // Bootstrap-Modal für OCR schließen
-                this.closeAllModals();
-            };
-        }
-        
-        console.log('OCR-Ergebnisbuttons initialisiert');
     },
     
     /**
@@ -1633,9 +1804,9 @@ export const OCRManager = {
                         </label>
                         <input type="hidden" name="firstName" value="${name.firstName}">
                         <input type="hidden" name="lastName" value="${name.lastName}">
-                        <input type="hidden" name="gender" value="">
-                    </div>
-                `;
+                        <input type="hidden" name="gender" value="Herr">
+                </div>
+            `;
                 
                 ocrResultsList.appendChild(nameItem);
             });
@@ -1688,4 +1859,137 @@ export const OCRManager = {
             throw error;
         }
     }
-}; 
+};
+
+// Toast-Benachrichtigungsfunktion
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type === 'error' ? 'bg-danger text-white' : 'bg-info'}`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="toast-header">
+            <strong class="me-auto">${type === 'error' ? 'Fehler' : 'Info'}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Schließen"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Toast nach dem Ausblenden entfernen
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+}
+
+// Hilfsfunktion zum Erstellen des Toast-Containers
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    document.body.appendChild(container);
+    return container;
+}
+
+// Füge CSS-Stile für die Kamera-UI hinzu
+const style = document.createElement('style');
+style.textContent = `
+    .camera-preview-container {
+        position: relative;
+        background: #000;
+        min-height: 300px;
+    }
+    
+    .camera-hint {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        z-index: 1;
+    }
+    
+    .document-guides {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+    
+    .corner-guide {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .top-left {
+        top: 20px;
+        left: 20px;
+        border-right: none;
+        border-bottom: none;
+    }
+    
+    .top-right {
+        top: 20px;
+        right: 20px;
+        border-left: none;
+        border-bottom: none;
+    }
+    
+    .bottom-left {
+        bottom: 20px;
+        left: 20px;
+        border-right: none;
+        border-top: none;
+    }
+    
+    .bottom-right {
+        bottom: 20px;
+        right: 20px;
+        border-left: none;
+        border-top: none;
+    }
+    
+    .center-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(0, 0, 0, 0.5);
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .camera-flash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        opacity: 0;
+        animation: flash 0.3s ease-out;
+        pointer-events: none;
+    }
+    
+    @keyframes flash {
+        0% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+`;
+
+document.head.appendChild(style); 

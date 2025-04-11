@@ -167,6 +167,44 @@ export const OCRManager = {
         
         // Bootstrap-Modal für die Kamera
         const cameraModal = new bootstrap.Modal(document.getElementById('cameraModal'));
+        
+        // Prüfe ob das Modal existiert
+        if (!document.getElementById('cameraModal')) {
+            // Erstelle das Modal dynamisch wenn es nicht existiert
+            const modalHTML = `
+                <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cameraModalLabel">Kamera</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="camera-preview-container position-relative">
+                                    <video id="cameraPreview" autoplay playsinline class="w-100"></video>
+                                    <div class="camera-hint text-center p-3">
+                                        <i class="fas fa-camera mb-2"></i>
+                                        <p>Kamera wird initialisiert...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                                <button type="button" class="btn btn-primary" id="switchCameraBtn">
+                                    <i class="fas fa-sync-alt me-2"></i>Kamera wechseln
+                                </button>
+                                <button type="button" class="btn btn-success" id="takePictureBtn">
+                                    <i class="fas fa-camera me-2"></i>Foto aufnehmen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        // Zeige das Modal
         cameraModal.show();
         
         // Video-Element für die Kameraanzeige
@@ -175,16 +213,7 @@ export const OCRManager = {
         // Kamera-Hint mit moderner Animation
         const cameraHint = document.querySelector('.camera-hint');
         
-        // Aktuelle Kamera-ID
-        let currentCameraId = null;
-        
-        // Verfügbare Kameras
-        let availableCameras = [];
-        
-        // Medienstream
-        let mediaStream = null;
-        
-        // Visuelle Hilfslinien für die Dokumentausrichtung hinzufügen
+        // Prüfe ob der Preview-Container existiert
         const previewContainer = document.querySelector('.camera-preview-container');
         if (previewContainer && !document.querySelector('.document-guides')) {
             const guides = document.createElement('div');
@@ -198,6 +227,15 @@ export const OCRManager = {
             `;
             previewContainer.appendChild(guides);
         }
+        
+        // Aktuelle Kamera-ID
+        let currentCameraId = null;
+        
+        // Verfügbare Kameras
+        let availableCameras = [];
+        
+        // Medienstream
+        let mediaStream = null;
         
         // Initialisiere die Kamera nach dem Anzeigen des Modals
         document.getElementById('cameraModal').addEventListener('shown.bs.modal', async function () {
@@ -395,18 +433,27 @@ export const OCRManager = {
                         return;
                     }
                     
-                    // Blitzeffekt für visuelles Feedback
-                    const flashEffect = document.createElement('div');
-                    flashEffect.className = 'camera-flash';
-                    document.querySelector('.camera-preview-container').appendChild(flashEffect);
-                    
-                    // Kamera-Sound abspielen (wenn erlaubt)
+                    // Blitzeffekt für visuelles Feedback - verbesserte Version
                     try {
-                        const shutterSound = new Audio('img/camera-shutter.mp3');
-                        await shutterSound.play();
-                    } catch (e) {
-                        // Sound konnte nicht abgespielt werden - ignorieren
+                        const previewContainer = document.querySelector('.camera-preview-container');
+                        if (previewContainer) {
+                            const flashEffect = document.createElement('div');
+                            flashEffect.className = 'camera-flash';
+                            previewContainer.appendChild(flashEffect);
+                            
+                            // Flash-Effekt nach Verzögerung entfernen
+                            setTimeout(() => {
+                                flashEffect.remove();
+                            }, 300);
+                        } else {
+                            console.error('Kamera-Vorschau-Container nicht gefunden');
+                        }
+                    } catch (flashError) {
+                        console.error('Fehler beim Erstellen des Blitzeffekts:', flashError);
                     }
+                    
+                    // Kein Kamera-Sound, da die Datei nicht existiert
+                    // Wir können dies später implementieren, wenn die Datei verfügbar ist
                     
                     // Canvas für das Foto erstellen mit hoher Qualität
                     const canvas = document.createElement('canvas');
@@ -457,19 +504,49 @@ export const OCRManager = {
                             const ocrModal = new bootstrap.Modal(document.getElementById('ocrModal'));
                             ocrModal.show();
                             
-                            // Vorschau des aufgenommenen Bildes anzeigen
-                            const previewContainer = document.getElementById('imagePreviewContainer');
+                            // Stelle sicher, dass der imagePreviewContainer existiert
+                            let previewContainer = document.getElementById('imagePreviewContainer');
+                            
+                            // Falls der Container nicht existiert, erstellen wir ihn dynamisch
+                            if (!previewContainer) {
+                                console.log('Erstelle imagePreviewContainer, da er nicht existiert');
+                                previewContainer = document.createElement('div');
+                                previewContainer.id = 'imagePreviewContainer';
+                                previewContainer.className = 'mb-3 text-center';
+                                
+                                // Finde einen geeigneten Elterncontainer im OCR-Modal
+                                const ocrModalBody = document.querySelector('#ocrModal .modal-body');
+                                if (ocrModalBody) {
+                                    // Container am Anfang des Modal-Body einfügen
+                                    ocrModalBody.insertBefore(previewContainer, ocrModalBody.firstChild);
+                                } else {
+                                    // Fallback: Zum body hinzufügen
+                                    document.body.appendChild(previewContainer);
+                                    console.warn('OCR-Modal-Body nicht gefunden, Container an body angehängt');
+                                }
+                            }
+                            
                             if (previewContainer) {
-                                const img = document.createElement('img');
-                                img.src = URL.createObjectURL(blob);
-                                img.className = 'img-fluid mb-3 captured-image-preview';
-                                
-                                // Altes Vorschaubild entfernen
-                                const oldPreview = previewContainer.querySelector('img');
-                                if (oldPreview) oldPreview.remove();
-                                
-                                previewContainer.appendChild(img);
-                                previewContainer.classList.remove('d-none');
+                                try {
+                                    // Verwende data URL statt Blob URL wegen CSP-Einschränkungen
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        const img = document.createElement('img');
+                                        img.src = e.target.result; // data URL ist CSP-konform
+                                        img.className = 'img-fluid mb-3 captured-image-preview';
+                                        
+                                        // Altes Vorschaubild entfernen
+                                        const oldPreview = previewContainer.querySelector('img');
+                                        if (oldPreview) oldPreview.remove();
+                                        
+                                        previewContainer.appendChild(img);
+                                        previewContainer.classList.remove('d-none');
+                                    };
+                                    reader.readAsDataURL(blob);
+                                } catch (imgError) {
+                                    console.error('Fehler beim Erstellen der Bildvorschau:', imgError);
+                                    ToastManager.warning('Bildvorschau konnte nicht angezeigt werden');
+                                }
                             }
                             
                             // Datei an das Datei-Input-Element anhängen
@@ -1782,4 +1859,137 @@ export const OCRManager = {
             throw error;
         }
     }
-}; 
+};
+
+// Toast-Benachrichtigungsfunktion
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type === 'error' ? 'bg-danger text-white' : 'bg-info'}`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="toast-header">
+            <strong class="me-auto">${type === 'error' ? 'Fehler' : 'Info'}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Schließen"></button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    // Toast nach dem Ausblenden entfernen
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
+}
+
+// Hilfsfunktion zum Erstellen des Toast-Containers
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    document.body.appendChild(container);
+    return container;
+}
+
+// Füge CSS-Stile für die Kamera-UI hinzu
+const style = document.createElement('style');
+style.textContent = `
+    .camera-preview-container {
+        position: relative;
+        background: #000;
+        min-height: 300px;
+    }
+    
+    .camera-hint {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        text-align: center;
+        z-index: 1;
+    }
+    
+    .document-guides {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+    
+    .corner-guide {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .top-left {
+        top: 20px;
+        left: 20px;
+        border-right: none;
+        border-bottom: none;
+    }
+    
+    .top-right {
+        top: 20px;
+        right: 20px;
+        border-left: none;
+        border-bottom: none;
+    }
+    
+    .bottom-left {
+        bottom: 20px;
+        left: 20px;
+        border-right: none;
+        border-top: none;
+    }
+    
+    .bottom-right {
+        bottom: 20px;
+        right: 20px;
+        border-left: none;
+        border-top: none;
+    }
+    
+    .center-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(0, 0, 0, 0.5);
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .camera-flash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        opacity: 0;
+        animation: flash 0.3s ease-out;
+        pointer-events: none;
+    }
+    
+    @keyframes flash {
+        0% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+`;
+
+document.head.appendChild(style); 

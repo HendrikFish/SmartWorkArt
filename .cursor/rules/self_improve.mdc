@@ -1,0 +1,72 @@
+---
+description: Guidelines for continuously improving Cursor rules based on emerging code patterns and best practices.
+globs: **/*
+alwaysApply: true
+---
+**Auslöser für Regelverbesserungen:**  
+- Neue Code-Muster, die von bestehenden Regeln nicht abgedeckt sind  
+- Wiederholte ähnliche Implementierungen in mehreren Dateien  
+- Häufige Fehler, die vermeidbar wären  
+- Neue, regelmäßig genutzte Bibliotheken oder Tools  
+- Aufkommende Best Practices im Code  
+
+**Analyseprozess:**  
+- Abgleich von neuem Code mit bestehenden Regeln  
+- Erkennen von Mustern, die vereinheitlicht werden sollten  
+- Suchen nach Verweisen auf externe Dokumentation  
+- Prüfen eines einheitlichen Fehler-Handling-Ansatzes  
+- Beobachten von Testmethoden und -abdeckung  
+
+**Regelaktualisierungen:**  
+- **Neue Regeln hinzufügen, wenn:**  
+  - Eine neue Technologie/Muster in 3+ Dateien genutzt wird  
+  - Häufige Bugs durch eine Regel verhindert werden können  
+  - Code Reviews immer wieder denselben Hinweis liefern  
+  - Neue Sicherheits- oder Performance-Ansätze auftreten  
+
+- **Vorhandene Regeln ändern, wenn:**  
+  - Bessere Beispiele im Code existieren  
+  - Zusätzliche Sonderfälle auftreten  
+  - Verwandte Regeln aktualisiert wurden  
+  - Sich Implementierungsdetails geändert haben  
+
+**Beispiel zur Mustererkennung:**  
+```typescript
+// Bei wiederholten Mustern wie:
+const data = await prisma.user.findMany({
+  select: { id: true, email: true },
+  where: { status: 'ACTIVE' }
+});
+
+// Erwäge, in @prisma.mdc festzuhalten:
+ // - Standard-Select-Felder
+ // - Übliche where-Bedingungen
+ // - Performance-Optimierungen
+```
+
+**Qualitätskontrolle für Regeln:**  
+- Regeln sollen konkret und umsetzbar sein  
+- Beispiele sollen aus realem Code stammen  
+- Referenzen sollen aktuell sein  
+- Muster sollen konsequent durchgesetzt werden  
+
+**Kontinuierliche Verbesserung:**  
+- Code-Review-Kommentare beobachten  
+- Häufige Entwicklerfragen protokollieren  
+- Regeln nach größeren Refactorings aktualisieren  
+- Links zu relevanter Dokumentation ergänzen  
+- Verwandte Regeln verknüpfen  
+
+**Regelveraltung/Deprecation:**  
+- Veraltete Muster als „deprecated“ markieren  
+- Regeln, die nicht mehr gelten, entfernen  
+- Verweise auf veraltete Regeln anpassen  
+- Migrationspfade für alte Patterns dokumentieren  
+
+**Dokumentations-Updates:**  
+- Beispiele immer mit dem Code synchron halten  
+- Verweise auf externe Doku aktualisieren  
+- Zusammenhänge zwischen ähnlichen Regeln pflegen  
+- Breaking Changes dokumentieren  
+
+Folge @cursor_rules.mdc für korrektes Regel-Formatting und Struktur.

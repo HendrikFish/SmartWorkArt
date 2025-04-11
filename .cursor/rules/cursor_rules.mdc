@@ -1,0 +1,49 @@
+---
+description: Guidelines for creating and maintaining Cursor rules to ensure consistency and effectiveness.
+globs: .cursor/rules/*.mdc
+alwaysApply: true
+---
+**Erforderliche Regelstruktur:**
+```markdown
+---
+description: Klare, einzeilige Beschreibung der Regel
+globs: pfad/zu/dateien/*.ext, anderer/pfad/**/*
+alwaysApply: boolean
+---
+
+- **Hauptpunkte in Fett**
+  - Unterpunkte mit Details
+  - Beispiele und Erläuterungen
+```
+
+**Dateireferenzen:**
+- Nutze `@dateiname` (@dateiname), um Dateien zu referenzieren
+- Beispiel: @prisma.mdc Regelverweise
+- Beispiel: @schema.prisma für C*Codebeispiele:**
+```typescript
+// ✅ MACHEN: Gutes Beispiel
+const gutesBeispiel = true;
+
+// ❌ NICHT MACHEN: Anti-Pattern
+const schlechtesBeispiel = false;
+```
+
+**Richtlinien für Regelinhalte:**
+- Beginne mit einer allgemeinen Übersicht
+- Gib konkrete, umsetzbare Anforderungen an
+- Zeige Beispiele für korrekte Implementierungen
+- Verweise bei Bedarf auf bestehenden Code
+- Vermeide Wiederholungen, indem du auf andere Regeln verweist
+
+**Regelwartung:**
+- Aktualisiere Regeln, wenn neue Muster auftauchen
+- Füge Beispiele aus dem echten Code hinzu
+- Entferne veraltete Beispiele
+- Verknüpfe verwandte Regeln
+
+**Best Practices:**
+- Verwende Aufzählungspunkte für bessere Übersicht
+- Halte Beschreibungen knapp
+- Zeige sowohl DO- als auch DON'T-Beispiele
+- Beziehe dich möglichst auf echten Code statt auf Theorien
+- Nutze einheitliches Format in allen Regeln

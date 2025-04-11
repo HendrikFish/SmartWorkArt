@@ -93,7 +93,12 @@
                                 <input type="text" class="form-control" id="lastName" name="lastName" required>
                             </div>
                             
-                            <div class="col-12">
+                            <div class="col-md-6">
+                                <label for="newResidentBirthDate" class="form-label">Geburtsdatum</label>
+                                <input type="date" class="form-control" id="newResidentBirthDate" name="birthDate" min="1900-01-01" value="1950-01-01">
+                            </div>
+                            
+                            <div class="col-md-6">
                                 <label class="form-label">Geschlecht <span class="text-danger">*</span></label>
                                 <div class="btn-group w-100" role="group" aria-label="Geschlecht">
                                     <input type="radio" class="btn-check" name="gender" id="genderHerr" value="Herr" autocomplete="off">
@@ -360,8 +365,8 @@
                             
                             <!-- Alter -->
                             <div class="col-md-6">
-                                <label for="residentDetailAge" class="form-label">Alter</label>
-                                <input type="number" class="form-control" id="residentDetailAge" name="vergin">
+                                <label for="residentDetailAge" class="form-label">Geburtsdatum</label>
+                                <input type="date" class="form-control" id="residentDetailAge" name="birthDate" min="1900-01-01" value="1950-01-01">
                             </div>
 
                             <!-- Dynamische Bereiche -->

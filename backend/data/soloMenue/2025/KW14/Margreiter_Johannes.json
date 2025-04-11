@@ -1,0 +1,27 @@
+{
+  "name": "Margreiter_Johannes",
+  "Montag": {
+    "extra_1742413252845": {
+      "category": "extra_1742413252845",
+      "selected": true,
+      "portion": "100%",
+      "meals": [
+        {
+          "name": "Schleim",
+          "isExtraKategorie": true,
+          "extraKategorieTitle": ""
+        }
+      ],
+      "notizen": "",
+      "ausgeschlosseneKomponenten": [],
+      "extraMenueAuswahl": [],
+      "isExtraKategorie": true
+    }
+  },
+  "Dienstag": {},
+  "Mittwoch": {},
+  "Donnerstag": {},
+  "Freitag": {},
+  "Samstag": {},
+  "Sonntag": {}
+}

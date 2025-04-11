@@ -53,8 +53,10 @@ function createNavbar() {
     
     // Logo hinzufügen (optional)
     const logo = document.createElement('img');
-    logo.src = '/frontend/navbar/logo.png'; // Falls ein Logo vorhanden ist
+    logo.src = '/frontend/SoloNew/img/logo2.png'; // Pfad zum neuen Logo
     logo.alt = 'Logo';
+    logo.width = 64; // Breite auf 64px setzen
+    logo.height = 64; // Höhe auf 64px setzen
     logo.onerror = function() {
         // Falls kein Logo gefunden wird, Icons verwenden
         this.remove();

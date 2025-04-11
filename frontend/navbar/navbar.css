@@ -88,5 +88,16 @@
 
 /* Platz für den Content unter der fixed Navbar */
 body {
-    padding-top: 70px;
+    padding-top: 110px;
+}
+
+/* Überschreibung des inline-styles im body-Element */
+body[style*="padding-top"] {
+    padding-top: 110px !important;
+}
+
+.action-buttons-container {
+    margin-top: 3rem !important;
+    position: relative !important;
+    z-index: 999 !important;
 }

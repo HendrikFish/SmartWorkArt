@@ -15,6 +15,23 @@ export const ResidentManager = {
     activeFilter: null,
     
     /**
+     * Formatiert ein Datum im deutschen Format (TT.MM.JJJJ)
+     * @param {string} dateString - Datumstring im Format JJJJ-MM-TT
+     * @returns {string} - Formatiertes Datum
+     */
+    formatDate(dateString) {
+        if (!dateString) return '';
+        
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('de-DE');
+        } catch (error) {
+            console.error('Fehler beim Formatieren des Datums:', error);
+            return dateString;
+        }
+    },
+    
+    /**
      * Initialisiert den Resident-Manager
      * @param {Object} options - Konfigurationsoptionen
      * @returns {Promise<void>}
@@ -718,9 +735,25 @@ export const ResidentManager = {
         
         if (resident.vergin) {
             infoParts.push(`Alter: ${resident.vergin}`);
+        } else if (resident.birthDate) {
+            // Berechne das Alter aus dem Geburtsdatum
+            const birthDateObj = new Date(resident.birthDate);
+            const today = new Date();
+            let age = today.getFullYear() - birthDateObj.getFullYear();
+            
+            // Wenn der Geburtstag in diesem Jahr noch nicht war, ein Jahr abziehen
+            if (
+                today.getMonth() < birthDateObj.getMonth() || 
+                (today.getMonth() === birthDateObj.getMonth() && today.getDate() < birthDateObj.getDate())
+            ) {
+                age--;
+            }
+            
+            infoParts.push(`Alter: ${age}`);
         }
         
         infoLine.textContent = infoParts.join(' | ');
+        infoLine.classList.add('text-center'); // Mittige Ausrichtung
         
         // Füge nur die In Bewohner Card anzeigen Bereiche als Badges hinzu
         const badgeContainer = document.createElement('div');
